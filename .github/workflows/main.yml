@@ -1,0 +1,22 @@
+name: deploy website
+on: [push]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          yarn install
+          yarn docs-sync pull ts-zh-docs/TypeScript-zh-Website#main 1
+          yarn bootstrap
+          yarn workspace typescriptlang-org setup-playground-cache-bust
+          yarn build
+          yarn build-site
+          cp -r packages/typescriptlang-org/public site
+      - uses: amondnet/vercel-action@v20 #deploy
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }} # Required
+          github-token: ${{ secrets.GITHUB_TOKEN }} #Optional 
+          vercel-org-id: ${{ secrets.ORG_ID}}  #Required
+          vercel-project-id: ${{ secrets.PROJECT_ID}} #Required 
+          
