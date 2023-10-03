@@ -1,7 +1,7 @@
 ---
 title: Mapped Types
 layout: docs
-permalink: /docs/handbook/2/mapped-types.html
+permalink: /zh/docs/handbook/2/mapped-types.html
 oneline: "Generating types by re-using an existing type."
 ---
 

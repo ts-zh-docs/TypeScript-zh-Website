@@ -1,7 +1,7 @@
 ---
 title: ASP.NET Core
 layout: docs
-permalink: /docs/handbook/asp-net-core.html
+permalink: /zh/docs/handbook/asp-net-core.html
 oneline: Using TypeScript in ASP.NET Core
 ---
 

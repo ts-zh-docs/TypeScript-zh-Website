@@ -1,7 +1,7 @@
 ---
 title: "Global: Plugin"
 layout: docs
-permalink: /docs/handbook/declaration-files/templates/global-plugin-d-ts.html
+permalink: /zh/docs/handbook/declaration-files/templates/global-plugin-d-ts.html
 ---
 
 ## _UMD_

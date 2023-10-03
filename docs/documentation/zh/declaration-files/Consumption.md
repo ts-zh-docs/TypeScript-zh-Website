@@ -1,7 +1,7 @@
 ---
 title: Consumption
 layout: docs
-permalink: /docs/handbook/declaration-files/consumption.html
+permalink: /zh/docs/handbook/declaration-files/consumption.html
 oneline: "How to download d.ts files for your project"
 ---
 

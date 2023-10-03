@@ -1,7 +1,7 @@
 ---
 title: Variable Declaration
 layout: docs
-permalink: /docs/handbook/variable-declarations.html
+permalink: /zh/docs/handbook/variable-declarations.html
 oneline: How TypeScript handles variable declaration
 translatable: true
 ---

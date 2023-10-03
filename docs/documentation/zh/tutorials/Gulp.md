@@ -1,7 +1,7 @@
 ---
 title: Gulp
 layout: docs
-permalink: /docs/handbook/gulp.html
+permalink: /zh/docs/handbook/gulp.html
 oneline: Using TypeScript with Gulp
 deprecated: true
 ---

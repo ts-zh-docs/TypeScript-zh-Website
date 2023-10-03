@@ -1,7 +1,7 @@
 ---
 title: "Module: Function"
 layout: docs
-permalink: /docs/handbook/declaration-files/templates/module-function-d-ts.html
+permalink: /zh/docs/handbook/declaration-files/templates/module-function-d-ts.html
 ---
 
 For example, when you want to work with JavaScript code which looks like:

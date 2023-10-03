@@ -1,7 +1,7 @@
 ---
 title: Library Structures
 layout: docs
-permalink: /docs/handbook/declaration-files/library-structures.html
+permalink: /zh/docs/handbook/declaration-files/library-structures.html
 oneline: How to structure your d.ts files
 ---
 

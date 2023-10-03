@@ -1,7 +1,7 @@
 ---
 title: Publishing
 layout: docs
-permalink: /docs/handbook/declaration-files/publishing.html
+permalink: /zh/docs/handbook/declaration-files/publishing.html
 oneline: How to get your d.ts files to users
 ---
 

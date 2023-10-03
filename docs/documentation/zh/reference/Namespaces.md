@@ -1,7 +1,7 @@
 ---
 title: Namespaces
 layout: docs
-permalink: /docs/handbook/namespaces.html
+permalink: /zh/docs/handbook/namespaces.html
 oneline: How TypeScript namespaces work
 translatable: true
 ---

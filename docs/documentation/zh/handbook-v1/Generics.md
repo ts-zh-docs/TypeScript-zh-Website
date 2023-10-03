@@ -1,7 +1,7 @@
 ---
 title: Generics
 layout: docs
-permalink: /docs/handbook/generics.html
+permalink: /zh/docs/handbook/generics.html
 oneline: Introduction to TypeScript and Generics
 handbook: "true"
 deprecated_by: /docs/handbook/2/generics.html

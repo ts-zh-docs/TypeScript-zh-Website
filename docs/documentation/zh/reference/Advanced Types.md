@@ -1,7 +1,7 @@
 ---
 title: Advanced Types
 layout: docs
-permalink: /docs/handbook/advanced-types.html
+permalink: /zh/docs/handbook/advanced-types.html
 oneline: Advanced concepts around types in TypeScript
 deprecated_by: /docs/handbook/2/types-from-types.html
 

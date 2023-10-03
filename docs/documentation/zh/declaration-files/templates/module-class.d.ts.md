@@ -1,7 +1,7 @@
 ---
 title: "Module: Class"
 layout: docs
-permalink: /docs/handbook/declaration-files/templates/module-class-d-ts.html
+permalink: /zh/docs/handbook/declaration-files/templates/module-class-d-ts.html
 ---
 
 <!--

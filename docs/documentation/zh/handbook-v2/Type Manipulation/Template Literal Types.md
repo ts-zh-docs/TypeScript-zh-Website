@@ -1,7 +1,7 @@
 ---
 title: Template Literal Types
 layout: docs
-permalink: /docs/handbook/2/template-literal-types.html
+permalink: /zh/docs/handbook/2/template-literal-types.html
 oneline: "Generating mapping types which change properties via template literal strings."
 ---
 

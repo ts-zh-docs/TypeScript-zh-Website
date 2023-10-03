@@ -2,7 +2,7 @@
 title: TypeScript for Functional Programmers
 short: TS for Functional Programmers
 layout: docs
-permalink: /docs/handbook/typescript-in-5-minutes-func.html
+permalink: /zh/docs/handbook/typescript-in-5-minutes-func.html
 oneline: Learn TypeScript if you have a background in functional programming
 ---
 

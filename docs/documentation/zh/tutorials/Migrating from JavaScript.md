@@ -1,7 +1,7 @@
 ---
 title: Migrating from JavaScript
 layout: docs
-permalink: /docs/handbook/migrating-from-javascript.html
+permalink: /zh/docs/handbook/migrating-from-javascript.html
 oneline: How to migrate from JavaScript to TypeScript
 ---
 

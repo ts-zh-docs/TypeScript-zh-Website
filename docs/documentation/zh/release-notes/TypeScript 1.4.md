@@ -1,7 +1,7 @@
 ---
 title: TypeScript 1.4
 layout: docs
-permalink: /docs/handbook/release-notes/typescript-1-4.html
+permalink: /zh/docs/handbook/release-notes/typescript-1-4.html
 oneline: TypeScript 1.3 Release Notes
 ---
 

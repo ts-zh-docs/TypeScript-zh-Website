@@ -1,7 +1,7 @@
 ---
 title: Type Checking JavaScript Files
 layout: docs
-permalink: /docs/handbook/type-checking-javascript-files.html
+permalink: /zh/docs/handbook/type-checking-javascript-files.html
 oneline: How to add type checking to JavaScript files using TypeScript
 ---
 

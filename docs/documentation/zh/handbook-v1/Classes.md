@@ -1,7 +1,7 @@
 ---
 title: Classes
 layout: docs
-permalink: /docs/handbook/classes.html
+permalink: /zh/docs/handbook/classes.html
 oneline: How classes work in TypeScript
 handbook: "true"
 deprecated_by: /docs/handbook/2/classes.html

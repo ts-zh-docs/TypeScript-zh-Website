@@ -1,7 +1,7 @@
 ---
 title: "Global .d.ts"
 layout: docs
-permalink: /docs/handbook/declaration-files/templates/global-d-ts.html
+permalink: /zh/docs/handbook/declaration-files/templates/global-d-ts.html
 ---
 
 ## Global Libraries

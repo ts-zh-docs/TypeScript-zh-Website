@@ -1,7 +1,7 @@
 ---
 title: Basic Types
 layout: docs
-permalink: /docs/handbook/basic-types.html
+permalink: /zh/docs/handbook/basic-types.html
 oneline: "Step two in learning TypeScript: The basic types."
 handbook: "true"
 deprecated_by: /docs/handbook/2/everyday-types.html

@@ -1,7 +1,7 @@
 ---
 title: Introduction
 layout: docs
-permalink: /docs/handbook/declaration-files/introduction.html
+permalink: /zh/docs/handbook/declaration-files/introduction.html
 oneline: "How to write a high-quality TypeScript Declaration (d.ts) file"
 ---
 

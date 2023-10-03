@@ -1,7 +1,7 @@
 ---
 title: Do's and Don'ts
 layout: docs
-permalink: /docs/handbook/declaration-files/do-s-and-don-ts.html
+permalink: /zh/docs/handbook/declaration-files/do-s-and-don-ts.html
 oneline: "Recommendations for writing d.ts files"
 ---
 

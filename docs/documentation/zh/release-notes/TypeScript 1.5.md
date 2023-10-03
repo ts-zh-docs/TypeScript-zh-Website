@@ -1,7 +1,7 @@
 ---
 title: TypeScript 1.5
 layout: docs
-permalink: /docs/handbook/release-notes/typescript-1-5.html
+permalink: /zh/docs/handbook/release-notes/typescript-1-5.html
 oneline: TypeScript 1.5 Release Notes
 ---
 

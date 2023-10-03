@@ -1,7 +1,7 @@
 ---
 title: Type Compatibility
 layout: docs
-permalink: /docs/handbook/type-compatibility.html
+permalink: /zh/docs/handbook/type-compatibility.html
 oneline: How type-checking works in TypeScript
 translatable: true
 ---

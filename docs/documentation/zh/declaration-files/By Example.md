@@ -1,7 +1,7 @@
 ---
 title: Declaration Reference
 layout: docs
-permalink: /docs/handbook/declaration-files/by-example.html
+permalink: /zh/docs/handbook/declaration-files/by-example.html
 oneline: "How to create a d.ts file for a module"
 ---
 

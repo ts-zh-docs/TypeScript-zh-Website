@@ -1,7 +1,7 @@
 ---
 title: TypeScript 2.7
 layout: docs
-permalink: /docs/handbook/release-notes/typescript-2-7.html
+permalink: /zh/docs/handbook/release-notes/typescript-2-7.html
 oneline: TypeScript 2.7 Release Notes
 ---
 

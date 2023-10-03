@@ -1,7 +1,7 @@
 ---
 title: ECMAScript Modules in Node.js
 layout: docs
-permalink: /docs/handbook/esm-node.html
+permalink: /zh/docs/handbook/esm-node.html
 oneline: Using ECMAScript Modules in Node.js
 ---
 

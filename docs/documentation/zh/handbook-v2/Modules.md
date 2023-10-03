@@ -1,7 +1,7 @@
 ---
 title: Modules
 layout: docs
-permalink: /docs/handbook/2/modules.html
+permalink: /zh/docs/handbook/2/modules.html
 oneline: "How JavaScript handles communicating across file boundaries."
 ---
 

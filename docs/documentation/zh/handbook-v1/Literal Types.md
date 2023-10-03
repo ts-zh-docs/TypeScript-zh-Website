@@ -1,7 +1,7 @@
 ---
 title: Literal Types
 layout: docs
-permalink: /docs/handbook/literal-types.html
+permalink: /zh/docs/handbook/literal-types.html
 oneline: Using literal types with TypeScript
 handbook: "true"
 deprecated_by: /docs/handbook/2/everyday-types.html#literal-types

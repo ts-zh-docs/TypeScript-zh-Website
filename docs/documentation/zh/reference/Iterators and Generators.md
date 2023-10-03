@@ -1,7 +1,7 @@
 ---
 title: Iterators and Generators
 layout: docs
-permalink: /docs/handbook/iterators-and-generators.html
+permalink: /zh/docs/handbook/iterators-and-generators.html
 oneline: How Iterators and Generators work in TypeScript
 translatable: true
 ---

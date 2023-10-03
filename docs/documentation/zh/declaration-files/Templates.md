@@ -1,7 +1,7 @@
 ---
 title: Templates
 layout: docs
-permalink: /docs/handbook/declaration-files/templates.html
+permalink: /zh/docs/handbook/declaration-files/templates.html
 oneline: "Different d.ts module template examples"
 ---
 

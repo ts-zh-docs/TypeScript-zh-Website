@@ -1,7 +1,7 @@
 ---
 title: Declaration Merging
 layout: docs
-permalink: /docs/handbook/declaration-merging.html
+permalink: /zh/docs/handbook/declaration-merging.html
 oneline: How merging namespaces and interfaces works
 translatable: true
 ---

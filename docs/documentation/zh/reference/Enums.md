@@ -1,7 +1,7 @@
 ---
 title: Enums
 layout: docs
-permalink: /docs/handbook/enums.html
+permalink: /zh/docs/handbook/enums.html
 oneline: How TypeScript enums work
 handbook: "true"
 ---

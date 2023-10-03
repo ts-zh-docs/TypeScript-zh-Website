@@ -1,7 +1,7 @@
 ---
 title: Configuring Watch
 layout: docs
-permalink: /docs/handbook/configuring-watch.html
+permalink: /zh/docs/handbook/configuring-watch.html
 oneline: How to configure the watch mode of TypeScript
 translatable: true
 ---

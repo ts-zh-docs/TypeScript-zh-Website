@@ -1,7 +1,7 @@
 ---
 title: Modules
 layout: docs
-permalink: /docs/handbook/modules.html
+permalink: /zh/docs/handbook/modules.html
 oneline: How modules work in TypeScript
 translatable: true
 ---

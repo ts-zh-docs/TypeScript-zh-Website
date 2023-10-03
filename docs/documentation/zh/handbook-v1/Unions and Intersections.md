@@ -1,7 +1,7 @@
 ---
 title: Unions and Intersection Types
 layout: docs
-permalink: /docs/handbook/unions-and-intersections.html
+permalink: /zh/docs/handbook/unions-and-intersections.html
 oneline: How to use unions and intersection types in TypeScript
 handbook: "true"
 deprecated_by: /docs/handbook/2/everyday-types.html#union-types

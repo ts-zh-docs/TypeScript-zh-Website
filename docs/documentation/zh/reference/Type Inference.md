@@ -1,7 +1,7 @@
 ---
 title: Type Inference
 layout: docs
-permalink: /docs/handbook/type-inference.html
+permalink: /zh/docs/handbook/type-inference.html
 oneline: How code flow analysis works in TypeScript
 translatable: true
 ---
