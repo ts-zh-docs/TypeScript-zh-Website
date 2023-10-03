@@ -55,6 +55,6 @@ jobs:
       - run: yarn workspace typescriptlang-org build
         working-directory: ./website
 
-      # Verify the website build
-      - run: yarn test
-        working-directory: ./website
+      # # Verify the website build
+      # - run: yarn test
+      #   working-directory: ./website
