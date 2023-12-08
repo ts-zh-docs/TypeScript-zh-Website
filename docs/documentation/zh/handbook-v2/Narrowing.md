@@ -1,7 +1,7 @@
 ---
 title: 缩小类型范围
 layout: docs
-permalink: /zh/zh/docs/handbook/2/narrowing.html
+permalink: /zh/docs/handbook/2/narrowing.html
 oneline: "了解 TypeScript 如何利用 JavaScript 的知识来减少项目中的类型语法量。"
 ---
 
