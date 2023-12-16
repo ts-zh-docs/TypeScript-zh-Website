@@ -143,9 +143,9 @@ interface PaintOptions {
 // ---cut---
 function paintShape({ shape, xPos = 0, yPos = 0 }: PaintOptions) {
   console.log("x 坐标为", xPos);
-  //                             ^?
+  //                      ^?
   console.log("y 坐标为", yPos);
-  //                             ^?
+  //                      ^?
   // ...
 }
 ```
@@ -181,7 +181,7 @@ interface SomeType {
 }
 
 function doSomething(obj: SomeType) {
-  // 我们可以读取 'obj.prop' 的值。
+  // 我们可以读取‘obj.prop’的值。
   console.log(`prop 的值为 '${obj.prop}'。`);
 
   // 但是我们无法重新赋值。
@@ -681,7 +681,7 @@ interface Apple {
   // ....
 }
 
-// 等同于 '{ contents: Apple }'。
+// 等同于‘{ contents: Apple }’。
 type AppleBox = Box<Apple>;
 ```
 
@@ -915,7 +915,7 @@ function setCoordinate(coord: Either2dOr3d) {
   //           ^?
 
   console.log(`所给坐标有 ${coord.length} 个维度`);
-  //                                            ^?
+  //                             ^?
 }
 ```
 
