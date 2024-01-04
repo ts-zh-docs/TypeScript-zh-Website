@@ -24,7 +24,7 @@ export const indexCopy = {
 
   // Quick pitch
   index_2_what_is: "什么是 TypeScript？",
-  index_2_what_is_js: "比 JavaScript 更多",
+  index_2_what_is_js: "TypeScript 是 JavaScript 的超集",
 
   index_2_what_is_js_copy: `TypeScript 为 JavaScript 添加了额外的语法以支持<strong>与编辑器更为紧密的集成</strong>。可以在编辑器中及早发现错误。`,
   index_2_trust: "你可以相信的结果",
