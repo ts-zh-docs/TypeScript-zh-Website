@@ -49,8 +49,8 @@ export const indexCopy = {
   index_2_migration_oss: "TypeScript 开源项目",
 
   // Survey results
-  index_2_loved_by: "TypeScript 是开发者喜爱的语言",
-  index_2_loved_stack: `在 <so>Stack Overflow 2020 开发者调查</so>中，被选为<strong>第二受欢迎的编程语言</strong>。`,
+  index_2_loved_by: "TypeScript 为开发者所喜爱"
+  index_2_loved_stack: `在 <so>Stack Overflow 2020 开发者调查</so>中，是<strong>第二受欢迎的编程语言</strong>。`,
   index_2_loved_state_js: `<js>2020 State of JS</js> 受访者中，<strong>78%</strong> 的人使用了 TypeScript，其中 <strong>93% 的人表示他们会再次使用</strong>。`,
   index_2_loved_state_js2: `基于同比增长，TypeScript 被授予 <strong>“Most Adopted Technology”</strong> 奖项。`,
 
