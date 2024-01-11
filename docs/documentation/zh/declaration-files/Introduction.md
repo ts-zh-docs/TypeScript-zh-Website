@@ -1,53 +1,48 @@
 ---
-title: Introduction
+title: 介绍
 layout: docs
 permalink: /zh/docs/handbook/declaration-files/introduction.html
-oneline: "How to write a high-quality TypeScript Declaration (d.ts) file"
+oneline: "如何编写高质量的 TypeScript 声明文件 (d.ts)"
 ---
 
-The Declaration Files section is designed to teach you how to write a high-quality TypeScript Declaration File. We need to assume basic familiarity with the TypeScript language in order to get started.
+声明文件部分旨在教你如何编写高质量的 TypeScript 声明文件。开始前，我们假设你对 TypeScript 语言有基本的了解。
 
-If you haven't already, you should read the [TypeScript Handbook](/docs/handbook/2/basic-types.html)
-to familiarize yourself with basic concepts, especially types and modules.
+如果还没有，你应该先阅读[TypeScript 手册](/docs/handbook/2/basic-types.html)以熟悉基本概念，尤其是类型和模块。
 
-The most common case for learning how .d.ts files work is that you're typing an npm package with no types. 
-In that case, you can jump straight to [Modules .d.ts](/docs/handbook/declaration-files/templates/module-d-ts.html).
+学习 .d.ts 文件如何工作的最常见情况是，你需要为一个没有类型的 npm 包添加类型定义。
+在这种情况下，你可以直接跳转到[Modules .d.ts](/docs/handbook/declaration-files/templates/module-d-ts.html).
 
-The Declaration Files section is broken down into the following sections.
+声明文件部分分为以下几个章节。
 
-## [Declaration Reference](/docs/handbook/declaration-files/by-example.html)
+## [声明参考](/docs/handbook/declaration-files/by-example.html)
 
-We are often faced with writing a declaration file when we only have examples of the underlying library to guide us.
-The [Declaration Reference](/docs/handbook/declaration-files/by-example.html) section shows many common API patterns and how to write declarations for each of them.
-This guide is aimed at the TypeScript novice who may not yet be familiar with every language construct in TypeScript.
+我们常常需要在只有底层库示例的情况下编写声明文件。
+[声明参考](/docs/handbook/declaration-files/by-example.html)部分展示了许多常见的 API 模式，以及如何为每个模式编写声明。
+本指南面向 TypeScript 新手，他们可能还不熟悉 TypeScript 中的所有语言结构。
 
-## [Library Structures](/docs/handbook/declaration-files/library-structures.html)
+## [库结构](/docs/handbook/declaration-files/library-structures.html)
 
-The [Library Structures](/docs/handbook/declaration-files/library-structures.html) guide helps you understand common library formats and how to write a proper declaration file for each format.
-If you're editing an existing file, you probably don't need to read this section.
-Authors of new declaration files are strongly encouraged to read this section to properly understand how the format of the library influences the writing of the declaration file. 
+[库结构](/docs/handbook/declaration-files/library-structures.html)部分帮助你理解常见的库格式，以及如何为每种格式编写合适的声明文件。
+如果你正在编辑现有文件，可能不需要阅读本部分。
+强烈建议新声明文件的作者阅读本部分，以正确理解库的格式如何影响声明文件的编写。
 
-In the Template section you'll find a number of declaration files that serve as a useful starting point
-when writing a new file. If you already know what your structure is, see the d.ts Template section in the sidebar.
+在模板部分，你会发现一些声明文件，它们可以作为编写新文件时的有用起点。如果你已经知道自己的结构，请参阅侧边栏中的 d.ts 模板部分。
 
-## [Do's and Don'ts](/docs/handbook/declaration-files/do-s-and-don-ts.html)
+## [注意事项](/docs/handbook/declaration-files/do-s-and-don-ts.html)
 
-Many common mistakes in declaration files can be easily avoided.
-The [Do's and Don'ts](/docs/handbook/declaration-files/do-s-and-don-ts.html) section identifies common errors, 
-describes how to detect them, 
-and how to fix them.
-Everyone should read this section to help themselves avoid common mistakes.
+许多常见的声明文件错误都可以轻松避免。
+[注意事项](/docs/handbook/declaration-files/do-s-and-don-ts.html)部分列出了常见错误，描述了如何检测它们，以及如何解决它们。
+每个人都应该阅读此部分，以帮助自己避免常见错误。
 
-## [Deep Dive](/docs/handbook/declaration-files/deep-dive.html)
+## [深入研究](/docs/handbook/declaration-files/deep-dive.html)
 
-For seasoned authors interested in the underlying mechanics of how declaration files work, 
-the [Deep Dive](/docs/handbook/declaration-files/deep-dive.html) section explains many advanced concepts in declaration writing, 
-and shows how to leverage these concepts to create cleaner and more intuitive declaration files.
+对于有经验的作者，如果想了解声明文件的底层工作机制，
+[深入研究](/docs/handbook/declaration-files/deep-dive.html)部分解释了声明文件编写中的许多高级概念，以及如何利用这些概念创建更简洁、更直观的声明文件。
 
-## [Publish to npm](/docs/handbook/declaration-files/publishing.html)
+## [发布到 npm](/docs/handbook/declaration-files/publishing.html)
 
-The [Publishing](/docs/handbook/declaration-files/publishing.html) section explains how to publish your declaration files to an npm package, and shows how to manage your dependent packages.
+[发布](/docs/handbook/declaration-files/publishing.html)部分介绍了如何将声明文件发布到 npm 包，并展示了如何管理依赖包。
 
-## [Find and Install Declaration Files](/docs/handbook/declaration-files/consumption.html)
+## [查找和安装声明文件](/docs/handbook/declaration-files/consumption.html)
 
-For JavaScript library users, the [Consumption](/docs/handbook/declaration-files/consumption.html) section offers a few simple steps to locate and install corresponding declaration files.
+对于 JavaScript 库用户来说，[使用](/docs/handbook/declaration-files/consumption.html)部分提供了几个简单的步骤来查找和安装相应的声明文件。
