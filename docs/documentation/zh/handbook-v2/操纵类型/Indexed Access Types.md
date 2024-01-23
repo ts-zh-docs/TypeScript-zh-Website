@@ -2,10 +2,10 @@
 title: 索引访问类型
 layout: docs
 permalink: /zh/docs/handbook/2/indexed-access-types.html
-oneline: "使用 Type['a'] 语法访问类型的子集。"
+oneline: "使用 Type['a'] 语法访问类型的子集"
 ---
 
-我们可以使用_索引访问类型_在另一个类型上查找特定的属性：
+我们可以使用*索引访问类型*在另一个类型上查找特定的属性：
 
 ```ts twoslash
 type Person = { age: number; name: string; alive: boolean };

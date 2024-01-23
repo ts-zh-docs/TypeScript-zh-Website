@@ -2,14 +2,14 @@
 title: 模块
 layout: docs
 permalink: /zh/docs/handbook/2/modules.html
-oneline: "JavaScript 处理跨文件通信的方式。"
+oneline: "JavaScript 处理跨文件通信的方式"
 ---
 
 JavaScript 历来具有多种处理代码模块化的方式。TypeScript 自 2012 年问世以来，已经实现了对这其中很多格式的支持。但随着时间的推移，社区和 JavaScript 规范已经趋于使用一种称为 ES 模块（或 ES6 模块）的格式。它使用的是 `import`/`export` 语法。
 
 ES 模块在 2015 年被添加到 JavaScript 规范中，并且截至 2020 年已经在大多数 Web 浏览器和 JavaScript 运行时中得到广泛支持。
 
-本手册将重点介绍 ES 模块及其流行的前身 CommonJS `module.exports =` 语法，你可以在参考部分的 [模块](/docs/handbook/modules.html) 下找到其他模块模式的信息。
+本手册将重点介绍 ES 模块及其流行的前身 CommonJS `module.exports =` 语法，你可以在参考部分的[模块](/docs/handbook/modules.html)下找到其他模块模式的信息。
 
 ## JavaScript 模块的定义方式
 
@@ -198,7 +198,7 @@ TypeScript 通过两个用来声明类型导入的概念，扩展了 `import` �
 
 ###### `import type`
 
-这是一个_仅_能导入类型的导入语句：
+这是一个*仅*能导入类型的导入语句：
 
 ```ts twoslash
 // @filename: animal.ts
@@ -237,7 +237,7 @@ const name = createCatName();
 
 #### 具有 CommonJS 行为的 ES 模块语法
 
-TypeScript 具有 ES 模块语法，它与 CommonJS 和 AMD 的 `require` _直接_对应。使用 ES 模块进行导入在大多数情况下与这些环境中的 `require` 相同，但是此语法确保你的 TypeScript 文件与 CommonJS 输出保持一对一的匹配：
+TypeScript 具有 ES 模块语法，它与 CommonJS 和 AMD 的 `require` *直接*对应。使用 ES 模块进行导入在大多数情况下与这些环境中的 `require` 相同，但是此语法确保你的 TypeScript 文件与 CommonJS 输出保持一对一的匹配：
 
 ```ts twoslash
 /// <reference types="node" />
@@ -247,7 +247,7 @@ import fs = require("fs");
 const code = fs.readFileSync("hello.ts", "utf8");
 ```
 
-你可以在 [模块参考页面](/docs/handbook/modules.html#export--and-import--require) 了解更多关于此语法的信息。
+你可以在[模块参考页面](/docs/handbook/modules.html#export--and-import--require)了解更多关于此语法的信息。
 
 ## CommonJS 语法
 
@@ -333,7 +333,7 @@ TypeScript 包括两种解析策略：经典解析和 Node 解析。经典解析
 
 有许多 TSConfig 标志会影响 TypeScript 内部的模块策略，包括 [`moduleResolution`](/tsconfig#moduleResolution)、[`baseUrl`](/tsconfig#baseUrl)、[`paths`](/tsconfig#paths) 和 [`rootDirs`](/tsconfig#rootDirs)。
 
-要了解这些策略的详细信息，可以参考 [模块解析](/docs/handbook/module-resolution.html)。
+要了解这些策略的详细信息，可以参考[模块解析](/docs/handbook/module-resolution.html)。
 
 ## TypeScript 的模块输出选项
 
@@ -393,7 +393,7 @@ export const twoPi = valueOfPi * 2;
 
 > 请注意，ES2020 在功能上与原始的 `index.ts` 相同。
 
-你可以在 [TSConfig 的 `module` 配置参考页面](/tsconfig#module) 中查看所有可用选项及其生成的 JavaScript 代码。
+你可以在 [TSConfig 的 `module` 配置参考页面](/tsconfig#module)中查看所有可用选项及其生成的 JavaScript 代码。
 
 ## TypeScript 命名空间
 

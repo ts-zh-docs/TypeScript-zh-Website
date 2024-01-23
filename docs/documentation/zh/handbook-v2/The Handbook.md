@@ -12,7 +12,7 @@ handbook: "true"
 
 程序员常犯的最常见错误是类型错误：在期望使用某种类型的值时使用了另外一种类型的值。这可能是由于简单的拼写错误、未理解库的 API、对运行时行为的错误假设或其他错误导致的。TypeScript 的目标是成为 JavaScript 程序的静态类型检查器，也就是说，在你的代码运行之前（静态）运行的工具，确保程序的类型是正确的（类型检查）。
 
-如果你没有 JavaScript 背景，打算把 TypeScript 作为你的第一门语言学习，我们建议你首先阅读 [微软 JavaScript 学习教程](https://developer.microsoft.com/javascript/)或阅读 [Mozilla Web 文档中的 JavaScript](https://developer.mozilla.org/docs/Web/JavaScript/Guide)教程。
+如果你没有 JavaScript 背景，打算把 TypeScript 作为你的第一门语言学习，我们建议你首先阅读 [微软 JavaScript 学习教程](https://developer.microsoft.com/javascript/)或阅读 [Mozilla Web 文档中的 JavaScript](https://developer.mozilla.org/docs/Web/JavaScript/Guide) 教程。
 
 如果你有其他语言的经验，通过阅读本手册，你应该能够很快掌握 JavaScript 语法。
 
@@ -50,11 +50,11 @@ handbook: "true"
 
 ## 开始学习
 
-在开始学习[基础知识](/docs/handbook/2/basic-types.html) 之前，我们建议挑一个以下介绍页面阅读。这些介绍旨在突出 TypeScript 与你喜欢的编程语言之间的主要相似性和差异，并澄清与这些语言特定的常见误解。
+在开始学习[基础知识](/docs/handbook/2/basic-types.html)之前，我们建议挑一个以下介绍页面阅读。这些介绍旨在突出 TypeScript 与你喜欢的编程语言之间的主要相似性和差异，并澄清与这些语言特定的常见误解。
 
 - [适用于新程序员的 TypeScript](/docs/handbook/typescript-from-scratch.html)
 - [适用于 JavaScript 程序员的 TypeScript](/docs/handbook/typescript-in-5-minutes.html)
-- [适用于 Java/C#程序员的 TypeScript](/docs/handbook/typescript-in-5-minutes-oop.html)
+- [适用于 Java/C# 程序员的 TypeScript](/docs/handbook/typescript-in-5-minutes-oop.html)
 - [适用于函数式程序员的 TypeScript](/docs/handbook/typescript-in-5-minutes-func.html)
 
 否则，你可以直接跳转到[基础知识](/docs/handbook/2/basic-types.html) 部分。

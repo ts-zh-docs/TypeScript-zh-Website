@@ -2,10 +2,10 @@
 title: 对象类型
 layout: docs
 permalink: /zh/docs/handbook/2/objects.html
-oneline: "TypeScript 描述 JavaScript 对象的方式。"
+oneline: "TypeScript 描述 JavaScript 对象的方式"
 ---
 
-在 JavaScript 中，对象是我们最基本的组织和传递数据的方式。在 TypeScript 中，我们通过_对象类型_来表示它们。
+在 JavaScript 中，对象是我们最基本的组织和传递数据的方式。在 TypeScript 中，我们通过*对象类型*来表示它们。
 
 正如我们所见，它们可以是匿名的：
 
@@ -56,7 +56,7 @@ function greet(person: Person) {
 
 ### 可选属性
 
-大部分情况下，我们处理的对象_可能_会有某些属性设置。在这种情况下，我们可以通过在属性名称末尾添加问号（`?`）来将这些属性标记为_可选_。
+大部分情况下，我们处理的对象*可能*会有某些属性设置。在这种情况下，我们可以通过在属性名称末尾添加问号（`?`）来将这些属性标记为*可选*。
 
 ```ts twoslash
 interface Shape {}
@@ -150,7 +150,7 @@ function paintShape({ shape, xPos = 0, yPos = 0 }: PaintOptions) {
 }
 ```
 
-在这里，我们使用了[解构赋值模式](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) 来定义 `paintShape` 的参数，并为 `xPos` 和 `yPos` 提供了[默认值](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#默认值)。现在，在 `paintShape` 函数体内，`xPos` 和 `yPos` 都是必然存在的，但对于 `paintShape` 的调用者来说是可选的。
+在这里，我们使用了[解构赋值模式](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Destructuring*assignment) 来定义 `paintShape` 的参数，并为 `xPos` 和 `yPos` 提供了[默认值](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Destructuring*assignment#默认值)。现在，在 `paintShape` 函数体内，`xPos` 和 `yPos` 都是必然存在的，但对于 `paintShape` 的调用者来说是可选的。
 
 > 注意，目前无法在解构赋值模式中放置类型注解。
 > 这是因为在 JavaScript 中，以下语法已经具有不同的含义。
@@ -346,11 +346,11 @@ function createSquare(config: SquareConfig): { color: string; area: number } {
 let mySquare = createSquare({ colour: "red", width: 100 });
 ```
 
-注意，传递给 `createSquare` 的参数中将 `color` 拼写为 _`colour`_ 而不是 `color`。在普通的 JavaScript 中，这种情况会悄无声息地失败。
+注意，传递给 `createSquare` 的参数中将 `color` 拼写为 *`colour`* 而不是 `color`。在普通的 JavaScript 中，这种情况会悄无声息地失败。
 
 你可以认为这个程序是正确类型化的，因为 `width` 属性是兼容的，没有 `color` 属性存在，并且额外的 `colour` 属性是无关紧要的。
 
-然而，TypeScript 认为这段代码可能存在 bug。对象字面量在赋值给其他变量或作为实参传递时会经历_额外的属性检查_。如果对象字面量具有任何目标类型不具备的属性，就会产生错误：
+然而，TypeScript 认为这段代码可能存在 bug。对象字面量在赋值给其他变量或作为实参传递时会经历*额外的属性检查*。如果对象字面量具有任何目标类型不具备的属性，就会产生错误：
 
 ```ts twoslash
 // @errors: 2345 2739
@@ -388,7 +388,7 @@ function createSquare(config: SquareConfig): { color: string; area: number } {
 let mySquare = createSquare({ width: 100, opacity: 0.5 } as SquareConfig);
 ```
 
-然而，如果你确定该对象可以具有一些额外的属性，并且这些属性在某种特殊方式下使用，一种更好的方法是在对象上添加字符串索引签名。如果 `SquareConfig` 可以具有上述类型的 `color` 和 `width` 属性，但_还_可以具有任意数量的其他属性，那么我们可以这样定义它：
+然而，如果你确定该对象可以具有一些额外的属性，并且这些属性在某种特殊方式下使用，一种更好的方法是在对象上添加字符串索引签名。如果 `SquareConfig` 可以具有上述类型的 `color` 和 `width` 属性，但*还*可以具有任意数量的其他属性，那么我们可以这样定义它：
 
 ```ts twoslash
 interface SquareConfig {
@@ -512,7 +512,7 @@ const cc: ColorfulCircle = {
 
 ## 交叉类型
 
-在 TypeScript 中，除了使用 `interface` 来扩展已有类型外，还提供了另一种构造方式，称为_交叉类型（intersection types）_，主要用于组合现有的对象类型。
+在 TypeScript 中，除了使用 `interface` 来扩展已有类型外，还提供了另一种构造方式，称为*交叉类型（intersection types）*，主要用于组合现有的对象类型。
 
 交叉类型使用 `&` 运算符进行定义。
 
@@ -527,7 +527,7 @@ interface Circle {
 type ColorfulCircle = Colorful & Circle;
 ```
 
-在这个例子中，我们对 `Colorful` 和 `Circle` 进行了交叉，生成了新类型，该类型具有 `Colorful` _和_ `Circle` 的所有成员。
+在这个例子中，我们对 `Colorful` 和 `Circle` 进行了交叉，生成了新类型，该类型具有 `Colorful` *和* `Circle` 的所有成员。
 
 ```ts twoslash
 // @errors: 2345
@@ -633,7 +633,7 @@ function setContents(box: { contents: any }, newContents: any) {
 
 有很多样板代码。而且，以后我们可能需要引入新的类型和重载。这很令人沮丧，因为我们的盒子类型和重载实际上是相同的。
 
-相反，我们可以创建声明_类型参数_的_泛型_ `Box` 类型。
+相反，我们可以创建声明*类型参数*的*泛型* `Box` 类型。
 
 ```ts twoslash
 interface Box<Type> {
@@ -641,7 +641,7 @@ interface Box<Type> {
 }
 ```
 
-你可以将其理解为“`Type` 类型的 `Box` 是具有类型为 `Type` 的 `contents` 的东西”。在稍后引用 `Box` 时，我们必须在 `Type` 的位置上给出一个_类型参数_。
+你可以将其理解为“`Type` 类型的 `Box` 是具有类型为 `Type` 的 `contents` 的东西”。在稍后引用 `Box` 时，我们必须在 `Type` 的位置上给出一个*类型参数*。
 
 ```ts twoslash
 interface Box<Type> {
@@ -839,7 +839,7 @@ y = x;
 
 ### 元组类型
 
-_元组类型_是另一种 `Array` 类型，它确切地知道它包含多少个元素，以及在特定位置包含的确切类型。
+*元组类型*是另一种 `Array` 类型，它确切地知道它包含多少个元素，以及在特定位置包含的确切类型。
 
 ```ts twoslash
 type StringNumberPair = [string, number];
