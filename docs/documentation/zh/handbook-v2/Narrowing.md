@@ -2,7 +2,7 @@
 title: 缩小类型范围
 layout: docs
 permalink: /zh/docs/handbook/2/narrowing.html
-oneline: "了解 TypeScript 如何利用 JavaScript 的知识来减少项目中的类型语法量。"
+oneline: "了解 TypeScript 如何利用 JavaScript 的知识来减少项目中的类型语法量"
 ---
 
 假设我们有一个名为 `padLeft` 的函数。
@@ -37,7 +37,7 @@ function padLeft(padding: number | string, input: string) {
 
 虽然它看起来可能不起眼，但在这里实际上发生了很多事情。就像 TypeScript 使用静态类型分析运行时值一样，它还在 JavaScript 的运行时控制流构造（如 `if/else`、条件三元运算符、循环、真值检查等）上叠加了类型分析，这些构造都可以影响这些类型。
 
-在我们的 `if` 检查中，TypeScript 看到 `typeof padding === "number"` 并将其理解为特殊形式的代码，称为_类型守卫_。TypeScript 沿着程序可能采取的路径来分析值在给定位置的最具体可能类型。它查看这些特殊的检查（称为_类型守卫_）和赋值，并将类型细化为比声明更具体的类型的过程称为_缩小_。在许多编辑器中，我们可以观察到这些类型在变化，我们在示例中也将这样做。
+在我们的 `if` 检查中，TypeScript 看到 `typeof padding === "number"` 并将其理解为特殊形式的代码，称为*类型守卫*。TypeScript 沿着程序可能采取的路径来分析值在给定位置的最具体可能类型。它查看这些特殊的检查（称为*类型守卫*）和赋值，并将类型细化为比声明更具体的类型的过程称为*缩小*。在许多编辑器中，我们可以观察到这些类型在变化，我们在示例中也将这样做。
 
 ```ts twoslash
 function padLeft(padding: number | string, input: string) {
@@ -164,7 +164,7 @@ function printAll(strs: string | string[] | null) {
 
 我们将整个函数体都包装在一个真值检查中，但这有一个微妙的缺点：我们可能不再能正确处理空字符串的情况。
 
-TypeScript 对我们来说没有任何问题，但如果你对 JavaScript 不太熟悉，这种行为值得注意。TypeScript 经常可以帮助你尽早发现错误，但如果你选择对一个值_什么也不做_，那么它能做的就有限了，而不会过于武断。如果你愿意，你可以通过使用一个代码检查工具来确保处理这类情况。
+TypeScript 对我们来说没有任何问题，但如果你对 JavaScript 不太熟悉，这种行为值得注意。TypeScript 经常可以帮助你尽早发现错误，但如果你选择对一个值*什么也不做*，那么它能做的就有限了，而不会过于武断。如果你愿意，你可以通过使用一个代码检查工具来确保处理这类情况。
 
 关于通过真值缩小类型的最后一点是，带有 `!` 的布尔否定会将被否定的值过滤到否定分支。
 
@@ -173,10 +173,11 @@ function multiplyAll(
   values: number[] | undefined,
   factor: number
 ): number[] | undefined {
-  if (!values){
-  return values;
-} else {
-  return values.map((x) => x * factor);
+  if (!values) {
+    return values;
+  } else {
+    return values.map((x) => x * factor);
+  }
 }
 ```
 
@@ -280,7 +281,7 @@ function move(animal: Fish | Bird | Human) {
 
 ## `instanceof` 缩小类型
 
-JavaScript 中有一个运算符可以检查一个值是否是另一个值的“实例”。具体来说，在 JavaScript 中，`x instanceof Foo` 检查 `x` 的_原型链_是否包含 `Foo.prototype`。虽然我们不会在这里深入讨论，而且在我们介绍类时会更多地涉及到它，但它仍然对大多数可以使用 `new` 构造的值非常有用。正如你可能已经猜到的那样，`instanceof` 也是一种类型护卫，在由 `instanceof` 保护的分支中，TypeScript 会缩小类型范围。
+JavaScript 中有一个运算符可以检查一个值是否是另一个值的“实例”。具体来说，在 JavaScript 中，`x instanceof Foo` 检查 `x` 的*原型链*是否包含 `Foo.prototype`。虽然我们不会在这里深入讨论，而且在我们介绍类时会更多地涉及到它，但它仍然对大多数可以使用 `new` 构造的值非常有用。正如你可能已经猜到的那样，`instanceof` 也是一种类型护卫，在由 `instanceof` 保护的分支中，TypeScript 会缩小类型范围。
 
 ```ts twoslash
 function logValue(x: Date | string) {
@@ -311,7 +312,7 @@ console.log(x);
 //          ^?
 ```
 
-请注意，每个赋值都有效。尽管在第一次赋值后，`x` 的观察类型变为 `number`，但我们仍然可以将 `string` 值赋值给 `x`。这是因为 `x` 的_声明类型_（`x` 起始的类型）是 `string | number`，而可赋值性始终根据声明类型进行检查。
+请注意，每个赋值都有效。尽管在第一次赋值后，`x` 的观察类型变为 `number`，但我们仍然可以将 `string` 值赋值给 `x`。这是因为 `x` 的*声明类型*（`x` 起始的类型）是 `string | number`，而可赋值性始终根据声明类型进行检查。
 
 如果我们将 `boolean` 值赋值给 `x`，就会看到错误，因为它不是声明类型的一部分。
 
@@ -342,9 +343,9 @@ function padLeft(padding: number | string, input: string) {
 }
 ```
 
-`padLeft` 在其第一个 `if` 块中返回。TypeScript 能够分析这段代码，并看到在 `padding` 是 `number` 的情况下，函数体的其余部分（`return padding + input;`）是_不可达_的。因此，在函数的剩余部分中，它能够将 `number` 从 `padding` 的类型中移除（将 `string | number` 缩小为 `string`）。
+`padLeft` 在其第一个 `if` 块中返回。TypeScript 能够分析这段代码，并看到在 `padding` 是 `number` 的情况下，函数体的其余部分（`return padding + input;`）是*不可达*的。因此，在函数的剩余部分中，它能够将 `number` 从 `padding` 的类型中移除（将 `string | number` 缩小为 `string`）。
 
-这种基于可达性的代码分析称为_控制流分析_，TypeScript 在遇到类型守卫和赋值时使用这种流分析来缩小类型。分析变量时，控制流可以一次又一次地分裂和重新合并，并且该变量在每个点上都可能具有不同的类型。
+这种基于可达性的代码分析称为*控制流分析*，TypeScript 在遇到类型守卫和赋值时使用这种流分析来缩小类型。分析变量时，控制流可以一次又一次地分裂和重新合并，并且该变量在每个点上都可能具有不同的类型。
 
 ```ts twoslash
 function example() {
@@ -374,7 +375,7 @@ function example() {
 
 到目前为止，我们已经使用现有的 JavaScript 构造来处理类型缩小，但有时你可能希望更直接地控制代码中的类型变化。
 
-要定义用户自定义的类型守卫，我们只需定义一个返回类型为_类型断言_的函数：
+要定义用户自定义的类型守卫，我们只需定义一个返回类型为*类型断言*的函数：
 
 ```ts twoslash
 type Fish = { swim: () => void };
@@ -388,7 +389,7 @@ function isFish(pet: Fish | Bird): pet is Fish {
 
 在这个示例中，`pet is Fish` 是我们的类型断言。断言采用 `parameterName is Type` 的形式，其中 `parameterName` 必须是当前函数签名中的参数名称。
 
-每当使用某个变量调用 `isFish` 时，TypeScript 将会根据原始类型是否兼容，将该变量_缩小_为特定类型。
+每当使用某个变量调用 `isFish` 时，TypeScript 将会根据原始类型是否兼容，将该变量*缩小*为特定类型。
 
 ```ts twoslash
 type Fish = { swim: () => void };
@@ -408,7 +409,7 @@ if (isFish(pet)) {
 }
 ```
 
-请注意，TypeScript 不仅知道在 `if` 分支中 `pet` 是 `Fish`；它还知道在 `else` 分支中，其_并非_`Fish`，所以它肯定是 `Bird`。
+请注意，TypeScript 不仅知道在 `if` 分支中 `pet` 是 `Fish`；它还知道在 `else` 分支中，其*并非*`Fish`，所以它肯定是 `Bird`。
 
 你可以使用类型守卫 `isFish` 来过滤 `Fish | Bird` 数组，并获得 `Fish` 数组：
 
@@ -524,7 +525,7 @@ function getArea(shape: Shape) {
 
 但这并不是理想的解决方法。我们不得不在类型检查器面前大声喊出这些非空断言（`!`），以说服它 `shape.radius` 是定义过的，但是如果我们开始调整代码，这些断言就容易出错。此外，在[`strictNullChecks`](/tsconfig#strictNullChecks) 之外，我们仍然可以意外访问这些字段（因为在读取它们时，可选属性被假定为始终存在）。我们肯定可以做得更好。
 
-这种 `Shape` 的编码方式的问题在于，类型检查器无法根据 `kind` 属性知道 `radius` 或 `sideLength` 是否存在。我们需要将_我们_所了解的信息传达给类型检查器。考虑到这一点，让我们尝试另一种方法来定义 `Shape`。
+这种 `Shape` 的编码方式的问题在于，类型检查器无法根据 `kind` 属性知道 `radius` 或 `sideLength` 是否存在。我们需要将*我们*所了解的信息传达给类型检查器。考虑到这一点，让我们尝试另一种方法来定义 `Shape`。
 
 ```ts twoslash
 interface Circle {
@@ -590,9 +591,9 @@ function getArea(shape: Shape) {
 }
 ```
 
-这样就消除了错误！当联合类型的每个成员都包含具有字面类型的共同属性时，TypeScript 将其视为_可辨识联合_，并可以排除联合的成员。
+这样就消除了错误！当联合类型的每个成员都包含具有字面类型的共同属性时，TypeScript 将其视为*可辨识联合*，并可以排除联合的成员。
 
-在这种情况下，`kind` 就是这个共同属性（被认为是 `Shape` 的_辨识属性_）。检查 `kind` 属性是否为 `"circle"` 可以排除 `Shape` 中没有具有类型为 `"circle"` 的 `kind` 属性的类型。这将 `shape` 缩小为类型 `Circle`。
+在这种情况下，`kind` 就是这个共同属性（被认为是 `Shape` 的*辨识属性*）。检查 `kind` 属性是否为 `"circle"` 可以排除 `Shape` 中没有具有类型为 `"circle"` 的 `kind` 属性的类型。这将 `shape` 缩小为类型 `Circle`。
 
 相同的检查也适用于 `switch` 语句。现在我们可以尝试编写完整的 `getArea` 函数，而无需使用烦人的 `!` 非空断言。
 

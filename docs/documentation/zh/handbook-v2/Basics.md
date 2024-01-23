@@ -2,7 +2,7 @@
 title: 基础
 layout: docs
 permalink: /zh/docs/handbook/2/basic-types.html
-oneline: "学习 TypeScript 的第一步：基本类型。"
+oneline: "学习 TypeScript 的第一步：基本类型"
 preamble: >
   <p>欢迎来到手册的第一页。如果这是你第一次接触到 TypeScript，你可能需要先阅读一下'<a href='/zh/docs/handbook/intro.html#get-started'>入门</a>'指南</p>
 ---

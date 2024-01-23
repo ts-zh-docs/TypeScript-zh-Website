@@ -83,7 +83,7 @@ person.on("firstNameChanged", (newValue) => {
 });
 ```
 
-注意，`on` 监听的事件是 `"firstNameChanged"`，而不仅仅是 `"firstName"`。如果我们能确保符合属性名集合与末尾添加“Changed”的并集的约束，我们可以使 `on()` 的规范更加强大。虽然我们在 JavaScript 中可以轻松进行这样的计算，即 ``Object.keys(passedObject).map(x => `${x}Changed`)``，但是_在类型系统中_，模板字面类型提供了类似的字符串处理方法：
+注意，`on` 监听的事件是 `"firstNameChanged"`，而不仅仅是 `"firstName"`。如果我们能确保符合属性名集合与末尾添加“Changed”的并集的约束，我们可以使 `on()` 的规范更加强大。虽然我们在 JavaScript 中可以轻松进行这样的计算，即 ``Object.keys(passedObject).map(x => `${x}Changed`)``，但是*在类型系统中*，模板字面类型提供了类似的字符串处理方法：
 
 ```ts twoslash
 type PropEventSource<Type> = {

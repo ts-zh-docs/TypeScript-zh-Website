@@ -2,10 +2,10 @@
 title: 条件类型
 layout: docs
 permalink: /zh/docs/handbook/2/conditional-types.html
-oneline: "创建类似于类型系统中 if 语句的类型。"
+oneline: "创建类似于类型系统中 if 语句的类型"
 ---
 
-大多数有效程序的核心是，我们必须依据输入做出一些决定。JavaScript 程序也是如此，但是由于值可以很容易地被内省，这些决定也是基于输入的类型。_条件类型_有助于描述输入和输出类型之间的关系。
+大多数有效程序的核心是，我们必须依据输入做出一些决定。JavaScript 程序也是如此，但是由于值可以很容易地被内省，这些决定也是基于输入的类型。*条件类型*有助于描述输入和输出类型之间的关系。
 
 ```ts twoslash
 interface Animal {
@@ -151,7 +151,7 @@ type DogMessageContents = MessageOf<Dog>;
 //   ^?
 ```
 
-在 true 分支中，TypeScript 知道 `T` _会_有 `message` 属性。
+在 true 分支中，TypeScript 知道 `T` *会*有 `message` 属性。
 
 举另一个示例，我们还可以编写名为 `Flatten` 的类型，如果是数组类型的话，将其类型展平为其元素类型，否则类型保持不变：
 
@@ -198,7 +198,7 @@ type Bools = GetReturnType<(a: boolean, b: boolean) => boolean[]>;
 //   ^?
 ```
 
-当从具有多个调用签名的类型（如重载函数的类型）进行推断时，将从_最后一个_签名进行推断（这也许是最宽松的万能情况）。无法基于实参类型列表对重载函数进行决策。
+当从具有多个调用签名的类型（如重载函数的类型）进行推断时，将从*最后一个*签名进行推断（这也许是最宽松的万能情况）。无法基于实参类型列表对重载函数进行决策。
 
 ```ts twoslash
 declare function stringOrNum(x: string): number;
@@ -211,7 +211,7 @@ type T1 = ReturnType<typeof stringOrNum>;
 
 ## 分布式条件类型
 
-当条件类型作用于泛型类型时，如果给定一个联合类型，它们就变成了_分布式_类型。例如，考虑以下代码：
+当条件类型作用于泛型类型时，如果给定一个联合类型，它们就变成了*分布式*类型。例如，考虑以下代码：
 
 ```ts twoslash
 type ToArray<Type> = Type extends any ? Type[] : never;

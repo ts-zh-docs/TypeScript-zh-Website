@@ -7,14 +7,14 @@ oneline: "在类型上下文中使用 typeof 运算符。"
 
 ## `typeof` 类型运算符
 
-JavaScript 已经有了 `typeof` 运算符，你可以在_表达式_上下文中使用它：
+JavaScript 已经有了 `typeof` 运算符，你可以在*表达式*上下文中使用它：
 
 ```ts twoslash
 // 输出 "string"
 console.log(typeof "Hello world");
 ```
 
-TypeScript 添加了 `typeof` 运算符，你可以在_类型_上下文中使用它来引用变量或属性的 _类型_：
+TypeScript 添加了 `typeof` 运算符，你可以在*类型*上下文中使用它来引用变量或属性的 *类型*：
 
 ```ts twoslash
 let s = "hello";
@@ -22,7 +22,7 @@ let n: typeof s;
 //  ^?
 ```
 
-对于基本类型，这并不是很有用，但是如果与其他类型运算符结合使用，你就可以方便地表达许多模式。例如，让我们首先看一下预定义类型 `ReturnType<T>`。它接受_函数类型_为参数并生成其返回类型：
+对于基本类型，这并不是很有用，但是如果与其他类型运算符结合使用，你就可以方便地表达许多模式。例如，让我们首先看一下预定义类型 `ReturnType<T>`。它接受*函数类型*为参数并生成其返回类型：
 
 ```ts twoslash
 type Predicate = (x: unknown) => boolean;
@@ -40,7 +40,7 @@ function f() {
 type P = ReturnType<f>;
 ```
 
-请记住，_值_和_类型_不是相同的东西。要引用_值 `f`_ 具有的_类型_，我们使用 `typeof`：
+请记住，*值*和*类型*不是相同的东西。要引用*值 `f`* 具有的*类型*，我们使用 `typeof`：
 
 ```ts twoslash
 function f() {
