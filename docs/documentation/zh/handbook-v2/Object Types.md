@@ -150,7 +150,7 @@ function paintShape({ shape, xPos = 0, yPos = 0 }: PaintOptions) {
 }
 ```
 
-在这里，我们使用了[解构赋值模式](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Destructuring*assignment) 来定义 `paintShape` 的参数，并为 `xPos` 和 `yPos` 提供了[默认值](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Destructuring*assignment#默认值)。现在，在 `paintShape` 函数体内，`xPos` 和 `yPos` 都是必然存在的，但对于 `paintShape` 的调用者来说是可选的。
+在这里，我们使用了[解构赋值模式](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) 来定义 `paintShape` 的参数，并为 `xPos` 和 `yPos` 提供了[默认值](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment#默认值)。现在，在 `paintShape` 函数体内，`xPos` 和 `yPos` 都是必然存在的，但对于 `paintShape` 的调用者来说是可选的。
 
 > 注意，目前无法在解构赋值模式中放置类型注解。
 > 这是因为在 JavaScript 中，以下语法已经具有不同的含义。
