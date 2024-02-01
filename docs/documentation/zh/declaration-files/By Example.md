@@ -13,7 +13,7 @@ oneline: "如何为一个模块创建一个 d.ts 文件"
 
 _文档_
 
-> 全局变量`myLib`有一个用于创建问候语的函数`makeGreeting`，以及一个表示到目前为止已经制造的问候语数量的属性`numberOfGreetings`。
+> 全局变量 `myLib` 有一个用于创建问候语的函数 `makeGreeting`，以及一个表示到目前为止已经制造的问候语数量的属性 `numberOfGreetings`。
 
 _代码_
 
@@ -26,7 +26,7 @@ let count = myLib.numberOfGreetings;
 
 _声明_
 
-使用`声明命名空间`来描述通过点符号访问的类型或值。
+使用 `declare namespace` 来描述通过点符号访问的类型或值。
 
 ```ts
 declare namespace myLib {
@@ -60,7 +60,7 @@ declare function getWidget(s: string): Widget[];
 
 _文档_
 
-> 指定问候语时，你必须传递一个`GreetingSettings`对象。
+> 指定问候语时，你必须传递一个 `GreetingSettings` 对象。
 > 此对象具有以下属性：
 >
 > 1 - greeting: 必需的字符串
@@ -74,13 +74,13 @@ _代码_
 ```ts
 greet({
   greeting: "hello world",
-  duration: 4000,
+  duration: 4000
 });
 ```
 
 _声明_
 
-使用`interface`来定义具有属性的类型。
+使用`接口`来定义具有属性的类型。
 
 ```ts
 interface GreetingSettings {
@@ -96,7 +96,7 @@ declare function greet(setting: GreetingSettings): void;
 
 _文档_
 
-> 任何需要问候语的地方，你都可以提供一个`string`，一个返回`string`的函数，或一个`Greeter`实例。
+> 任何需要问候语的地方，你都可以提供一个 `string`，一个返回 `string` 的函数，或一个 `Greeter` 实例。
 
 _代码_
 
@@ -125,8 +125,8 @@ declare function greet(g: GreetingLike): void;
 
 _文档_
 
-> `greeter`对象可以记录到文件或显示警告。
-> 你可以向`.log(...)`提供 LogOptions，向`.alert(...)`提供警报选项
+> `greeter` 对象可以记录到文件或显示警告。
+> 你可以向 `.log(...)` 提供 LogOptions，向 `.alert(...)` 提供警报选项
 
 _代码_
 
@@ -173,7 +173,7 @@ declare namespace GreetingLib.Options {
 
 _文档_
 
-> 你可以通过实例化`Greeter`对象来创建一个问候者，或通过继承它来创建一个定制的问候者。
+> 你可以通过实例化 `Greeter` 对象来创建一个问候者，或通过继承它来创建一个定制的问候者。
 
 _代码_
 
@@ -191,7 +191,7 @@ class SpecialGreeter extends Greeter {
 
 _声明_
 
-使用`declare class`来描述一个类或类似类的对象。
+使用 `declare class` 来描述一个类或类似类的对象。
 类可以有属性和方法以及构造函数。
 
 ```ts
@@ -207,7 +207,7 @@ declare class Greeter {
 
 _文档_
 
-> 全局变量`foo`包含当前存在的小部件数量。
+> 全局变量 `foo` 包含当前存在的小部件数量。
 
 _代码_
 
@@ -217,9 +217,7 @@ console.log("Half the number of widgets is " + foo / 2);
 
 _声明_
 
-使用`declare var`来声明变量。
-如果变量是只读的，你可以使用`declare const`。
-如果变量是块作用域的，你也可以使用`declare let`。
+使用 `declare var` 来声明变量。如果变量是只读的，你可以使用 `declare const`。如果变量是块作用域的，你也可以使用 `declare let`。
 
 ```ts
 /** The number of widgets present */
@@ -230,7 +228,7 @@ declare var foo: number;
 
 _文档_
 
-> 你可以用一个字符串调用函数`greet`来向用户显示问候语。
+> 你可以用一个字符串调用函数 `greet` 来向用户显示问候语。
 
 _代码_
 
@@ -240,7 +238,7 @@ greet("hello, world");
 
 _声明_
 
-使用`declare function`来声明函数。
+使用 `declare function` 来声明函数。
 
 ```ts
 declare function greet(greeting: string): void;
