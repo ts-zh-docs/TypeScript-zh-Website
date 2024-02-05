@@ -2,7 +2,7 @@
 title: 声明文件参考
 layout: docs
 permalink: /zh/docs/handbook/declaration-files/by-example.html
-oneline: "如何为一个模块创建一个 d.ts 文件"
+oneline: "如何为模块创建 d.ts 文件"
 ---
 
 本指南的目的是教你如何编写高质量的声明文件。本指南通过展示某些 API 的文档、API 的示例用法，并解释如何编写相应的声明。
@@ -39,7 +39,7 @@ declare namespace myLib {
 
 _文档_
 
-`getWidget` 函数接受一个数字并返回一个 Widget，或接受一个字符串并返回一个 Widget 数组。
+`getWidget` 函数接受数字并返回 Widget，或接受字符串并返回 Widget 数组。
 
 _代码_
 
@@ -113,7 +113,7 @@ greet(new MyGreeter());
 
 _声明_
 
-你可以使用类型别名来为一个类型做简写：
+你可以使用类型别名来为类型做简写：
 
 ```ts
 type GreetingLike = string | (() => string) | MyGreeter;
