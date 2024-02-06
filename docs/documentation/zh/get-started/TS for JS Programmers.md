@@ -23,7 +23,7 @@ let helloWorld = "Hello World";
 //  ^?
 ```
 
-通过感知 JavaScript 的工作原理，TypeScript 可以构建一个接受 JavaScript 代码但具有类型的类型系统。这个类型系统使得我们不需要添加额外的字符来显式地指定类型。在上面的例子中，TypeScript就是这样知道 `helloWorld` 是 `string` 类型的。
+通过感知 JavaScript 的工作原理，TypeScript 可以构建一个接受 JavaScript 代码但具有类型的类型系统。这个类型系统使得我们不需要添加额外的字符来显式地指定类型。在上面的例子中，TypeScript 就是这样知道 `helloWorld` 是 `string` 类型的。
 
 你可能已经在 Visual Studio Code 中编写了 JavaScript，并已使用了编辑器的自动补全功能。Visual Studio Code 使用了 TypeScript 的引擎，以便更容易地处理 JavaScript。
 
@@ -119,7 +119,7 @@ function deleteUser(user: User) {
 
 JavaScript 中已经有一些基本类型可用：`boolean`、 `bigint`、 `null`、`number`、 `string`、 `symbol ` 和 `undefined`，它们都可以在接口中使用。TypeScript 将此列表扩展为更多的内容，例如 `any` （允许任何类型）、[`unknown`](/play#example/unknown-and-never) （确保使用此类型的人声明类型是什么）、 [`never`](/play#example/unknown-and-never) （这种类型不可能发生）和 `void` （返回 `undefined` 或没有返回值的函数）。
 
-构建类型有两种语法： [接口和类型](/play/?e=83#example/types-vs-interfaces)。 你应该更喜欢 `interface`。当需要特定功能时使用 `type` 。
+构建类型有两种语法： [接口和类型](/zh/play/?e=83#example/types-vs-interfaces)。 你应该更喜欢 `interface`。当需要特定功能时使用 `type` 。
 
 ## 组合类型
 
@@ -133,9 +133,9 @@ JavaScript 中已经有一些基本类型可用：`boolean`、 `bigint`、 `null
 type MyBool = true | false;
 ```
 
-_注意：_如果将鼠标悬停在上面的 `MyBool` 上，您将看到它被归类为 `boolean`。这是结构化类型系统的一个属性。下面有更加详细的信息。
+*注意：*如果将鼠标悬停在上面的 `MyBool` 上，您将看到它被归类为 `boolean`。这是结构化类型系统的一个属性。下面有更加详细的信息。
 
-联合类型的一个流行用法是描述 `string` 或者 `number` 的[字面量](/docs/handbook/2/everyday-types.html#literal-types)的合法值。
+联合类型的一个流行用法是描述 `string` 或者 `number` 的[字面量](/zh/docs/handbook/2/everyday-types.html#literal-types)的合法值。
 
 ```ts twoslash
 type WindowStates = "open" | "closed" | "minimized";
@@ -226,7 +226,7 @@ const point = { x: 12, y: 26 };
 logPoint(point);
 ```
 
- `point` 变量从未声明为 `Point` 类型。 但是，在类型检查中，TypeScript 将 `point` 的结构与 `Point`的结构进行比较。它们的结构相同，所以代码通过了。
+`point` 变量从未声明为 `Point` 类型。 但是，在类型检查中，TypeScript 将 `point` 的结构与 `Point`的结构进行比较。它们的结构相同，所以代码通过了。
 
 结构匹配只需要匹配对象字段的子集。
 
@@ -284,6 +284,5 @@ logPoint(newVPoint); // 打印 "13, 56"
 
 这是对一般的 TypeScript 中使用的语法和工具的简要概述。参见：
 
-- 阅读完整手册[由始至终](/docs/handbook/intro.html) （30 分钟）
+- 阅读完整手册[由始至终](/zh/docs/handbook/intro.html) （30 分钟）
 - 探索 [Playground 上的示例](/play#show-examples)
-

@@ -198,7 +198,7 @@ Update project file to include locally installed `Microsoft.TypeScript.Default.p
 </Project>
 ```
 
-More details about defining MSBuild compiler options: [Setting Compiler Options in MSBuild projects](/docs/handbook/compiler-options-in-msbuild.html)
+More details about defining MSBuild compiler options: [Setting Compiler Options in MSBuild projects](/zh/docs/handbook/compiler-options-in-msbuild.html)
 
 ## NuGet
 
@@ -225,15 +225,15 @@ Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/
 
 ```js
 // rollup.config.js
-import typescript from '@rollup/plugin-typescript';
+import typescript from "@rollup/plugin-typescript";
 
 export default {
-  input: 'src/index.ts',
+  input: "src/index.ts",
   output: {
-    dir: 'output',
-    format: 'cjs'
+    dir: "output",
+    format: "cjs",
   },
-  plugins: [typescript()]
+  plugins: [typescript()],
 };
 ```
 
@@ -255,12 +255,12 @@ Create a `svelte.config.js` configuration file and import the plugin:
 
 ```js
 // svelte.config.js
-import preprocess from 'svelte-preprocess';
+import preprocess from "svelte-preprocess";
 
 const config = {
   // Consult https://github.com/sveltejs/svelte-preprocess
   // for more information about preprocessors
-  preprocess: preprocess()
+  preprocess: preprocess(),
 };
 
 export default config;
@@ -287,25 +287,25 @@ npm install ts-loader --save-dev
 ### Basic webpack.config.js when using Webpack 5 or 4
 
 ```js
-const path = require('path');
+const path = require("path");
 
 module.exports = {
-  entry: './src/index.ts',
+  entry: "./src/index.ts",
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        use: "ts-loader",
         exclude: /node_modules/,
       },
     ],
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    extensions: [".tsx", ".ts", ".js"],
   },
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    filename: "bundle.js",
+    path: path.resolve(__dirname, "dist"),
   },
 };
 ```

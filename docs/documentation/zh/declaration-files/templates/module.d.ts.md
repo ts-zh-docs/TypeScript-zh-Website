@@ -105,7 +105,7 @@ declare namespace getArrayLength {
 export = getArrayLength;
 ```
 
-See [Module: Functions](/docs/handbook/declaration-files/templates/module-function-d-ts.html) for details of how that works, and the [Modules reference](/docs/handbook/modules.html) page.
+See [Module: Functions](/zh/docs/handbook/declaration-files/templates/module-function-d-ts.html) for details of how that works, and the [Modules reference](/zh/docs/handbook/modules.html) page.
 
 ## Handling Many Consuming Import
 
@@ -168,7 +168,7 @@ export type ArrayMetadata = {
 export function getArrayMetadata(arr: any[]): ArrayMetadata;
 ```
 
-This example is a good case for [using generics](/docs/handbook/generics.html#generic-types) to provide richer type information:
+This example is a good case for [using generics](/zh/docs/handbook/generics.html#generic-types) to provide richer type information:
 
 ```ts
 export type ArrayMetadata<ArrType> = {
@@ -183,7 +183,7 @@ export function getArrayMetadata<ArrType>(
 
 Now the type of the array propagates into the `ArrayMetadata` type.
 
-The types which are exported can then be re-used by consumers of the modules using either `import` or `import type` in TypeScript code or [JSDoc imports](/docs/handbook/jsdoc-supported-types.html#import-types).
+The types which are exported can then be re-used by consumers of the modules using either `import` or `import type` in TypeScript code or [JSDoc imports](/zh/docs/handbook/jsdoc-supported-types.html#import-types).
 
 ### Namespaces in Module Code
 
@@ -213,7 +213,7 @@ declare namespace API {
 }
 ```
 
-To understand how namespaces work in `.d.ts` files read the [`.d.ts` deep dive](/docs/handbook/declaration-files/deep-dive.html).
+To understand how namespaces work in `.d.ts` files read the [`.d.ts` deep dive](/zh/docs/handbook/declaration-files/deep-dive.html).
 
 ### Optional Global Usage
 
@@ -302,10 +302,10 @@ If you are planning on submitting these changes to DefinitelyTyped for everyone 
 > 1. Create a new folder in `node_modules/@types/[libname]`
 > 2. Create an `index.d.ts` in that folder, and copy the example in
 > 3. See where your usage of the module breaks, and start to fill out the index.d.ts
-> 4. When you're happy, clone [DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped) and follow the instructions in the README. 
+> 4. When you're happy, clone [DefinitelyTyped/DefinitelyTyped](https://github.com/DefinitelyTyped) and follow the instructions in the README.
 
 Otherwise
 
 > 1. Create a new file in the root of your source tree: `[libname].d.ts`
 > 2. Add `declare module "[libname]" {  }`
-> 3. Add the template inside the braces of the declare module, and see where your usage breaks 
+> 3. Add the template inside the braces of the declare module, and see where your usage breaks

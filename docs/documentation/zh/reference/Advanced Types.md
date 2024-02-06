@@ -29,7 +29,7 @@ deprecation_redirects: [
 ]
 ---
 
-This page lists some of the more advanced ways in which you can model types, it works in tandem with the [Utility Types](/docs/handbook/utility-types.html) doc which includes types which are included in TypeScript and available globally.
+This page lists some of the more advanced ways in which you can model types, it works in tandem with the [Utility Types](/zh/docs/handbook/utility-types.html) doc which includes types which are included in TypeScript and available globally.
 
 ## Type Guards and Differentiating Types
 
@@ -258,7 +258,7 @@ in that order.
 ## Nullable types
 
 TypeScript has two special types, `null` and `undefined`, that have the values null and undefined respectively.
-We mentioned these briefly in [the Basic Types section](/docs/handbook/basic-types.html).
+We mentioned these briefly in [the Basic Types section](/zh/docs/handbook/basic-types.html).
 
 By default, the type checker considers `null` and `undefined` assignable to anything.
 Effectively, `null` and `undefined` are valid values of every type.
@@ -282,7 +282,7 @@ stringOrNull = undefined;
 Note that TypeScript treats `null` and `undefined` differently in order to match JavaScript semantics.
 `string | null` is a different type than `string | undefined` and `string | undefined | null`.
 
-From TypeScript 3.7 and onwards, you can use [optional chaining](/docs/handbook/release-notes/typescript-3-7.html#optional-chaining) to simplify working with nullable types.
+From TypeScript 3.7 and onwards, you can use [optional chaining](/zh/docs/handbook/release-notes/typescript-3-7.html#optional-chaining) to simplify working with nullable types.
 
 ### Optional parameters and properties
 
@@ -400,7 +400,7 @@ type Tree<T> = {
 };
 ```
 
-Together with [intersection](/docs/handbook/unions-and-intersections.html) types, we can make some pretty mind-bending types:
+Together with [intersection](/zh/docs/handbook/unions-and-intersections.html) types, we can make some pretty mind-bending types:
 
 ```ts twoslash
 declare function getDriversLicenseQueue(): LinkedList<Person>;
@@ -762,13 +762,12 @@ If you want to add members, you can use an intersection type:
 // Use this:
 type PartialWithNewMember<T> = {
   [P in keyof T]?: T[P];
-} & { newMember: boolean }
+} & { newMember: boolean };
 
 // This is an error!
 type WrongPartialWithNewMember<T> = {
   [P in keyof T]?: T[P];
-  newMember: boolean;
-}
+};
 ```
 
 Let's take a look at the simplest mapped type and its parts:
@@ -1200,4 +1199,4 @@ type ReturnType<T extends AnyFunction> = T extends (...args: any[]) => infer R
 
 ## Predefined conditional types
 
-TypeScript adds several predefined conditional types, you can find the full list and examples in [Utility Types](/docs/handbook/utility-types.html).
+TypeScript adds several predefined conditional types, you can find the full list and examples in [Utility Types](/zh/docs/handbook/utility-types.html).

@@ -73,7 +73,7 @@ TypeScript 2.6 also improves type inference involving contravariant positions:
 
 ```ts
 function combine<T>(...funcs: ((x: T) => void)[]): (x: T) => void {
-  return x => {
+  return (x) => {
     for (const f of funcs) f(x);
   };
 }
@@ -114,7 +114,7 @@ Results in the following generated code:
 "use strict";
 var __makeTemplateObject =
   (this && this.__makeTemplateObject) ||
-  function(cooked, raw) {
+  function (cooked, raw) {
     if (Object.defineProperty) {
       Object.defineProperty(cooked, "raw", { value: raw });
     } else {
@@ -242,7 +242,7 @@ The watcher logic has been completely rewritten to respond faster to change even
 
 ## Write-only references now flagged as unused
 
-TypeScript 2.6 adds revised implementation the [`noUnusedLocals`](/tsconfig#noUnusedLocals) and [`noUnusedParameters`](/tsconfig#noUnusedParameters) [compiler options](/docs/handbook/compiler-options.html).
+TypeScript 2.6 adds revised implementation the [`noUnusedLocals`](/tsconfig#noUnusedLocals) and [`noUnusedParameters`](/tsconfig#noUnusedParameters) [compiler options](/zh/docs/handbook/compiler-options.html).
 Declarations are only written to but never read from are now flagged as unused.
 
 ##### Example

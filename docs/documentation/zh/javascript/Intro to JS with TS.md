@@ -9,8 +9,8 @@ translatable: true
 在一般的代码中，TypeScript 中的类型系统的严格程度是不一样的：
 
 - 只基于 JavaScript 代码推断
-- 增强的  JavaScript 类型推断（[通过  JSDoc](/docs/handbook/jsdoc-supported-types.html)）
-- 在 JavaScript 文件里面使用 `// @ts-check` 
+- 增强的 JavaScript 类型推断（[通过 JSDoc](/zh/docs/handbook/jsdoc-supported-types.html)）
+- 在 JavaScript 文件里面使用 `// @ts-check`
 - TypeScript 代码
 - TypeScript 的 [`strict`](/tsconfig#strict) 模式
 
@@ -35,7 +35,7 @@ x = 0; // OK
 x = false; // OK?!
 ```
 
-你可以[在 JSDoc 支持的类型列表](/docs/handbook/jsdoc-supported-types.html)找到支持的 JSDoc 模式的完整说明。
+你可以[在 JSDoc 支持的类型列表](/zh/docs/handbook/jsdoc-supported-types.html)找到支持的 JSDoc 模式的完整说明。
 
 ## `@ts-check`
 
@@ -52,7 +52,7 @@ x = 0; // OK
 x = false; // Not OK
 ```
 
-如果你有许多 JavaScript 文件要显示错误，则可以使用 [`jsconfig.json`](/docs/handbook/tsconfig-json.html) 来代替注释。
+如果你有许多 JavaScript 文件要显示错误，则可以使用 [`jsconfig.json`](/zh/docs/handbook/tsconfig-json.html) 来代替注释。
 你可以通过在文件中添加`// @ts-nocheck` 注释来跳过检查某些文件。
 
 TypeScript 可能会提供你不想看到的错误，在这种情况下，你可以通过在前一行添加 `// @ts-ignore` 或 `// @ts-expect-error` 来忽略某一行上的错误。
@@ -67,4 +67,4 @@ x = 0; // OK
 x = false; // Not OK
 ```
 
-要了解有关 TypeScript 如何解释 JavaScript 的更多信息，请阅读 [TS 是如何解释 JS 的](/docs/handbook/type-checking-javascript-files.html)。
+要了解有关 TypeScript 如何解释 JavaScript 的更多信息，请阅读 [TS 是如何解释 JS 的](/zh/docs/handbook/type-checking-javascript-files.html)。

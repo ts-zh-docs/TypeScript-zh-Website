@@ -84,7 +84,7 @@ Each build tool is different, but we'll do our best to cover the gist of things.
 
 ### Gulp
 
-If you're using Gulp in some fashion, we have a tutorial on [using Gulp](/docs/handbook/gulp.html) with TypeScript, and integrating with common build tools like Browserify, Babelify, and Uglify.
+If you're using Gulp in some fashion, we have a tutorial on [using Gulp](/zh/docs/handbook/gulp.html) with TypeScript, and integrating with common build tools like Browserify, Babelify, and Uglify.
 You can read more there.
 
 ### Webpack
@@ -130,7 +130,7 @@ module.exports = {
 
 It's important to note that ts-loader will need to run before any other loader that deals with `.js` files.
 
-You can see an example of using Webpack in our [tutorial on React and Webpack](/docs/handbook/react-&-webpack.html).
+You can see an example of using Webpack in our [tutorial on React and Webpack](/zh/docs/handbook/react-&-webpack.html).
 
 ## Moving to TypeScript Files
 

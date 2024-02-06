@@ -23,8 +23,8 @@ The definition for "super-greeter":
 ```ts
 /*~ This example shows how to have multiple overloads for your function */
 export interface GreeterFunction {
-  (name: string): void
-  (time: number): void
+  (name: string): void;
+  (time: number): void;
 }
 
 /*~ This example shows how to export a function specified by an interface */
@@ -58,7 +58,7 @@ export module "super-greeter" {
 }
 ```
 
-This uses [declaration merging](/docs/handbook/declaration-merging.html)
+This uses [declaration merging](/zh/docs/handbook/declaration-merging.html)
 
 ## The Impact of ES6 on Module Plugins
 

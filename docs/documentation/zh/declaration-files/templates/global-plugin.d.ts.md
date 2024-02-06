@@ -51,9 +51,9 @@ Examples include [jQuery](https://jquery.com/), [Moment.js](http://momentjs.com/
 ### Template
 
 There are three templates available for modules,
-[`module.d.ts`](/docs/handbook/declaration-files/templates/module-d-ts.html), [`module-class.d.ts`](/docs/handbook/declaration-files/templates/module-class-d-ts.html) and [`module-function.d.ts`](/docs/handbook/declaration-files/templates/module-function-d-ts.html).
+[`module.d.ts`](/zh/docs/handbook/declaration-files/templates/module-d-ts.html), [`module-class.d.ts`](/zh/docs/handbook/declaration-files/templates/module-class-d-ts.html) and [`module-function.d.ts`](/zh/docs/handbook/declaration-files/templates/module-function-d-ts.html).
 
-Use [`module-function.d.ts`](/docs/handbook/declaration-files/templates/module-function-d-ts.html) if your module can be _called_ like a function:
+Use [`module-function.d.ts`](/zh/docs/handbook/declaration-files/templates/module-function-d-ts.html) if your module can be _called_ like a function:
 
 ```js
 var x = require("foo");
@@ -63,7 +63,7 @@ var y = x(42);
 
 Be sure to read the [footnote "The Impact of ES6 on Module Call Signatures"](#the-impact-of-es6-on-module-plugins)
 
-Use [`module-class.d.ts`](/docs/handbook/declaration-files/templates/module-class-d-ts.html) if your module can be _constructed_ using `new`:
+Use [`module-class.d.ts`](/zh/docs/handbook/declaration-files/templates/module-class-d-ts.html) if your module can be _constructed_ using `new`:
 
 ```js
 var x = require("bar");
@@ -73,7 +73,7 @@ var y = new x("hello");
 
 The same [footnote](#the-impact-of-es6-on-module-plugins) applies to these modules.
 
-If your module is not callable or constructable, use the [`module.d.ts`](/docs/handbook/declaration-files/templates/module-d-ts.html) file.
+If your module is not callable or constructable, use the [`module.d.ts`](/zh/docs/handbook/declaration-files/templates/module-d-ts.html) file.
 
 ## _Module Plugin_ or _UMD Plugin_
 
@@ -84,7 +84,7 @@ For the purposes of writing a declaration file, you'll write the same code wheth
 
 ### Template
 
-Use the [`module-plugin.d.ts`](/docs/handbook/declaration-files/templates/module-plugin-d-ts.html) template.
+Use the [`module-plugin.d.ts`](/zh/docs/handbook/declaration-files/templates/module-plugin-d-ts.html) template.
 
 ## _Global Plugin_
 
@@ -111,7 +111,7 @@ console.log(y.reverseAndSort());
 
 ### Template
 
-Use the [`global-plugin.d.ts`](/docs/handbook/declaration-files/templates/global-plugin-d-ts.html) template.
+Use the [`global-plugin.d.ts`](/zh/docs/handbook/declaration-files/templates/global-plugin-d-ts.html) template.
 
 ## _Global-modifying Modules_
 
@@ -144,7 +144,7 @@ console.log(y.reverseAndSort());
 
 ### Template
 
-Use the [`global-modifying-module.d.ts`](/docs/handbook/declaration-files/templates/global-modifying-module-d-ts.html) template.
+Use the [`global-modifying-module.d.ts`](/zh/docs/handbook/declaration-files/templates/global-modifying-module-d-ts.html) template.
 
 ## Consuming Dependencies
 

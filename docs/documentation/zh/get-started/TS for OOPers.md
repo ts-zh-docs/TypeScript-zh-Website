@@ -9,7 +9,7 @@ oneline: 如果你有面向对象语言的背景，请学习 TypeScript
 对于习惯于使用静态类型的其他语言（如 C# 和 Java）的程序员来说，TypeScript 是一个很受欢迎的选择。
 
 TypeScript 的类型系统也提供了许多相同的优点，比如更好的代码补全、更早的错误检测以及程序各部分之间更清晰的通信。
-虽然 TypeScript 为这些开发人员提供了许多熟悉的特性，但有必要来看看 JavaScript（以及TypeScript）与传统的 OOP 语言有何不同。
+虽然 TypeScript 为这些开发人员提供了许多熟悉的特性，但有必要来看看 JavaScript（以及 TypeScript）与传统的 OOP 语言有何不同。
 了解这些差异将有助于你编写更好的 JavaScript 代码，并避免程序员直接从 Java/C# 转向 TypeScript 时可能陷入的常见陷阱。
 
 ## 一起学习 JavaScript
@@ -17,22 +17,22 @@ TypeScript 的类型系统也提供了许多相同的优点，比如更好的代
 如果你已经熟悉 JavaScript，但主要是 Java 或 C# 程序员，这个介绍页面可以帮助您解释一些常见的误解和陷阱，你可能容易受到它们的影响。
 TypeScript 组织类型的一些方式与 Java 或 C# 有很大的不同，在学习 TypeScript 时记住这些是很重要的。
 
-如果你是一个 Java 或 C# 程序员，对 JavaScript 不熟悉，我们建议你先学习一点 JavaScript ，以理解JavaScript 的运行时行为。
+如果你是一个 Java 或 C# 程序员，对 JavaScript 不熟悉，我们建议你先学习一点 JavaScript ，以理解 JavaScript 的运行时行为。
 因为 TypeScript 不会改变你的代码的运行方式，所以你仍然需要学习 JavaScript 是如何工作的，这样才能编写出真正有意义的代码!
 
-一定要记住 TypeScript 和 JavaScript 使用相同的_运行环境_，所以任何关于如何完成特定运行时行为的资源(将字符串转换为数字、显示警告、将文件写入磁盘等)都同样适用于 TypeScript 程序。
+一定要记住 TypeScript 和 JavaScript 使用相同的*运行环境*，所以任何关于如何完成特定运行时行为的资源(将字符串转换为数字、显示警告、将文件写入磁盘等)都同样适用于 TypeScript 程序。
 不要把自己局限于 TypeScript 的资源。
 
 ## 重新思考类的概念
 
 C# 和 Java 可能会被我们称为 _强制的 OOP_ 语言。
-在这些语言中，_class_ 是代码组织的基本单位，也是运行时所有数据_和_行为的基本容器，强制所有功能和数据都保存在类中，对于某些问题，可以是一个很好的领域模型。但并不是每个领域都需要这样表示。
+在这些语言中，_class_ 是代码组织的基本单位，也是运行时所有数据*和*行为的基本容器，强制所有功能和数据都保存在类中，对于某些问题，可以是一个很好的领域模型。但并不是每个领域都需要这样表示。
 
 ### 自由的函数和数据
 
 在 JavaScript 中，函数可以存在于任何地方，数据可以自由传递，而不需要在预定义的内部的 `class` 或者 `struct` 当中。
 这种灵活性是极其强大的。
-在没有隐去 OOP 层次结构的情况下，处理数据的“自由”函数（那些与类无关的函数）往往是用JavaScript 编写程序的首选模型。
+在没有隐去 OOP 层次结构的情况下，处理数据的“自由”函数（那些与类无关的函数）往往是用 JavaScript 编写程序的首选模型。
 
 ### 静态类
 
@@ -173,12 +173,12 @@ static void LogType<T>() {
 
 由于 TypeScript 的类型系统被完全擦除，因此有关泛型类型参数的实例化的信息在运行时不可用。
 
-JavaScript确实有一些有限的原始运算符，如 `typeof` 和 `instanceof` ，但请记住，这些运算符输出的是类型擦除后存在的值。
+JavaScript 确实有一些有限的原始运算符，如 `typeof` 和 `instanceof` ，但请记住，这些运算符输出的是类型擦除后存在的值。
 例如，`typeof (new Car())` 将是 `"object"` 而不是 `Car` 或者 `"Car"`。
 
 ## 下一步
 
 这是对日常使用 TypeScript 的语法和工具的简要概述。从这里，您可以：
 
-- 阅读完整手册[由始至终](/docs/handbook/intro.html)（30 分钟）
+- 阅读完整手册[由始至终](/zh/docs/handbook/intro.html)（30 分钟）
 - 探索 [Playground 示例](/play#show-examples)

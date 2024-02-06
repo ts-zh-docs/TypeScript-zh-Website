@@ -33,7 +33,6 @@ For example:
 
 Note that the `"typings"` field is synonymous with `types`, and could be used as well.
 
-
 ## Dependencies
 
 All dependencies are managed by npm.
@@ -81,7 +80,7 @@ _Do_ use `/// <reference types="..." />` instead.
 ....
 ```
 
-Make sure to revisit the [Consuming dependencies](/docs/handbook/declaration-files/library-structures.html#consuming-dependencies) section for more information.
+Make sure to revisit the [Consuming dependencies](/zh/docs/handbook/declaration-files/library-structures.html#consuming-dependencies) section for more information.
 
 ### Packaging dependent declarations
 

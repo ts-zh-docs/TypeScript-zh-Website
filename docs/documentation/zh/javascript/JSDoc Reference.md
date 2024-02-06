@@ -21,7 +21,6 @@ Note any tags which are not explicitly listed below (such as `@async`) are not y
 - [`@template`](#template)
 - [`@satisfies`](#satisfies)
 
-
 #### Classes
 
 - [Property Modifiers](#property-modifiers) `@public`, `@private`, `@protected`, `@readonly`
@@ -62,7 +61,7 @@ You can reference types with the "@type" tag. The type can be:
 2. Declared in a TypeScript declaration, either global or imported.
 3. Declared in a JSDoc [`@typedef`](#typedef-callback-and-param) tag.
 
-You can use most JSDoc type syntax and any TypeScript syntax, from [the most basic like `string`](/docs/handbook/2/basic-types.html) to [the most advanced, like conditional types](/docs/handbook/2/conditional-types.html).
+You can use most JSDoc type syntax and any TypeScript syntax, from [the most basic like `string`](/zh/docs/handbook/2/basic-types.html) to [the most advanced, like conditional types](/zh/docs/handbook/2/conditional-types.html).
 
 ```js twoslash
 /**
@@ -173,7 +172,7 @@ var typeAssertedNumber = /** @type {number} */ (numberOrString);
 You can even cast to `const` just like TypeScript:
 
 ```js twoslash
-let one = /** @type {const} */(1);
+let one = /** @type {const} */ (1);
 ```
 
 #### Import types
@@ -392,16 +391,15 @@ Finally, you can specify a default for a type parameter:
 ```js twoslash
 /** @template [T=object] */
 class Cache {
-    /** @param {T} initial */
-    constructor(initial) {
-    }
+  /** @param {T} initial */
+  constructor(initial) {}
 }
-let c = new Cache()
+let c = new Cache();
 ```
 
 ### `@satisfies`
 
-`@satisfies` provides access to the postfix [operator `satisfies`](/docs/handbook/release-notes/typescript-4-9.html) in TypeScript. Satisfies is used to declare that a value implements a type but does not affect the type of the value. 
+`@satisfies` provides access to the postfix [operator `satisfies`](/zh/docs/handbook/release-notes/typescript-4-9.html) in TypeScript. Satisfies is used to declare that a value implements a type but does not affect the type of the value.
 
 ```js twoslash
 // @errors: 1360
@@ -411,17 +409,16 @@ let c = new Cache()
  */
 
 /** @satisfies {WelcomeMessage} */
-const message = "hello world"
+const message = "hello world";
 //     ^?
 
 /** @satisfies {WelcomeMessage} */
-const failingMessage = "Hello world!"
+const failingMessage = "Hello world!";
 
 /** @type {WelcomeMessage} */
-const messageUsingType = "hello world"
+const messageUsingType = "hello world";
 //     ^?
 ```
-
 
 ## Classes
 
@@ -465,8 +462,8 @@ var result = C(1);
 They can also be declared as constructor functions; use [`@constructor`](#constructor) along with [`@this`](#this) for this.
 
 ### Property Modifiers
-<div id="jsdoc-property-modifiers"></div>
 
+<div id="jsdoc-property-modifiers"></div>
 
 `@public`, `@private`, and `@protected` work exactly like `public`, `private`, and `protected` in TypeScript:
 
@@ -524,11 +521,11 @@ console.log(c.identifier);
 
 ```js twoslash
 export class C {
-  m() { }
+  m() {}
 }
 class D extends C {
   /** @override */
-  m() { }
+  m() {}
 }
 ```
 
@@ -601,7 +598,7 @@ c.size;
 var result = C(1);
 ```
 
-> Note: Error messages only show up in JS codebases with [a JSConfig](/docs/handbook/tsconfig-json.html) and [`checkJs`](/tsconfig#checkJs) enabled.
+> Note: Error messages only show up in JS codebases with [a JSConfig](/zh/docs/handbook/tsconfig-json.html) and [`checkJs`](/tsconfig#checkJs) enabled.
 
 With `@constructor`, `this` is checked inside the constructor function `C`, so you will get suggestions for the `initialize` method and an error if you pass it a number. Your editor may also show warnings if you call `C` instead of constructing it.
 
@@ -624,6 +621,7 @@ function callbackForLater(e) {
 ## Documentation
 
 ### `@deprecated`
+
 <div id="deprecated-comments"></div>
 
 When a function, method, or property is deprecated you can let users know by marking it with a `/** @deprecated */` JSDoc comment. That information is surfaced in completion lists and as a suggestion diagnostic that editors can handle specially. In an editor like VS Code, deprecated values are typically displayed in a strike-through style ~~like this~~.
@@ -636,8 +634,6 @@ const apiV2 = {};
 
 apiV;
 // ^|
-
-
 ```
 
 ### `@see`
@@ -645,7 +641,7 @@ apiV;
 `@see` lets you link to other names in your program:
 
 ```ts twoslash
-type Box<T> = { t: T }
+type Box<T> = { t: T };
 /** @see Box for implementation details */
 type Boxify<T> = { [K in keyof T]: Box<T> };
 ```
@@ -657,7 +653,7 @@ Some editors will turn `Box` into a link to make it easy to jump there and back.
 `@link` is like `@see`, except that it can be used inside other tags:
 
 ```ts twoslash
-type Box<T> = { t: T }
+type Box<T> = { t: T };
 /** @returns A {@link Box} containing the parameter. */
 function box<U>(u: U): Box<U> {
   return { t: u };

@@ -72,15 +72,15 @@ TypeScript has corresponding primitive types for the built-in types:
 
 #### Other important TypeScript types
 
-| Type           | Explanation                                                                     |
-| -------------- | ------------------------------------------------------------------------------- |
-| `unknown`      | the top type.                                                                   |
-| `never`        | the bottom type.                                                                |
-| object literal | eg `{ property: Type }`                                                         |
+| Type           | Explanation                                   |
+| -------------- | --------------------------------------------- |
+| `unknown`      | the top type.                                 |
+| `never`        | the bottom type.                              |
+| object literal | eg `{ property: Type }`                       |
 | `void`         | for functions with no documented return value |
-| `T[]`          | mutable arrays, also written `Array<T>`                                         |
-| `[T, T]`       | tuples, which are fixed-length but mutable                                      |
-| `(t: T) => U`  | functions                                                                       |
+| `T[]`          | mutable arrays, also written `Array<T>`       |
+| `[T, T]`       | tuples, which are fixed-length but mutable    |
+| `(t: T) => U`  | functions                                     |
 
 Notes:
 
@@ -526,8 +526,10 @@ function g() {} // g is not exported
 Or by marking each export individually:
 
 ```ts
-export function f() { return g() }
-function g() { }
+export function f() {
+  return g();
+}
+function g() {}
 ```
 
 The latter style is more common but both are allowed, even in the same
@@ -593,5 +595,5 @@ consistently used in TypeScript code.
 
 This doc is a high level overview of the syntax and types you would use in everyday code. From here you should:
 
-- Read the full Handbook [from start to finish](/docs/handbook/intro.html)
+- Read the full Handbook [from start to finish](/zh/docs/handbook/intro.html)
 - Explore the [Playground examples](/play#show-examples)

@@ -9,7 +9,7 @@ Broadly speaking, the way you _structure_ your declaration file depends on how t
 There are many ways of offering a library for consumption in JavaScript, and you'll need to write your declaration file to match it.
 This guide covers how to identify common library patterns, and how to write declaration files which correspond to that pattern.
 
-Each type of major library structuring pattern has a corresponding file in the [Templates](/docs/handbook/declaration-files/templates.html) section.
+Each type of major library structuring pattern has a corresponding file in the [Templates](/zh/docs/handbook/declaration-files/templates.html) section.
 You can start with these templates to help you get going faster.
 
 ## Identifying Kinds of Libraries
@@ -86,11 +86,11 @@ They will rarely have:
 #### Templates For Modules
 
 There are four templates available for modules,
-[`module.d.ts`](/docs/handbook/declaration-files/templates/module-d-ts.html), [`module-class.d.ts`](/docs/handbook/declaration-files/templates/module-class-d-ts.html), [`module-function.d.ts`](/docs/handbook/declaration-files/templates/module-function-d-ts.html) and [`module-plugin.d.ts`](/docs/handbook/declaration-files/templates/module-plugin-d-ts.html).
+[`module.d.ts`](/zh/docs/handbook/declaration-files/templates/module-d-ts.html), [`module-class.d.ts`](/zh/docs/handbook/declaration-files/templates/module-class-d-ts.html), [`module-function.d.ts`](/zh/docs/handbook/declaration-files/templates/module-function-d-ts.html) and [`module-plugin.d.ts`](/zh/docs/handbook/declaration-files/templates/module-plugin-d-ts.html).
 
-You should first read [`module.d.ts`](/docs/handbook/declaration-files/templates/module-d-ts.html) for an overview on the way they all work.
+You should first read [`module.d.ts`](/zh/docs/handbook/declaration-files/templates/module-d-ts.html) for an overview on the way they all work.
 
-Then use the template [`module-function.d.ts`](/docs/handbook/declaration-files/templates/module-function-d-ts.html) if your module can be _called_ like a function:
+Then use the template [`module-function.d.ts`](/zh/docs/handbook/declaration-files/templates/module-function-d-ts.html) if your module can be _called_ like a function:
 
 ```js
 const x = require("foo");
@@ -98,7 +98,7 @@ const x = require("foo");
 const y = x(42);
 ```
 
-Use the template [`module-class.d.ts`](/docs/handbook/declaration-files/templates/module-class-d-ts.html) if your module can be _constructed_ using `new`:
+Use the template [`module-class.d.ts`](/zh/docs/handbook/declaration-files/templates/module-class-d-ts.html) if your module can be _constructed_ using `new`:
 
 ```js
 const x = require("bar");
@@ -106,7 +106,7 @@ const x = require("bar");
 const y = new x("hello");
 ```
 
-If you have a module which when imported, makes changes to other modules use template [`module-plugin.d.ts`](/docs/handbook/declaration-files/templates/module-plugin-d-ts.html):
+If you have a module which when imported, makes changes to other modules use template [`module-plugin.d.ts`](/zh/docs/handbook/declaration-files/templates/module-plugin-d-ts.html):
 
 ```js
 const jest = require("jest");
@@ -185,7 +185,7 @@ However, libraries that are small and require the DOM (or have _no_ dependencies
 
 #### Global Library Template
 
-The template file [`global.d.ts`](/docs/handbook/declaration-files/templates/global-d-ts.html) defines an example library `myLib`.
+The template file [`global.d.ts`](/zh/docs/handbook/declaration-files/templates/global-d-ts.html) defines an example library `myLib`.
 Be sure to read the ["Preventing Name Conflicts" footnote](#preventing-name-conflicts).
 
 ### _UMD_
@@ -234,7 +234,7 @@ Examples include [jQuery](https://jquery.com/), [Moment.js](https://momentjs.com
 
 #### Template
 
-Use the [`module-plugin.d.ts`](/docs/handbook/declaration-files/templates/module-plugin-d-ts.html) template.
+Use the [`module-plugin.d.ts`](/zh/docs/handbook/declaration-files/templates/module-plugin-d-ts.html) template.
 
 ## Consuming Dependencies
 

@@ -50,7 +50,7 @@ The suggested method of configuring watch behavior is through the new `watchOpti
 }
 ```
 
-For further details, see [the release notes for Typescript 3.8](/docs/handbook/release-notes/typescript-3-8.html#better-directory-watching-on-linux-and-watchoptions).
+For further details, see [the release notes for Typescript 3.8](/zh/docs/handbook/release-notes/typescript-3-8.html#better-directory-watching-on-linux-and-watchoptions).
 
 ## Configuring file watching using environment variable `TSC_WATCHFILE`
 
@@ -66,7 +66,7 @@ default (no value specified)                   | If environment variable `TSC_NO
 
 ## Configuring directory watching using environment variable `TSC_WATCHDIRECTORY`
 
-For directory watches on platforms which don't natively allow recursive directory watching (i.e. non macOS and Windows operating systems) is supported through recursively creating directory watchers for each child directory using different options selected by `TSC_WATCHDIRECTORY`. 
+For directory watches on platforms which don't natively allow recursive directory watching (i.e. non macOS and Windows operating systems) is supported through recursively creating directory watchers for each child directory using different options selected by `TSC_WATCHDIRECTORY`.
 
 **NOTE:** On platforms which support native recursive directory watching, the value of `TSC_WATCHDIRECTORY` is ignored.
 
