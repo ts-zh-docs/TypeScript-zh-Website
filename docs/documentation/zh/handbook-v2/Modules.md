@@ -9,7 +9,7 @@ JavaScript 历来具有多种处理代码模块化的方式。TypeScript 自 201
 
 ES 模块在 2015 年被添加到 JavaScript 规范中，并且截至 2020 年已经在大多数 Web 浏览器和 JavaScript 运行时中得到广泛支持。
 
-本手册将重点介绍 ES 模块及其流行的前身 CommonJS `module.exports =` 语法，你可以在参考部分的[模块](/docs/handbook/modules.html)下找到其他模块模式的信息。
+本手册将重点介绍 ES 模块及其流行的前身 CommonJS `module.exports =` 语法，你可以在参考部分的[模块](/zh/docs/handbook/modules.html)下找到其他模块模式的信息。
 
 ## JavaScript 模块的定义方式
 
@@ -247,7 +247,7 @@ import fs = require("fs");
 const code = fs.readFileSync("hello.ts", "utf8");
 ```
 
-你可以在[模块参考页面](/docs/handbook/modules.html#export--and-import--require)了解更多关于此语法的信息。
+你可以在[模块参考页面](/zh/docs/handbook/modules.html#export--and-import--require)了解更多关于此语法的信息。
 
 ## CommonJS 语法
 
@@ -333,7 +333,7 @@ TypeScript 包括两种解析策略：经典解析和 Node 解析。经典解析
 
 有许多 TSConfig 标志会影响 TypeScript 内部的模块策略，包括 [`moduleResolution`](/tsconfig#moduleResolution)、[`baseUrl`](/tsconfig#baseUrl)、[`paths`](/tsconfig#paths) 和 [`rootDirs`](/tsconfig#rootDirs)。
 
-要了解这些策略的详细信息，可以参考[模块解析](/docs/handbook/module-resolution.html)。
+要了解这些策略的详细信息，可以参考[模块解析](/zh/docs/handbook/module-resolution.html)。
 
 ## TypeScript 的模块输出选项
 
@@ -397,4 +397,4 @@ export const twoPi = valueOfPi * 2;
 
 ## TypeScript 命名空间
 
-TypeScript 有自己的模块格式，称为 `命名空间`，它早于 ES 模块的标准化。这种语法具有许多用于创建复杂定义文件的有用功能，并且仍然在 [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped) 中得到广泛使用。虽然没有被弃用，但大多数命名空间中的功能也存在于 ES 模块中，因此我们建议你使用 ES 模块，以与 JavaScript 的发展方向保持一致。你可以在[命名空间参考页面](/docs/handbook/namespaces.html)了解更多关于命名空间的信息。
+TypeScript 有自己的模块格式，称为 `命名空间`，它早于 ES 模块的标准化。这种语法具有许多用于创建复杂定义文件的有用功能，并且仍然在 [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped) 中得到广泛使用。虽然没有被弃用，但大多数命名空间中的功能也存在于 ES 模块中，因此我们建议你使用 ES 模块，以与 JavaScript 的发展方向保持一致。你可以在[命名空间参考页面](/zh/docs/handbook/namespaces.html)了解更多关于命名空间的信息。

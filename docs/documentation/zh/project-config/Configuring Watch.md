@@ -50,7 +50,7 @@ The suggested method of configuring watch behavior is through the new `watchOpti
 }
 ```
 
-For further details, see [the release notes for Typescript 3.8](/docs/handbook/release-notes/typescript-3-8.html#better-directory-watching-on-linux-and-watchoptions).
+For further details, see [the release notes for Typescript 3.8](/zh/docs/handbook/release-notes/typescript-3-8.html#better-directory-watching-on-linux-and-watchoptions).
 
 ## Configuring file watching using environment variable `TSC_WATCHFILE`
 

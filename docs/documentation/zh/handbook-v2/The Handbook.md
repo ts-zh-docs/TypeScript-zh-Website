@@ -50,11 +50,11 @@ handbook: "true"
 
 ## 开始学习
 
-在开始学习[基础知识](/docs/handbook/2/basic-types.html)之前，我们建议挑一个以下介绍页面阅读。这些介绍旨在突出 TypeScript 与你喜欢的编程语言之间的主要相似性和差异，并澄清与这些语言特定的常见误解。
+在开始学习[基础知识](/zh/docs/handbook/2/basic-types.html)之前，我们建议挑一个以下介绍页面阅读。这些介绍旨在突出 TypeScript 与你喜欢的编程语言之间的主要相似性和差异，并澄清与这些语言特定的常见误解。
 
-- [适用于新程序员的 TypeScript](/docs/handbook/typescript-from-scratch.html)
-- [适用于 JavaScript 程序员的 TypeScript](/docs/handbook/typescript-in-5-minutes.html)
-- [适用于 Java/C# 程序员的 TypeScript](/docs/handbook/typescript-in-5-minutes-oop.html)
-- [适用于函数式程序员的 TypeScript](/docs/handbook/typescript-in-5-minutes-func.html)
+- [适用于新程序员的 TypeScript](/zh/docs/handbook/typescript-from-scratch.html)
+- [适用于 JavaScript 程序员的 TypeScript](/zh/docs/handbook/typescript-in-5-minutes.html)
+- [适用于 Java/C# 程序员的 TypeScript](/zh/docs/handbook/typescript-in-5-minutes-oop.html)
+- [适用于函数式程序员的 TypeScript](/zh/docs/handbook/typescript-in-5-minutes-func.html)
 
-否则，你可以直接跳转到[基础知识](/docs/handbook/2/basic-types.html) 部分。
+否则，你可以直接跳转到[基础知识](/zh/docs/handbook/2/basic-types.html) 部分。

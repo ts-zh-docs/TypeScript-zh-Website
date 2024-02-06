@@ -5,7 +5,7 @@ oneline: "模块代码生成。"
 
 设置程序的模块系统。在 <a href='/docs/handbook/modules.html'>模块</a> 参考页面获取更多信息。你很可能要用 `"CommonJS"`。
 
-改变 `module` 可能会影响 [`moduleResolution`](#moduleResolution)，它也有 [一个参考页](/docs/handbook/module-resolution.html)。
+改变 `module` 可能会影响 [`moduleResolution`](#moduleResolution)，它也有 [一个参考页](/zh/docs/handbook/module-resolution.html)。
 
 下面是这个文件的一些输出例子：
 

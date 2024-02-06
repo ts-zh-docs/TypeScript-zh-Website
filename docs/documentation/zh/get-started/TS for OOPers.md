@@ -180,5 +180,5 @@ JavaScript确实有一些有限的原始运算符，如 `typeof` 和 `instanceof
 
 这是对日常使用 TypeScript 的语法和工具的简要概述。从这里，您可以：
 
-- 阅读完整手册[由始至终](/docs/handbook/intro.html)（30 分钟）
+- 阅读完整手册[由始至终](/zh/docs/handbook/intro.html)（30 分钟）
 - 探索 [Playground 示例](/play#show-examples)

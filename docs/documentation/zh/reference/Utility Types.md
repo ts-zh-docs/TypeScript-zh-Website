@@ -13,7 +13,7 @@ TypeScript provides several utility types to facilitate common type transformati
 <blockquote class=bg-reading>
 
 Released:
-[4.5](/docs/handbook/release-notes/typescript-4-5.html#the-awaited-type-and-promise-improvements)
+[4.5](/zh/docs/handbook/release-notes/typescript-4-5.html#the-awaited-type-and-promise-improvements)
 
 </blockquote>
 
@@ -39,7 +39,7 @@ type C = Awaited<boolean | Promise<number>>;
 <blockquote class=bg-reading>
 
 Released:  
-[2.1](/docs/handbook/release-notes/typescript-2-1.html#partial-readonly-record-and-pick)
+[2.1](/zh/docs/handbook/release-notes/typescript-2-1.html#partial-readonly-record-and-pick)
 
 </blockquote>
 
@@ -72,7 +72,7 @@ const todo2 = updateTodo(todo1, {
 <blockquote class=bg-reading>
 
 Released:  
-[2.8](/docs/handbook/release-notes/typescript-2-8.html#improved-control-over-mapped-type-modifiers)
+[2.8](/zh/docs/handbook/release-notes/typescript-2-8.html#improved-control-over-mapped-type-modifiers)
 
 </blockquote>
 
@@ -97,7 +97,7 @@ const obj2: Required<Props> = { a: 5 };
 <blockquote class=bg-reading>
 
 Released:  
-[2.1](/docs/handbook/release-notes/typescript-2-1.html#partial-readonly-record-and-pick)
+[2.1](/zh/docs/handbook/release-notes/typescript-2-1.html#partial-readonly-record-and-pick)
 
 </blockquote>
 
@@ -131,7 +131,7 @@ function freeze<Type>(obj: Type): Readonly<Type>;
 <blockquote class=bg-reading>
 
 Released:  
-[2.1](/docs/handbook/release-notes/typescript-2-1.html#partial-readonly-record-and-pick)
+[2.1](/zh/docs/handbook/release-notes/typescript-2-1.html#partial-readonly-record-and-pick)
 
 </blockquote>
 
@@ -162,7 +162,7 @@ cats.boris;
 <blockquote class=bg-reading>
 
 Released:  
-[2.1](/docs/handbook/release-notes/typescript-2-1.html#partial-readonly-record-and-pick)
+[2.1](/zh/docs/handbook/release-notes/typescript-2-1.html#partial-readonly-record-and-pick)
 
 </blockquote>
 
@@ -193,7 +193,7 @@ todo;
 <blockquote class=bg-reading>
 
 Released:  
-[3.5](/docs/handbook/release-notes/typescript-3-5.html#the-omit-helper-type)
+[3.5](/zh/docs/handbook/release-notes/typescript-3-5.html#the-omit-helper-type)
 
 </blockquote>
 
@@ -236,7 +236,7 @@ todoInfo;
 <blockquote class=bg-reading>
 
 Released:  
-[2.8](/docs/handbook/release-notes/typescript-2-8.html#predefined-conditional-types)
+[2.8](/zh/docs/handbook/release-notes/typescript-2-8.html#predefined-conditional-types)
 
 </blockquote>
 
@@ -266,7 +266,7 @@ type T3 = Exclude<Shape, { kind: "circle" }>
 <blockquote class=bg-reading>
 
 Released:  
-[2.8](/docs/handbook/release-notes/typescript-2-8.html#predefined-conditional-types)
+[2.8](/zh/docs/handbook/release-notes/typescript-2-8.html#predefined-conditional-types)
 
 </blockquote>
 
@@ -294,7 +294,7 @@ type T2 = Extract<Shape, { kind: "circle" }>
 <blockquote class=bg-reading>
 
 Released:  
-[2.8](/docs/handbook/release-notes/typescript-2-8.html#predefined-conditional-types)
+[2.8](/zh/docs/handbook/release-notes/typescript-2-8.html#predefined-conditional-types)
 
 </blockquote>
 
@@ -320,7 +320,7 @@ Released:
 
 Constructs a tuple type from the types used in the parameters of a function type `Type`.
 
-For overloaded functions, this will be the parameters of the _last_ signature; see [Inferring Within Conditional Types](/docs/handbook/2/conditional-types.html#inferring-within-conditional-types).
+For overloaded functions, this will be the parameters of the _last_ signature; see [Inferring Within Conditional Types](/zh/docs/handbook/2/conditional-types.html#inferring-within-conditional-types).
 
 ##### Example
 
@@ -385,13 +385,13 @@ type T5 = ConstructorParameters<Function>;
 <blockquote class=bg-reading>
 
 Released:  
-[2.8](/docs/handbook/release-notes/typescript-2-8.html#predefined-conditional-types)
+[2.8](/zh/docs/handbook/release-notes/typescript-2-8.html#predefined-conditional-types)
 
 </blockquote>
 
 Constructs a type consisting of the return type of function `Type`.
 
-For overloaded functions, this will be the return type of the _last_ signature; see [Inferring Within Conditional Types](/docs/handbook/2/conditional-types.html#inferring-within-conditional-types).
+For overloaded functions, this will be the return type of the _last_ signature; see [Inferring Within Conditional Types](/zh/docs/handbook/2/conditional-types.html#inferring-within-conditional-types).
 
 ##### Example
 
@@ -424,7 +424,7 @@ type T8 = ReturnType<Function>;
 <blockquote class=bg-reading>
 
 Released:  
-[2.8](/docs/handbook/release-notes/typescript-2-8.html#predefined-conditional-types)
+[2.8](/zh/docs/handbook/release-notes/typescript-2-8.html#predefined-conditional-types)
 
 </blockquote>
 
@@ -461,7 +461,7 @@ Released:
 
 </blockquote>
 
-Extracts the type of the [this](/docs/handbook/functions.html#this-parameters) parameter for a function type, or [unknown](/docs/handbook/release-notes/typescript-3-0.html#new-unknown-top-type) if the function type has no `this` parameter.
+Extracts the type of the [this](/zh/docs/handbook/functions.html#this-parameters) parameter for a function type, or [unknown](/zh/docs/handbook/release-notes/typescript-3-0.html#new-unknown-top-type) if the function type has no `this` parameter.
 
 ##### Example
 
@@ -484,7 +484,7 @@ Released:
 
 </blockquote>
 
-Removes the [`this`](/docs/handbook/functions.html#this-parameters) parameter from `Type`. If `Type` has no explicitly declared `this` parameter, the result is simply `Type`. Otherwise, a new function type with no `this` parameter is created from `Type`. Generics are erased and only the last overload signature is propagated into the new function type.
+Removes the [`this`](/zh/docs/handbook/functions.html#this-parameters) parameter from `Type`. If `Type` has no explicitly declared `this` parameter, the result is simply `Type`. Otherwise, a new function type with no `this` parameter is created from `Type`. Generics are erased and only the last overload signature is propagated into the new function type.
 
 ##### Example
 
@@ -507,7 +507,7 @@ Released:
 
 </blockquote>
 
-This utility does not return a transformed type. Instead, it serves as a marker for a contextual [`this`](/docs/handbook/functions.html#this) type. Note that the [`noImplicitThis`](/tsconfig#noImplicitThis) flag must be enabled to use this utility.
+This utility does not return a transformed type. Instead, it serves as a marker for a contextual [`this`](/zh/docs/handbook/functions.html#this) type. Note that the [`noImplicitThis`](/tsconfig#noImplicitThis) flag must be enabled to use this utility.
 
 ##### Example
 
@@ -539,7 +539,7 @@ obj.y = 20;
 obj.moveBy(5, 5);
 ```
 
-In the example above, the `methods` object in the argument to `makeObject` has a contextual type that includes `ThisType<D & M>` and therefore the type of [this](/docs/handbook/functions.html#this) in methods within the `methods` object is `{ x: number, y: number } & { moveBy(dx: number, dy: number): void }`. Notice how the type of the `methods` property simultaneously is an inference target and a source for the `this` type in methods.
+In the example above, the `methods` object in the argument to `makeObject` has a contextual type that includes `ThisType<D & M>` and therefore the type of [this](/zh/docs/handbook/functions.html#this) in methods within the `methods` object is `{ x: number, y: number } & { moveBy(dx: number, dy: number): void }`. Notice how the type of the `methods` property simultaneously is an inference target and a source for the `this` type in methods.
 
 The `ThisType<T>` marker interface is simply an empty interface declared in `lib.d.ts`. Beyond being recognized in the contextual type of an object literal, the interface acts like any empty interface.
 
@@ -553,4 +553,4 @@ The `ThisType<T>` marker interface is simply an empty interface declared in `lib
 
 ### `Uncapitalize<StringType>`
 
-To help with string manipulation around template string literals, TypeScript includes a set of types which can be used in string manipulation within the type system. You can find those in the [Template Literal Types](/docs/handbook/2/template-literal-types.html#uppercasestringtype) documentation.
+To help with string manipulation around template string literals, TypeScript includes a set of types which can be used in string manipulation within the type system. You can find those in the [Template Literal Types](/zh/docs/handbook/2/template-literal-types.html#uppercasestringtype) documentation.
