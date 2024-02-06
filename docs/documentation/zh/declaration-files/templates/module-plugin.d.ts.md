@@ -58,7 +58,7 @@ export module "super-greeter" {
 }
 ```
 
-This uses [declaration merging](/docs/handbook/declaration-merging.html)
+This uses [declaration merging](/zh/docs/handbook/declaration-merging.html)
 
 ## The Impact of ES6 on Module Plugins
 

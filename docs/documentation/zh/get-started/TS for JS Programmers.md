@@ -119,7 +119,7 @@ function deleteUser(user: User) {
 
 JavaScript 中已经有一些基本类型可用：`boolean`、 `bigint`、 `null`、`number`、 `string`、 `symbol ` 和 `undefined`，它们都可以在接口中使用。TypeScript 将此列表扩展为更多的内容，例如 `any` （允许任何类型）、[`unknown`](/play#example/unknown-and-never) （确保使用此类型的人声明类型是什么）、 [`never`](/play#example/unknown-and-never) （这种类型不可能发生）和 `void` （返回 `undefined` 或没有返回值的函数）。
 
-构建类型有两种语法： [接口和类型](/play/?e=83#example/types-vs-interfaces)。 你应该更喜欢 `interface`。当需要特定功能时使用 `type` 。
+构建类型有两种语法： [接口和类型](/zh/play/?e=83#example/types-vs-interfaces)。 你应该更喜欢 `interface`。当需要特定功能时使用 `type` 。
 
 ## 组合类型
 
@@ -135,7 +135,7 @@ type MyBool = true | false;
 
 _注意：_如果将鼠标悬停在上面的 `MyBool` 上，您将看到它被归类为 `boolean`。这是结构化类型系统的一个属性。下面有更加详细的信息。
 
-联合类型的一个流行用法是描述 `string` 或者 `number` 的[字面量](/docs/handbook/2/everyday-types.html#literal-types)的合法值。
+联合类型的一个流行用法是描述 `string` 或者 `number` 的[字面量](/zh/docs/handbook/2/everyday-types.html#literal-types)的合法值。
 
 ```ts twoslash
 type WindowStates = "open" | "closed" | "minimized";
@@ -284,6 +284,6 @@ logPoint(newVPoint); // 打印 "13, 56"
 
 这是对一般的 TypeScript 中使用的语法和工具的简要概述。参见：
 
-- 阅读完整手册[由始至终](/docs/handbook/intro.html) （30 分钟）
+- 阅读完整手册[由始至终](/zh/docs/handbook/intro.html) （30 分钟）
 - 探索 [Playground 上的示例](/play#show-examples)
 

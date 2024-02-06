@@ -70,7 +70,7 @@ How you do this depends on exactly which library you're getting types for.
 If a library you're using is published as an npm package, it may include type declaration files as part of its distribution already.
 You can read the project's documentation to find out, or simply try importing the package and see if TypeScript is able to automatically resolve the types for you.
 
-If you're a package author considering bundling type definitions with your package, you can read our guide on [bundling type definitions](/docs/handbook/declaration-files/publishing.html#including-declarations-in-your-npm-package).
+If you're a package author considering bundling type definitions with your package, you can read our guide on [bundling type definitions](/zh/docs/handbook/declaration-files/publishing.html#including-declarations-in-your-npm-package).
 
 ### DefinitelyTyped / `@types`
 
@@ -90,7 +90,7 @@ TypeScript automatically finds type definitions under `node_modules/@types`, so 
 ### Your Own Definitions
 
 In the uncommon event that a library didn't bundle its own types and didn't have a definition on DefinitelyTyped, you can write a declaration file yourself.
-See the appendix [Writing Declaration Files](/docs/handbook/declaration-files/introduction.html) for a guide.
+See the appendix [Writing Declaration Files](/zh/docs/handbook/declaration-files/introduction.html) for a guide.
 
 If you want to silence warnings about a particular module without writing a declaration file, you can also quick declare the module as type `any` by putting an empty declaration for it in a `.d.ts` file in your project.
 For example, if you wanted to use a module named `some-untyped-module` without having definitions for it, you would write:

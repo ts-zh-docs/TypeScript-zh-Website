@@ -7,7 +7,7 @@ translatable: true
 ---
 
 `let` and `const` are two relatively new concepts for variable declarations in JavaScript.
-[As we mentioned earlier](/docs/handbook/basic-types.html#a-note-about-let), `let` is similar to `var` in some respects, but allows users to avoid some of the common "gotchas" that users run into in JavaScript.
+[As we mentioned earlier](/zh/docs/handbook/basic-types.html#a-note-about-let), `let` is similar to `var` in some respects, but allows users to avoid some of the common "gotchas" that users run into in JavaScript.
 
 `const` is an augmentation of `let` in that it prevents re-assignment to a variable.
 
@@ -429,7 +429,7 @@ kitty.numLives--;
 
 Unless you take specific measures to avoid it, the internal state of a `const` variable is still modifiable.
 Fortunately, TypeScript allows you to specify that members of an object are `readonly`.
-The [chapter on Interfaces](/docs/handbook/interfaces.html) has the details.
+The [chapter on Interfaces](/zh/docs/handbook/interfaces.html) has the details.
 
 ## `let` vs. `const`
 

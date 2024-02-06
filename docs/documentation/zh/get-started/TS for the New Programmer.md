@@ -135,8 +135,8 @@ that this document is maintained.)
 以下是 TypeScript 中常用语法和工具的简要介绍。在这里，你可以：
 
 - 学习一些 JavaScript 基础知识 （[Mozilla Web Docs 的 JavaScript 指南 ](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide) 是个不错的开始）
-- 继续阅读 [JavaScript 程序员的 TypeScript](/docs/handbook/typescript-in-5-minutes.html)
-- 阅读完整手册 [从头至尾](/docs/handbook/intro.html) (30m)
+- 继续阅读 [JavaScript 程序员的 TypeScript](/zh/docs/handbook/typescript-in-5-minutes.html)
+- 阅读完整手册 [从头至尾](/zh/docs/handbook/intro.html) (30m)
 - 探索 [游乐场示例](/play#show-examples)
 
 <!-- Note: I'll be happy to write the following... -->

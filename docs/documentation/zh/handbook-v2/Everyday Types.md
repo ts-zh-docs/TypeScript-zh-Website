@@ -638,7 +638,7 @@ const oneHundred: bigint = BigInt(100);
 const anotherHundred: bigint = 100n;
 ```
 
-你可以在 [TypeScript 3.2 发布说明](/docs/handbook/release-notes/typescript-3-2.html#bigint)中了解更多关于 `BigInt` 的信息。
+你可以在 [TypeScript 3.2 发布说明](/zh/docs/handbook/release-notes/typescript-3-2.html#bigint)中了解更多关于 `BigInt` 的信息。
 
 ##### `symbol`
 
