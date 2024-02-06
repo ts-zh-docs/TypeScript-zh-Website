@@ -1,6 +1,5 @@
 export const indexCopy = {
-  index_2_headline:
-    "TypeScript 是<bold>带有类型的 JavaScript</bold>",
+  index_2_headline: "TypeScript 是<bold>带有类型的 JavaScript</bold>",
   index_2_byline: "TypeScript 通过添加类型扩展了 JavaScript",
   index_2_summary:
     "TypeScript 是一种基于 JavaScript 的强类型编程语言，在任意规模的应用上都是更有力的工具。",
@@ -24,7 +23,7 @@ export const indexCopy = {
 
   // Quick pitch
   index_2_what_is: "什么是 TypeScript？",
-  index_2_what_is_js: "TypeScript 是 JavaScript 的超集",
+  index_2_what_is_js: "JavaScript 的超集",
 
   index_2_what_is_js_copy: `TypeScript 为 JavaScript 添加了额外的语法以支持<strong>与编辑器更为紧密的集成</strong>。可以在编辑器中及早发现错误。`,
   index_2_trust: "你可以相信的结果",
@@ -56,8 +55,7 @@ export const indexCopy = {
 
   // Show me some code
   index_2_describe: "刻画数据",
-  index_2_describe_blurb1:
-    "在代码中<strong>刻画对象和函数</strong>。",
+  index_2_describe_blurb1: "在代码中<strong>刻画对象和函数</strong>。",
   index_2_describe_blurb2:
     "可以<strong>在编辑器</strong>中查看<strong>文档和问题</strong>。",
 
@@ -76,4 +74,4 @@ export const indexCopy = {
 
   index_2_adopt_info_1:
     "JavaScript 文件中没有编辑器警告。<br/><br/>这段代码运行时会崩溃。",
-}
+};
