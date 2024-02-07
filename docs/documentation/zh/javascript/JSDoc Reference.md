@@ -62,7 +62,7 @@ You can reference types with the "@type" tag. The type can be:
 2. Declared in a TypeScript declaration, either global or imported.
 3. Declared in a JSDoc [`@typedef`](#typedef-callback-and-param) tag.
 
-You can use most JSDoc type syntax and any TypeScript syntax, from [the most basic like `string`](/docs/handbook/2/basic-types.html) to [the most advanced, like conditional types](/docs/handbook/2/conditional-types.html).
+You can use most JSDoc type syntax and any TypeScript syntax, from [the most basic like `string`](/zh/docs/handbook/2/basic-types.html) to [the most advanced, like conditional types](/zh/docs/handbook/2/conditional-types.html).
 
 ```js twoslash
 /**
@@ -401,7 +401,7 @@ let c = new Cache()
 
 ### `@satisfies`
 
-`@satisfies` provides access to the postfix [operator `satisfies`](/docs/handbook/release-notes/typescript-4-9.html) in TypeScript. Satisfies is used to declare that a value implements a type but does not affect the type of the value. 
+`@satisfies` provides access to the postfix [operator `satisfies`](/zh/docs/handbook/release-notes/typescript-4-9.html) in TypeScript. Satisfies is used to declare that a value implements a type but does not affect the type of the value. 
 
 ```js twoslash
 // @errors: 1360
@@ -601,7 +601,7 @@ c.size;
 var result = C(1);
 ```
 
-> Note: Error messages only show up in JS codebases with [a JSConfig](/docs/handbook/tsconfig-json.html) and [`checkJs`](/tsconfig#checkJs) enabled.
+> Note: Error messages only show up in JS codebases with [a JSConfig](/zh/docs/handbook/tsconfig-json.html) and [`checkJs`](/tsconfig#checkJs) enabled.
 
 With `@constructor`, `this` is checked inside the constructor function `C`, so you will get suggestions for the `initialize` method and an error if you pass it a number. Your editor may also show warnings if you call `C` instead of constructing it.
 

@@ -6,11 +6,11 @@ oneline: "How to add d.ts generation to JavaScript projects"
 translatable: true
 ---
 
-[With TypeScript 3.7](/docs/handbook/release-notes/typescript-3-7.html#--declaration-and---allowjs),
+[With TypeScript 3.7](/zh/docs/handbook/release-notes/typescript-3-7.html#--declaration-and---allowjs),
 TypeScript added support for generating .d.ts files from JavaScript using JSDoc syntax.
 
 This set up means you can own the editor experience of TypeScript-powered editors without porting your project to TypeScript, or having to maintain .d.ts files in your codebase.
-TypeScript supports most JSDoc tags, you can find [the reference here](/docs/handbook/type-checking-javascript-files.html#supported-jsdoc).
+TypeScript supports most JSDoc tags, you can find [the reference here](/zh/docs/handbook/type-checking-javascript-files.html#supported-jsdoc).
 
 ## Setting up your Project to emit .d.ts files
 

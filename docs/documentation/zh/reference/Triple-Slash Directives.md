@@ -61,7 +61,7 @@ For declaration files generated during compilation, the compiler will automatica
 A `/// <reference types="..." />` in a generated declaration file is added _if and only if_ the resulting file uses any declarations from the referenced package.
 
 For declaring a dependency on an `@types` package in a `.ts` file, use [`types`](/tsconfig#types) on the command line or in your `tsconfig.json` instead.
-See [using `@types`, `typeRoots` and `types` in `tsconfig.json` files](/docs/handbook/tsconfig-json.html#types-typeroots-and-types) for more details.
+See [using `@types`, `typeRoots` and `types` in `tsconfig.json` files](/zh/docs/handbook/tsconfig-json.html#types-typeroots-and-types) for more details.
 
 ## `/// <reference lib="..." />`
 

@@ -198,7 +198,7 @@ Update project file to include locally installed `Microsoft.TypeScript.Default.p
 </Project>
 ```
 
-More details about defining MSBuild compiler options: [Setting Compiler Options in MSBuild projects](/docs/handbook/compiler-options-in-msbuild.html)
+More details about defining MSBuild compiler options: [Setting Compiler Options in MSBuild projects](/zh/docs/handbook/compiler-options-in-msbuild.html)
 
 ## NuGet
 

@@ -72,7 +72,7 @@ Only members of the target type (`Pet` in this case) are considered when
 checking for compatibility. This comparison process proceeds recursively,
 exploring the type of each member and sub-member.
 
-Be aware, however, that object literals [may only specify known properties](/docs/handbook/2/objects.html#excess-property-checks).
+Be aware, however, that object literals [may only specify known properties](/zh/docs/handbook/2/objects.html#excess-property-checks).
 For example, because we have explicitly specified that `dog` is
 of type `Pet`, the following code is invalid:
 
@@ -399,7 +399,7 @@ A "<span class='black-tick'>✓</span>" indicates a combination that is compatib
 </tbody>
 </table>
 
-Reiterating [The Basics](/docs/handbook/2/basic-types.html):
+Reiterating [The Basics](/zh/docs/handbook/2/basic-types.html):
 
 - Everything is assignable to itself.
 - `any` and `unknown` are the same in terms of what is assignable to them, different in that `unknown` is not assignable to anything except `any`.

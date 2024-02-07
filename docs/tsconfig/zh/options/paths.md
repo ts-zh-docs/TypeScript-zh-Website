@@ -3,7 +3,7 @@ display: "路径设置"
 oneline: "一组用于寻找模块导入的路径"
 ---
 
-一些将模块导入重新映射到相对于 `baseUrl` 路径的配置。[手册](/docs/handbook/module-resolution.html#path-mapping)中有更多关于 `paths` 的内容。
+一些将模块导入重新映射到相对于 `baseUrl` 路径的配置。[手册](/zh/docs/handbook/module-resolution.html#path-mapping)中有更多关于 `paths` 的内容。
 
 `paths` 可以允许你声明 TypeScript 应该如何解析你的 `require`/`import`。
 
