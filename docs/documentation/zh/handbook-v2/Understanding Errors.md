@@ -1,42 +1,35 @@
 ---
-title: Understanding Errors
+title: 理解错误
 layout: docs
 permalink: /zh/docs/handbook/2/understanding-errors.html
-oneline: "How to read TypeScript errors."
+oneline: "如何阅读 TypeScript 错误信息"
 ---
 
-# Understanding Errors
+# 理解错误
 
-Whenever TypeScript finds an error, it tries to explain what went wrong in as much detail as possible.
-Because its type system is structural, this often means providing somewhat lengthy descriptions of where it found a problem.
+每当 TypeScript 发现错误时，它会尽可能详细地解释出错的原因。由于 TypeScript 的类型系统是结构化的，这通常意味着提供对问题出现位置的详细描述。
 
-## Terminology
+## 术语
 
-There is some terminology you'll frequently see in error messages that is helpful to understand.
+在错误信息中，你会经常看到一些术语，理解这些术语对于我们有所帮助。
 
 #### _assignable to_
 
-TypeScript considers a type _assignable to_ another type if one is an acceptable substitute for the other.
-In other words, a `Cat` is _assignable to_ an `Animal` because a `Cat` is an acceptable substitute for an `Animal`.
+如果一个类型可以接受另一个类型作为替代，TypeScript 就认为这后者可以赋值给前者。换句话说，如果 `Cat` 可以作为 `Animal` 的替代，那么 `Cat` 就可以赋值给 `Animal`。
 
-As its name implies, this relationship is used to check the validity of an assignment `t = s;` by examining the types of `t` and `s`.
-It's also used to check most other places where two types interact.
-For example, when calling a function, each argument's type must be _assignable to_ parameter's declared type.
+正如其名称所示，这种关系用于检查赋值 `t = s;` 的有效性，这通过检查 `t` 和 `s` 的类型完成。它还用于检查大多数其他的两个类型交互的情况。例如，在调用函数时，每个实参的类型必须是可赋值给参数的声明类型的。
 
-Informally, if you see `T is not assignable to S`, you can think of that as TypeScript saying "_`T` and `S` are not compatible"_.
-However, note that this is a _directional_ relationship: `S` being assignable to `T` does not imply that `T` is assignable to `S`.
+非正式地说，如果你看到 `T is not assignable to S`，你可以理解为 TypeScript 在说“`T` 和 `S` 不兼容”。但是需要注意的是，这是一种*单向*关系：`S` 可以赋值给 `T` 并不意味着 `T` 可以赋值给 `S`。
 
-## Examples
+## 示例
 
-Let's look at some example error messages and understand what's going on.
+让我们看一些示例错误消息，并理解其中发生了什么。
 
-### Error Elaborations
+### 错误详细信息
 
-Each error starts with a leading message, sometimes followed by more sub-messages.
-You can think of each sub-message as answering a "why?" question about the message above it.
-Let's work through some examples to see how they work in practice.
+每个错误都以一个主要的消息开头，有时会跟随更多的子消息。你可以将每个子消息看作是对上面消息的一个“为什么？”的回答。让我们通过一些示例来看看它们在实践中是如何工作的。
 
-Here's an example that produces an error message longer than the example itself:
+这是一个产生比示例本身还长的错误消息的示例：
 
 ```ts twoslash
 // @errors: 2322
@@ -45,15 +38,14 @@ let b = { m: [""] };
 a = b;
 ```
 
-TypeScript found an error when checking the last line.
-Its logic for issuing an error follows from its logic for determining if the assignment is OK:
+TypeScript 在检查最后一行时发现了一个错误。它发出错误的逻辑遵循于确定赋值是否正确的逻辑：
 
-1. Is `b`'s type assignable to `a`'s? No. Why?
-2. Because the type of the `m` property is incompatible. Why?
-3. Because `b`'s `m` property (`string[]`) is not assignable to `a`'s `m` property (`number[]`). Why?
-4. Because one array's element type (`string`) is not assignable to the other (`number`)
+1. `b` 的类型是否可以赋值给 `a` 的类型？否。为什么？
+2. 因为 `m` 属性的类型不兼容。为什么？
+3. 因为 `b` 的 `m` 属性（`string[]`）不能赋值给 `a` 的 `m` 属性（`number[]`）。为什么？
+4. 因为一个数组的元素类型（`string`）不能赋值给另一个（`number`）。
 
-### Extra Properties
+### 额外属性
 
 ```ts twoslash
 // @errors: 2322
@@ -61,7 +53,7 @@ type A = { m: number };
 const a: A = { m: 10, n: "" };
 ```
 
-### Union Assignments
+### 联合类型赋值
 
 ```ts twoslash
 // @errors: 2322
