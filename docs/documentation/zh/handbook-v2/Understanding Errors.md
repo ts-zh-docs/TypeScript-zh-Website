@@ -53,7 +53,7 @@ type A = { m: number };
 const a: A = { m: 10, n: "" };
 ```
 
-### 联合赋值
+### 联合类型赋值
 
 ```ts twoslash
 // @errors: 2322
