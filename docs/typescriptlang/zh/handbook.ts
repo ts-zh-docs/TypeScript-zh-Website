@@ -1,4 +1,15 @@
 export const handbookCopy = {
-  handb_prev: "上一篇",
-  handb_next: "下一篇",
+  handb_prev: "上一页",
+  handb_next: "下一页",
+  handb_on_this_page: "本页目录",
+  handb_like_dislike_title: "页面对你有帮助吗？",
+  handb_like_desc: "是",
+  handb_dislike_desc: "否",
+  handb_thanks: "感谢你的反馈",
+  handb_deprecated_title: "这个页面已经被弃用。",
+  handb_deprecated_subtitle: "这个页面已经被替换，",
+  handb_deprecated_subtitle_link: "去新的页面看看",
+  handb_deprecated_subtitle_action: "前往新页面",
+  handb_experimental_title: "这个页面有一些实验性的文档",
+  handb_experimental_subtitle: "这些内容是正在进行的一些工作的相关主题",
 }
