@@ -5,13 +5,13 @@ permalink: /zh/docs/handbook/release-notes/typescript-1-1.html
 oneline: TypeScript 1.1 Release Notes
 ---
 
-## 改进性能
+## Performance Improvements
 
-1.1版本的编译器速度比所有之前发布的版本快4倍。阅读[这篇博客里的有关图表](http://blogs.msdn.com/b/typescript/archive/2014/10/06/announcing-typescript-1-1-ctp.aspx)
+The 1.1 compiler is typically around 4x faster than any previous release. See [this blog post for some impressive charts.](https://web.archive.org/web/20141007020020/http://blogs.msdn.com/b/typescript/archive/2014/10/06/announcing-typescript-1-1-ctp.aspx)
 
-## 更好的模块可见性规则
+## Better Module Visibility Rules
 
-TypeScript现在只在使用`--declaration`标记时才严格强制模块里类型的可见性。这在Angular里很有用，例如：
+TypeScript now only strictly enforces the visibility of types in modules if the [`declaration`](/tsconfig#declaration) flag is provided. This is very useful for Angular scenarios, for example:
 
 ```ts
 module MyControllers {
@@ -21,7 +21,7 @@ module MyControllers {
   export class ZooController {
     // Used to be an error (cannot expose ZooScope), but now is only
     // an error when trying to generate .d.ts files
-    constructor(public $scope: ZooScope) { }
+    constructor(public $scope: ZooScope) {}
     /* more code */
   }
 }
