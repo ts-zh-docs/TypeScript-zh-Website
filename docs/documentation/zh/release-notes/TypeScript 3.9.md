@@ -1,7 +1,7 @@
 ---
 title: TypeScript 3.9
 layout: docs
-permalink: /docs/handbook/release-notes/typescript-3-9.html
+permalink: /zh/docs/handbook/release-notes/typescript-3-9.html
 oneline: TypeScript 3.9 Release Notes
 ---
 

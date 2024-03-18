@@ -1,7 +1,7 @@
 ---
 title: TypeScript 2.3
 layout: docs
-permalink: /docs/handbook/release-notes/typescript-2-3.html
+permalink: /zh/docs/handbook/release-notes/typescript-2-3.html
 oneline: TypeScript 2.3 Release Notes
 ---
 

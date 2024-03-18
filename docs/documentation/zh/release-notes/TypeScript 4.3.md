@@ -1,7 +1,7 @@
 ---
 title: TypeScript 4.3
 layout: docs
-permalink: /docs/handbook/release-notes/typescript-4-3.html
+permalink: /zh/docs/handbook/release-notes/typescript-4-3.html
 oneline: TypeScript 4.3 Release Notes
 ---
 

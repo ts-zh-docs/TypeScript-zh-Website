@@ -1,7 +1,7 @@
 ---
 title: TypeScript 3.6
 layout: docs
-permalink: /docs/handbook/release-notes/typescript-3-6.html
+permalink: /zh/docs/handbook/release-notes/typescript-3-6.html
 oneline: TypeScript 3.6 Release Notes
 ---
 

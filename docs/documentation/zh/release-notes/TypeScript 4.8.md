@@ -1,7 +1,7 @@
 ---
 title: TypeScript 4.8
 layout: docs
-permalink: /docs/handbook/release-notes/typescript-4-8.html
+permalink: /zh/docs/handbook/release-notes/typescript-4-8.html
 oneline: TypeScript 4.8 Release Notes
 ---
 
