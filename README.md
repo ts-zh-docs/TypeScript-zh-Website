@@ -16,3 +16,5 @@ yarn pull-en
 通过具有匹配文件路径的特定语言文件来处理翻译：
 
 例如：`/packages/documentation/copy/en/reference/JSX.md` 对应的路径应该是 `/packages/documentation/copy/zh/reference/JSX.md`.
+
+本翻译的 release notes 部分来自于 @zhongsp 的[翻译](https://github.com/zhongsp/TypeScript)，在此向他表示感谢。
