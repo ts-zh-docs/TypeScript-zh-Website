@@ -5,186 +5,190 @@ permalink: /zh/docs/handbook/release-notes/typescript-1-7.html
 oneline: TypeScript 1.7 Release Notes
 ---
 
-## 支持 `async`/`await` 编译到 ES6 \(Node v4+\)
+## `async`/`await` support in ES6 targets (Node v4+)
 
-TypeScript 目前在已经原生支持 ES6 generator 的引擎 \(比如 Node v4 及以上版本\) 上支持异步函数. 异步函数前置 `async` 关键字; `await` 会暂停执行, 直到一个异步函数执行后返回的 promise 被 fulfill 后获得它的值.
+TypeScript now supports asynchronous functions for engines that have native support for ES6 generators, e.g. Node v4 and above.
+Asynchronous functions are prefixed with the `async` keyword;
+`await` suspends the execution until an asynchronous function return promise is fulfilled and unwraps the value from the `Promise` returned.
 
-### 例子
+##### Example
 
-在下面的例子中, 输入的内容将会延时 400 毫秒逐个打印:
+In the following example, each input element will be printed out one at a time with a 400ms delay:
 
 ```ts
 "use strict";
 
-// printDelayed 返回值是一个 'Promise<void>'
+// printDelayed is a 'Promise<void>'
 async function printDelayed(elements: string[]) {
-    for (const element of elements) {
-        await delay(400);
-        console.log(element);
-    }
+  for (const element of elements) {
+    await delay(400);
+    console.log(element);
+  }
 }
 
 async function delay(milliseconds: number) {
-    return new Promise<void>(resolve => {
-        setTimeout(resolve, milliseconds);
-    });
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
 }
 
 printDelayed(["Hello", "beautiful", "asynchronous", "world"]).then(() => {
-    console.log();
-    console.log("打印每一个内容!");
+  console.log();
+  console.log("Printed every element!");
 });
 ```
 
-查看 [Async Functions](http://blogs.msdn.com/b/typescript/archive/2015/11/03/what-about-async-await.aspx) 一文了解更多.
+For more information see [async function reference](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/async_function) reference.
 
-## 支持同时使用 `--target ES6` 和 `--module`
+## Support for `--target ES6` with `--module`
 
-TypeScript 1.7 将 `ES6` 添加到了 `--module` 选项支持的选项的列表, 当编译到 `ES6` 时允许指定模块类型. 这让使用具体运行时中你需要的特性更加灵活.
+TypeScript 1.7 adds `ES6` to the list of options available for the [`module`](/tsconfig#module) option and allows you to specify the module output when targeting `ES6`.
+This provides more flexibility to target exactly the features you want in specific runtimes.
 
-### 例子
+##### Example
 
-```js
+```json tsconfig
 {
-    "compilerOptions": {
-        "module": "amd",
-        "target": "es6"
-    }
+  "compilerOptions": {
+    "module": "amd",
+    "target": "es6"
+  }
 }
 ```
 
-## `this` 类型
+## `this`-typing
 
-在方法中返回当前对象 \(也就是 `this`\) 是一种创建链式 API 的常见方式. 比如, 考虑下面的 `BasicCalculator` 模块:
+It is a common pattern to return the current object (i.e. `this`) from a method to create [fluent-style APIs](https://wikipedia.org/wiki/Fluent_interface).
+For instance, consider the following `BasicCalculator` module:
 
 ```ts
 export default class BasicCalculator {
-    public constructor(protected value: number = 0) { }
+  public constructor(protected value: number = 0) {}
 
-    public currentValue(): number {
-        return this.value;
-    }
+  public currentValue(): number {
+    return this.value;
+  }
 
-    public add(operand: number) {
-        this.value += operand;
-        return this;
-    }
+  public add(operand: number) {
+    this.value += operand;
+    return this;
+  }
 
-    public subtract(operand: number) {
-        this.value -= operand;
-        return this;
-    }
+  public subtract(operand: number) {
+    this.value -= operand;
+    return this;
+  }
 
-    public multiply(operand: number) {
-        this.value *= operand;
-        return this;
-    }
+  public multiply(operand: number) {
+    this.value *= operand;
+    return this;
+  }
 
-    public divide(operand: number) {
-        this.value /= operand;
-        return this;
-    }
+  public divide(operand: number) {
+    this.value /= operand;
+    return this;
+  }
 }
 ```
 
-使用者可以这样表述 `2 * 5 + 1`:
+A user could express `2 * 5 + 1` as
 
 ```ts
 import calc from "./BasicCalculator";
 
-let v = new calc(2)
-    .multiply(5)
-    .add(1)
-    .currentValue();
+let v = new calc(2).multiply(5).add(1).currentValue();
 ```
 
-这使得这么一种优雅的编码方式成为可能; 然而, 对于想要去继承 `BasicCalculator` 的类来说有一个问题. 想象使用者可能需要编写一个 `ScientificCalculator`:
+This often opens up very elegant ways of writing code; however, there was a problem for classes that wanted to extend from `BasicCalculator`.
+Imagine a user wanted to start writing a `ScientificCalculator`:
 
 ```ts
 import BasicCalculator from "./BasicCalculator";
 
 export default class ScientificCalculator extends BasicCalculator {
-    public constructor(value = 0) {
-        super(value);
-    }
+  public constructor(value = 0) {
+    super(value);
+  }
 
-    public square() {
-        this.value = this.value ** 2;
-        return this;
-    }
+  public square() {
+    this.value = this.value ** 2;
+    return this;
+  }
 
-    public sin() {
-        this.value = Math.sin(this.value);
-        return this;
-    }
+  public sin() {
+    this.value = Math.sin(this.value);
+    return this;
+  }
 }
 ```
 
-因为 `BasicCalculator` 的方法返回了 `this`, TypeScript 过去推断的类型是 `BasicCalculator`, 如果在 `ScientificCalculator` 的实例上调用属于 `BasicCalculator` 的方法, 类型系统不能很好地处理.
+Because TypeScript used to infer the type `BasicCalculator` for each method in `BasicCalculator` that returned `this`, the type system would forget that it had `ScientificCalculator` whenever using a `BasicCalculator` method.
 
-举例来说:
+For instance:
 
 ```ts
 import calc from "./ScientificCalculator";
 
 let v = new calc(0.5)
-    .square()
-    .divide(2)
-    .sin()    // Error: 'BasicCalculator' 没有 'sin' 方法.
-    .currentValue();
+  .square()
+  .divide(2)
+  .sin() // Error: 'BasicCalculator' has no 'sin' method.
+  .currentValue();
 ```
 
-这已经不再是问题 - TypeScript 现在在类的实例方法中, 会将 `this` 推断为一个特殊的叫做 `this` 的类型. `this` 类型也就写作 `this`, 可以大致理解为 "方法调用时点左边的类型".
+This is no longer the case - TypeScript now infers `this` to have a special type called `this` whenever inside an instance method of a class.
+The `this` type is written as so, and basically means "the type of the left side of the dot in a method call".
 
-`this` 类型在描述一些使用了 mixin 风格继承的库 \(比如 Ember.js\) 的交叉类型:
+The `this` type is also useful with intersection types in describing libraries (e.g. Ember.js) that use mixin-style patterns to describe inheritance:
 
 ```ts
 interface MyType {
-    extend<T>(other: T): this & T;
+  extend<T>(other: T): this & T;
 }
 ```
 
-## ES7 幂运算符
+## ES7 exponentiation operator
 
-TypeScript 1.7 支持将在 ES7/ES2016 中增加的[幂运算符](https://github.com/rwaldron/exponentiation-operator): `**` 和 `**=`. 这些运算符会被转换为 ES3/ES5 中的 `Math.pow`.
+TypeScript 1.7 supports upcoming [ES7/ES2016 exponentiation operators](https://github.com/rwaldron/exponentiation-operator): `**` and `**=`.
+The operators will be transformed in the output to ES3/ES5 using `Math.pow`.
 
-### 举例
+##### Example
 
 ```ts
 var x = 2 ** 3;
 var y = 10;
 y **= 2;
-var z =  -(4 ** 3);
+var z = -(4 ** 3);
 ```
 
-会生成下面的 JavaScript:
+Will generate the following JavaScript output:
 
-```ts
+```js
 var x = Math.pow(2, 3);
 var y = 10;
 y = Math.pow(y, 2);
-var z = -(Math.pow(4, 3));
+var z = -Math.pow(4, 3);
 ```
 
-## 改进对象字面量解构的检查
+## Improved checking for destructuring object literal
 
-TypeScript 1.7 使对象和数组字面量解构初始值的检查更加直观和自然.
+TypeScript 1.7 makes checking of destructuring patterns with an object literal or array literal initializers less rigid and more intuitive.
 
-当一个对象字面量通过与之对应的对象解构绑定推断类型时:
+When an object literal is contextually typed by the implied type of an object binding pattern:
 
-* 对象解构绑定中有默认值的属性对于对象字面量来说可选.
-* 对象解构绑定中的属性如果在对象字面量中没有匹配的值, 则该属性必须有默认值, 并且会被添加到对象字面量的类型中.
-* 对象字面量中的属性必须在对象解构绑定中存在.
+- Properties with default values in the object binding pattern become optional in the object literal.
+- Properties in the object binding pattern that have no match in the object literal are required to have a default value in the object binding pattern and are automatically added to the object literal type.
+- Properties in the object literal that have no match in the object binding pattern are an error.
 
-当一个数组字面量通过与之对应的数组解构绑定推断类型时:
+When an array literal is contextually typed by the implied type of an array binding pattern:
 
-* 数组解构绑定中的元素如果在数组字面量中没有匹配的值, 则该元素必须有默认值, 并且会被添加到数组字面量的类型中.
+- Elements in the array binding pattern that have no match in the array literal are required to have a default value in the array binding pattern and are automatically added to the array literal type.
 
-### 举例
+##### Example
 
 ```ts
-// f1 的类型为 (arg?: { x?: number, y?: number }) => void
-function f1({ x = 0, y = 0 } = {}) { }
+// Type of f1 is (arg?: { x?: number, y?: number }) => void
+function f1({ x = 0, y = 0 } = {}) {}
 
 // And can be called as:
 f1();
@@ -193,17 +197,18 @@ f1({ x: 1 });
 f1({ y: 1 });
 f1({ x: 1, y: 1 });
 
-// f2 的类型为 (arg?: (x: number, y?: number) => void
-function f2({ x, y = 0 } = { x: 0 }) { }
+// Type of f2 is (arg?: (x: number, y?: number) => void
+function f2({ x, y = 0 } = { x: 0 }) {}
 
 f2();
-f2({});        // 错误, x 非可选
+f2({}); // Error, x not optional
 f2({ x: 1 });
-f2({ y: 1 });  // 错误, x 非可选
+f2({ y: 1 }); // Error, x not optional
 f2({ x: 1, y: 1 });
 ```
 
-## 装饰器 \(decorators\) 支持的编译目标版本增加 ES3
+## Support for decorators when targeting ES3
 
-装饰器现在可以编译到 ES3. TypeScript 1.7 在 `__decorate` 函数中移除了 ES5 中增加的 `reduceRight`. 相关改动也内联了对 `Object.getOwnPropertyDescriptor` 和 `Object.defineProperty` 的调用, 并向后兼容, 使 ES5 的输出可以消除前面提到的 `Object` 方法的重复\[1\].
-
+Decorators are now allowed when targeting ES3.
+TypeScript 1.7 removes the ES5-specific use of `reduceRight` from the `__decorate` helper.
+The changes also inline calls `Object.getOwnPropertyDescriptor` and `Object.defineProperty` in a backwards-compatible fashion that allows for a to clean up the emit for ES5 and later by removing various repetitive calls to the aforementioned `Object` methods.

@@ -5,26 +5,28 @@ permalink: /zh/docs/handbook/release-notes/typescript-3-5.html
 oneline: TypeScript 3.5 Release Notes
 ---
 
-## 改进速度
+## Speed improvements
 
-TypeScript 3.5 为类型检查和增量构建采用了几个优化。
+TypeScript 3.5 introduces several optimizations around type-checking and incremental builds.
 
-### 类型检查速度提升
+### Type-checking speed-ups
 
-TypeScript 3.5 包含对 TypeScript 3.4 的某些优化，可以更高效地进行类型检查。 在代码补全列表等类型检查驱动的操作上，这些改进效果显著。
+TypeScript 3.5 contains certain optimizations over TypeScript 3.4 for type-checking more efficiently.
+These improvements are significantly more pronounced in editor scenarios where type-checking drives operations like code completion lists.
 
-### 改进 `--incremental`
+### `--incremental` improvements
 
-TypeScript 3.5 通过缓存计算状态的信息（编译器设置、寻找文件的原因、文件在哪里被找到等等），改进了在 3.4 中的 `--incremental` 构建模式。[我们发现重新构建花费的时间比 TypeScript 3.4 减少了 68%](https://github.com/Microsoft/TypeScript/pull/31101)!
+TypeScript 3.5 improves on 3.4's [`incremental`](/tsconfig#incremental) build mode, by saving information about how the state of the world was calculated - compiler settings, why files were looked up, where files were found, etc.
+In scenarios involving hundreds of projects using TypeScript's project references in `--build` mode, [we've found that the amount of time rebuilding can be reduced by as much as 68% compared to TypeScript 3.4](https://github.com/Microsoft/TypeScript/pull/31101)!
 
-有关更多信息，你可以查看这些 pull requests
+For more details, you can see the pull requests to
 
-* [缓存模块解析](https://github.com/Microsoft/TypeScript/pull/31100)
-* [缓存 `tsconfig.json` 计算](https://github.com/Microsoft/TypeScript/pull/31101)
+- [cache module resolution](https://github.com/Microsoft/TypeScript/pull/31100)
+- [cache settings calculated from `tsconfig.json`](https://github.com/Microsoft/TypeScript/pull/31101)
 
-## `Omit` 辅助类型
+## The `Omit` helper type
 
-TypeScript 3.5 添加了新的 `Omit` 辅助类型，这个类型用来创建从原始类型中移除了某些属性的新类型。
+TypeScript 3.5 introduces the new `Omit` helper type, which creates a new type with some properties dropped from the original.
 
 ```ts
 type Person = {
@@ -35,20 +37,21 @@ type Person = {
 
 type QuantumPerson = Omit<Person, "location">;
 
-// 相当于
+// equivalent to
 type QuantumPerson = {
   name: string;
   age: number;
 };
 ```
 
-使用 `Omit` 辅助，我们有能力复制 `Person` 中除了 `location` 之外的所有属性。
+Here we were able to copy over all the properties of `Person` except for `location` using the `Omit` helper.
 
-有关更多细节，[在 GitHub 查看添加 `Omit` 的 pull request](https://github.com/Microsoft/TypeScript/pull/30552), 以及[有关剩余对象使用 `Omit` 的更改](https://github.com/microsoft/TypeScript/pull/31134)。
+For more details, [see the pull request on GitHub to add `Omit`](https://github.com/Microsoft/TypeScript/pull/30552), as well as [the change to use `Omit` for object rest](https://github.com/microsoft/TypeScript/pull/31134).
 
-### 改进了联合类型中多余属性的检查
+### Improved excess property checks in union types
 
-在 TypeScript 3.4 及之前的版本中，会出现确实不应该存在的多余属性却被允许存在的情况。 例如，TypeScript 3.4 在对象字面量上允许不正确的 `name` 属性，甚至它的类型在 `Point` 和 `Label` 之中都不匹配。
+In TypeScript 3.4 and earlier, certain excess properties were allowed in situations where they really shouldn't have been.
+For instance, TypeScript 3.4 permitted the incorrect `name` property in the object literal even though its types don't match between `Point` and `Label`.
 
 ```ts
 type Point = {
@@ -67,11 +70,11 @@ const thing: Point | Label = {
 };
 ```
 
-以前，一个无区别的联合在它的成员上不会进行_任何_多余属性的检查，结果，类型错误的 `name` 属性溜了进来。
+Previously, a non-disciminated union wouldn't have _any_ excess property checking done on its members, and as a result, the incorrectly typed `name` property slipped by.
 
-在 TypeScript 3.5 中，类型检查器至少会验证所有提供的属性属于_某个_联合类型的成员，且类型恰当，这意味着，上面的例子会正确的进行错误提示。
+In TypeScript 3.5, the type-checker at least verifies that all the provided properties belong to _some_ union member and have the appropriate type, meaning that the sample above correctly issues an error.
 
-注意，只要属性类型有效，仍允许部分重叠。
+Note that partial overlap is still permitted as long as the property types are valid.
 
 ```ts
 const pl: Point | Label = {
@@ -81,27 +84,27 @@ const pl: Point | Label = {
 };
 ```
 
-## `--allowUmdGlobalAccess` 标志
+## The `--allowUmdGlobalAccess` flag
 
-在 TypeScript 3.5 中，使用新的 `--allowUmdGlobalAccess` 标志，你现在可以从任何位置引用全局的 UMD 申明——甚至模块。
+In TypeScript 3.5, you can now reference UMD global declarations like
 
-```ts
+```
 export as namespace foo;
 ```
 
-此模式增加了混合和匹配第三方库的灵活性，其中库声明的全局变量总是可以被使用，甚至可以从模块内部使用。
+from anywhere - even modules - using the new [`allowUmdGlobalAccess`](/tsconfig#allowUmdGlobalAccess) flag.
 
-有关更多细节，[查看 GitHub 上的 pull request](https://github.com/Microsoft/TypeScript/pull/30776/files)。
+This mode adds flexibility for mixing and matching the way 3rd party libraries, where globals that libraries declare can always be consumed, even from within modules.
 
-## 更智能的联合类型检查
+For more details, [see the pull request on GitHub](https://github.com/Microsoft/TypeScript/pull/30776/files).
 
-在 TypeScript 3.4 以及之前的版本中，下面的例子会无效：
+## Smarter union type checking
+
+In TypeScript 3.4 and prior, the following example would fail:
 
 ```ts
-type S = { done: boolean, value: number }
-type T =
-  | { done: false, value: number }
-  | { done: true, value: number };
+type S = { done: boolean; value: number };
+type T = { done: false; value: number } | { done: true; value: number };
 
 declare let source: S;
 declare let target: T;
@@ -109,11 +112,11 @@ declare let target: T;
 target = source;
 ```
 
-这是因为 `S` 无法被分配给 `{ done: false, value: number }` 或者 `{ done: true, value: number }`。 为啥？ 因为属性 `done` 在 `S` 不够具体——他是 `boolean`。而 `T` 的的每个成员有一个明确的为 `true` 或者 `false` 属性 `done`。
-
-这就是我们单独检查每个成员的意义：TypeScript 不只是将每个属性合并在一起，看看是否可以赋予 `S` 。
-
-如果这样做，一些糟糕的代码可能会像下面这样：
+That's because `S` isn't assignable to `{ done: false, value: number }` nor `{ done: true, value: number }`.
+Why?
+Because the `done` property in `S` isn't specific enough - it's `boolean` whereas each constituent of `T` has a `done` property that's specifically `true` or `false`.
+That's what we meant by each constituent type being checked in isolation: TypeScript doesn't just union each property together and see if `S` is assignable to that.
+If it did, some bad code could get through like the following:
 
 ```ts
 interface Foo {
@@ -132,37 +135,39 @@ function doSomething(x: Foo | Bar) {
   }
 }
 
-// uh-oh - 幸运的是， TypeScript 在这里会提示错误!
+// uh-oh - luckily TypeScript errors here!
 doSomething({
   kind: "foo",
-  value: 123,
+  value: 123
 });
 ```
 
-然而，对于原始的例子，这有点过于严格。 如果你弄清除 `S` 的任何可能值的精确类型，你实际上可以看到它与 `T` 中的类型完全匹配。
+However, this was a bit overly strict for the original example.
+If you figure out the precise type of any possible value of `S`, you can actually see that it matches the types in `T` exactly.
 
-在 TypeScript 3.5 中，当分配具有辨别属性的类型时，如 `T`，实际上_将_进一步将类似 `S` 的类型分解为每个可能的成员类型的并集。 在这种情况下，由于 `boolean` 是 `true` 和 `false` 的联合，`S` 将被视为 `{done：false，value：number}` 和 `{done：true，value：number }`。
+In TypeScript 3.5, when assigning to types with discriminant properties like in `T`, the language actually _will_ go further and decompose types like `S` into a union of every possible inhabitant type.
+In this case, since `boolean` is a union of `true` and `false`, `S` will be viewed as a union of `{ done: false, value: number }` and `{ done: true, value: number }`.
 
-有关更多细节，你可以[在 GitHub 上查看原始的 pull request](https://github.com/microsoft/TypeScript/pull/30779)。
+For more details, you can [see the original pull request on GitHub](https://github.com/microsoft/TypeScript/pull/30779).
 
-## 泛型构造函数的高阶类型推断
+## Higher order type inference from generic constructors
 
-在 TypeScript 3.4 中，我们改进了对返回函数的泛型函数的推断：
+In TypeScript 3.4, we improved inference for when generic functions that return functions like so:
 
 ```ts
 function compose<T, U, V>(f: (x: T) => U, g: (y: U) => V): (x: T) => V {
-  return x => g(f(x))
+  return x => g(f(x));
 }
 ```
 
-将其他泛型函数作为参数，如下所示：
+took other generic functions as arguments, like so:
 
 ```ts
 function arrayify<T>(x: T): T[] {
   return [x];
 }
 
-type Box<U> = { value: U }
+type Box<U> = { value: U };
 function boxify<U>(y: U): Box<U> {
   return { value: y };
 }
@@ -170,9 +175,10 @@ function boxify<U>(y: U): Box<U> {
 let newFn = compose(arrayify, boxify);
 ```
 
-TypeScript 3.4 的推断允许 `newFn` 是泛型的。它的新类型是 `<T>（x：T）=> Box <T []>`。而不是旧版本推断的，相对无用的类型，如 `（x：{}）=> Box <{} []>`。
+Instead of a relatively useless type like `(x: {}) => Box<{}[]>`, which older versions of the language would infer, TypeScript 3.4's inference allows `newFn` to be generic.
+Its new type is `<T>(x: T) => Box<T[]>`.
 
-TypeScript 3.5 在处理构造函数的时候推广了这种行为。
+TypeScript 3.5 generalizes this behavior to work on constructor functions as well.
 
 ```ts
 class Box<T> {
@@ -191,15 +197,18 @@ class Bag<U> {
   }
 }
 
-function composeCtor<T, U, V>(F: new (x: T) => U, G: new (y: U) => V): (x: T) => V {
-  return x => new G(new F(x))
+function composeCtor<T, U, V>(
+  F: new (x: T) => U,
+  G: new (y: U) => V
+): (x: T) => V {
+  return x => new G(new F(x));
 }
 
-let f = composeCtor(Box, Bag); // 拥有类型 '<T>(x: T) => Bag<Box<T>>'
-let a = f(1024); // 拥有类型 'Bag<Box<number>>'
+let f = composeCtor(Box, Bag); // has type '<T>(x: T) => Bag<Box<T>>'
+let a = f(1024); // has type 'Bag<Box<number>>'
 ```
 
-除了上面的组合模式之外，这种对泛型构造函数的新推断意味着在某些 UI 库（如 React ）中对类组件进行操作的函数可以更正确地对泛型类组件进行操作。
+In addition to compositional patterns like the above, this new inference on generic constructors means that functions that operate on class components in certain UI libraries like React can more correctly operate on generic class components.
 
 ```ts
 type ComponentClass<P> = new (props: P) => Component<P>;
@@ -210,17 +219,12 @@ declare class Component<P> {
 
 declare function myHoc<P>(C: ComponentClass<P>): ComponentClass<P>;
 
-type NestedProps<T> = { foo: number, stuff: T };
+type NestedProps<T> = { foo: number; stuff: T };
 
-declare class GenericComponent<T> extends Component<NestedProps<T>> { }
+declare class GenericComponent<T> extends Component<NestedProps<T>> {}
 
-// 类型为 'new <T>(props: NestedProps<T>) => Component<NestedProps<T>>'
+// type is 'new <T>(props: NestedProps<T>) => Component<NestedProps<T>>'
 const GenericComponent2 = myHoc(GenericComponent);
 ```
 
-想学习更多，[在 GitHub 上查看原始的 pull requet](https://github.com/microsoft/TypeScript/pull/31116)。
-
-## 参考
-
-* [原文](https://github.com/microsoft/TypeScript-Handbook/blob/master/pages/release%20notes/TypeScript%203.5.md)
-
+To learn more, [check out the original pull request on GitHub](https://github.com/microsoft/TypeScript/pull/31116).
