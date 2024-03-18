@@ -5,529 +5,505 @@ permalink: /zh/docs/handbook/release-notes/typescript-2-0.html
 oneline: TypeScript 2.0 Release Notes
 ---
 
-## Null- and undefined-aware types
+## Null和undefined类型
 
-TypeScript has two special types, Null and Undefined, that have the values `null` and `undefined` respectively.
-Previously it was not possible to explicitly name these types, but `null` and `undefined` may now be used as type names regardless of type checking mode.
+TypeScript现在有两个特殊的类型：Null和Undefined, 它们的值分别是`null`和`undefined`。 以前这是不可能明确地命名这些类型的，但是现在`null`和`undefined`不管在什么类型检查模式下都可以作为类型名称使用。
 
-The type checker previously considered `null` and `undefined` assignable to anything.
-Effectively, `null` and `undefined` were valid values of _every_ type and it wasn't possible to specifically exclude them (and therefore not possible to detect erroneous use of them).
+以前类型检查器认为`null`和`undefined`赋值给一切。实际上，`null`和`undefined`是每一个类型的有效值， 并且不能明确排除它们（因此不可能检测到错误）。
 
-## `--strictNullChecks`
+### `--strictNullChecks`
 
-[`strictNullChecks`](/tsconfig#strictNullChecks) switches to a new strict null checking mode.
+`--strictNullChecks`可以切换到新的严格空检查模式中。
 
-In strict null checking mode, the `null` and `undefined` values are _not_ in the domain of every type and are only assignable to themselves and `any` (the one exception being that `undefined` is also assignable to `void`).
-So, whereas `T` and `T | undefined` are considered synonymous in regular type checking mode (because `undefined` is considered a subtype of any `T`), they are different types in strict type checking mode, and only `T | undefined` permits `undefined` values. The same is true for the relationship of `T` to `T | null`.
+在严格空检查模式中，`null`和`undefined`值_不再_属于任何类型的值，仅仅属于它们自己类型和`any`类型的值 （还有一个例外，`undefined`也能赋值给`void`）。因此，尽管在常规类型检查模式下`T`和`T | undefined`被认为是相同的 （因为`undefined`被认为是任何`T`的子类型），但是在严格类型检查模式下它们是不同的， 并且仅仅`T | undefined`允许有`undefined`值，`T`和`T | null`的关系同样如此。
 
-##### Example
+#### 示例
 
 ```ts
-// Compiled with --strictNullChecks
+// 使用--strictNullChecks参数进行编译的
 let x: number;
 let y: number | undefined;
 let z: number | null | undefined;
-x = 1; // Ok
-y = 1; // Ok
-z = 1; // Ok
-x = undefined; // Error
-y = undefined; // Ok
-z = undefined; // Ok
-x = null; // Error
-y = null; // Error
-z = null; // Ok
-x = y; // Error
-x = z; // Error
-y = x; // Ok
-y = z; // Error
-z = x; // Ok
-z = y; // Ok
+x = 1;  // 正确
+y = 1;  // 正确
+z = 1;  // 正确
+x = undefined;  // 错误
+y = undefined;  // 正确
+z = undefined;  // 正确
+x = null;  // 错误
+y = null;  // 错误
+z = null;  // 正确
+x = y;  // 错误
+x = z;  // 错误
+y = x;  // 正确
+y = z;  // 错误
+z = x;  // 正确
+z = y;  // 正确
 ```
 
-## Assigned-before-use checking
+### 使用前赋值检查
 
-In strict null checking mode the compiler requires every reference to a local variable of a type that doesn't include `undefined` to be preceded by an assignment to that variable in every possible preceding code path.
+在严格空检查模式中，编译器要求未包含`undefined`类型的局部变量在使用之前必须先赋值。
 
-##### Example
+#### 示例
 
 ```ts
-// Compiled with --strictNullChecks
+// 使用--strictNullChecks参数进行编译
 let x: number;
 let y: number | null;
 let z: number | undefined;
-x; // Error, reference not preceded by assignment
-y; // Error, reference not preceded by assignment
-z; // Ok
+x;  // 错误，使用前未赋值
+y;  // 错误，使用前未赋值
+z;  // 正确
 x = 1;
 y = null;
-x; // Ok
-y; // Ok
+x;  // 正确
+y;  // 正确
 ```
 
-The compiler checks that variables are definitely assigned by performing _control flow based type analysis_. See later for further details on this topic.
+编译器通过执行_基于控制流的类型分析_检查变量明确被赋过值。在本篇文章后面会有进一步的细节。
 
-## Optional parameters and properties
+### 可选参数和属性
 
-Optional parameters and properties automatically have `undefined` added to their types, even when their type annotations don't specifically include `undefined`.
-For example, the following two types are identical:
+可选参数和属性会自动把`undefined`添加到他们的类型中，即使他们的类型注解明确不包含`undefined`。例如，下面两个类型是完全相同的：
 
 ```ts
-// Compiled with --strictNullChecks
-type T1 = (x?: number) => string; // x has type number | undefined
-type T2 = (x?: number | undefined) => string; // x has type number | undefined
+// 使用--strictNullChecks参数进行编译
+type T1 = (x?: number) => string;              // x的类型是 number | undefined
+type T2 = (x?: number | undefined) => string;  // x的类型是 number | undefined
 ```
 
-## Non-null and non-undefined type guards
+### 非null和非undefined类型保护
 
-A property access or a function call produces a compile-time error if the object or function is of a type that includes `null` or `undefined`.
-However, type guards are extended to support non-null and non-undefined checks.
+如果对象或者函数的类型包含`null`和`undefined`，那么访问属性或调用函数时就会产生编译错误。因此，对类型保护进行了扩展，以支持对非null和非undefined的检查。
 
-##### Example
+#### 示例
 
 ```ts
-// Compiled with --strictNullChecks
+// 使用--strictNullChecks参数进行编译
 declare function f(x: number): string;
 let x: number | null | undefined;
 if (x) {
-  f(x); // Ok, type of x is number here
-} else {
-  f(x); // Error, type of x is number? here
+    f(x);  // 正确，这里的x类型是number
 }
-let a = x != null ? f(x) : ""; // Type of a is string
-let b = x && f(x); // Type of b is string | 0 | null | undefined
+else {
+    f(x);  // 错误，这里的x类型是number？
+}
+let a = x != null ? f(x) : "";  // a的类型是string
+let b = x && f(x);  // b的类型是 string | 0 | null | undefined
 ```
 
-Non-null and non-undefined type guards may use the `==`, `!=`, `===`, or `!==` operator to compare to `null` or `undefined`, as in `x != null` or `x === undefined`.
-The effects on subject variable types accurately reflect JavaScript semantics (e.g. double-equals operators check for both values no matter which one is specified whereas triple-equals only checks for the specified value).
+非null和非undefined类型保护可以使用`==`、`!=`、`===`或`!==`操作符和`null`或`undefined`进行比较，如`x != null`或`x === undefined`。对被试变量类型的影响准确地反映了JavaScript的语义（比如，双等号运算符检查两个值无论你指定的是null还是undefined，然而三等于号运算符仅仅检查指定的那一个值）。
 
-## Dotted names in type guards
+### 类型保护中的点名称
 
-Type guards previously only supported checking local variables and parameters.
-Type guards now support checking "dotted names" consisting of a variable or parameter name followed one or more property accesses.
+类型保护以前仅仅支持对局部变量和参数的检查。现在类型保护支持检查由变量或参数名称后跟一个或多个访问属性组成的“点名称”。
 
-##### Example
+#### 示例
 
 ```ts
 interface Options {
-  location?: {
-    x?: number;
-    y?: number;
-  };
+    location?: {
+        x?: number;
+        y?: number;
+    };
 }
 
 function foo(options?: Options) {
-  if (options && options.location && options.location.x) {
-    const x = options.location.x; // Type of x is number
-  }
+    if (options && options.location && options.location.x) {
+        const x = options.location.x;  // x的类型是number
+    }
 }
 ```
 
-Type guards for dotted names also work with user defined type guard functions and the `typeof` and `instanceof` operators and do not depend on the [`strictNullChecks`](/tsconfig#strictNullChecks) compiler option.
+点名称的类型保护和用户定义的类型保护函数，还有`typeof`和`instanceof`操作符一起工作，并且不依赖`--strictNullChecks`编译参数。
 
-A type guard for a dotted name has no effect following an assignment to any part of the dotted name.
-For example, a type guard for `x.y.z` will have no effect following an assignment to `x`, `x.y`, or `x.y.z`.
+对点名称进行类型保护后给点名称任一部分赋值都会导致类型保护无效。例如，对`x.y.z`进行了类型保护后给`x`、`x.y`或`x.y.z`赋值，都会导致`x.y.z`类型保护无效。
 
-## Expression operators
+### 表达式操作符
 
-Expression operators permit operand types to include `null` and/or `undefined` but always produce values of non-null and non-undefined types.
+表达式操作符允许运算对象的类型包含`null`和/或`undefined`，但是总是产生非null和非undefined类型的结果值。
 
-```ts
-// Compiled with --strictNullChecks
+```js
+// 使用--strictNullChecks参数进行编译
 function sum(a: number | null, b: number | null) {
-  return a + b; // Produces value of type number
+    return a + b;  // 计算的结果值类型是number
 }
 ```
 
-The `&&` operator adds `null` and/or `undefined` to the type of the right operand depending on which are present in the type of the left operand, and the `||` operator removes both `null` and `undefined` from the type of the left operand in the resulting union type.
+`&&`操作符添加`null`和/或`undefined`到右边操作对象的类型中取决于当前左边操作对象的类型，`||`操作符从左边联合类型的操作对象的类型中将`null`和`undefined`同时删除。
 
 ```ts
-// Compiled with --strictNullChecks
+// 使用--strictNullChecks参数进行编译
 interface Entity {
-  name: string;
+    name: string;
 }
 let x: Entity | null;
-let s = x && x.name; // s is of type string | null
-let y = x || { name: "test" }; // y is of type Entity
+let s = x && x.name;  // s的类型是string | null
+let y = x || { name: "test" };  // y的类型是Entity
 ```
 
-## Type widening
+### 类型扩展
 
-The `null` and `undefined` types are _not_ widened to `any` in strict null checking mode.
+在严格空检查模式中，`null`和`undefined`类型是_不会_扩展到`any`类型中的。
 
 ```ts
-let z = null; // Type of z is null
+let z = null;  // z的类型是null
 ```
 
-In regular type checking mode the inferred type of `z` is `any` because of widening, but in strict null checking mode the inferred type of `z` is `null` (and therefore, absent a type annotation, `null` is the only possible value for `z`).
+在常规类型检查模式中，由于扩展，会推断`z`的类型是`any`，但是在严格空检查模式中，推断`z`是`null`类型（因此，如果没有类型注释，`null`是`z`的唯一值）。
 
-## Non-null assertion operator
+### 非空断言操作符
 
-A new `!` post-fix expression operator may be used to assert that its operand is non-null and non-undefined in contexts where the type checker is unable to conclude that fact.
-Specifically, the operation `x!` produces a value of the type of `x` with `null` and `undefined` excluded.
-Similar to type assertions of the forms `<T>x` and `x as T`, the `!` non-null assertion operator is simply removed in the emitted JavaScript code.
+在上下文中当类型检查器无法断定类型时，一个新的后缀表达式操作符`!`可以用于断言操作对象是非null和非undefined类型的。具体而言，运算`x!`产生一个不包含`null`和`undefined`的`x`的值。断言的形式类似于`<T>x`和`x as T`，`!`非空断言操作符会从编译成的JavaScript代码中移除。
 
 ```ts
-// Compiled with --strictNullChecks
+// 使用--strictNullChecks参数进行编译
 function validateEntity(e?: Entity) {
-  // Throw exception if e is null or invalid entity
+    // 如果e是null或者无效的实体，就会抛出异常
 }
 
 function processEntity(e?: Entity) {
-  validateEntity(e);
-  let s = e!.name; // Assert that e is non-null and access name
+    validateEntity(e);
+    let s = e!.name;  // 断言e是非空并访问name属性
 }
 ```
 
-## Compatibility
+### 兼容性
 
-The new features are designed such that they can be used in both strict null checking mode and regular type checking mode.
-In particular, the `null` and `undefined` types are automatically erased from union types in regular type checking mode (because they are subtypes of all other types), and the `!` non-null assertion expression operator is permitted but has no effect in regular type checking mode. Thus, declaration files that are updated to use null- and undefined-aware types can still be used in regular type checking mode for backwards compatibility.
+这些新特性是经过设计的，使得它们能够在严格空检查模式和常规类型检查模式下都能够使用。尤其是在常规类型检查模式中，`null`和`undefined`类型会自动从联合类型中删除（因为它们是其它所有类型的子类型），`!`非空断言表达式操作符也被允许使用但是没有任何作用。因此，声明文件使用null和undefined敏感类型更新后，在常规类型模式中仍然是可以向后兼容使用的。
 
-In practical terms, strict null checking mode requires that all files in a compilation are null- and undefined-aware.
+在实际应用中，严格空检查模式要求编译的所有文件都是null和undefined敏感类型。
 
-## Control flow based type analysis
+## 基于控制流的类型分析
 
-TypeScript 2.0 implements a control flow-based type analysis for local variables and parameters.
-Previously, the type analysis performed for type guards was limited to `if` statements and `?:` conditional expressions and didn't include effects of assignments and control flow constructs such as `return` and `break` statements.
-With TypeScript 2.0, the type checker analyses all possible flows of control in statements and expressions to produce the most specific type possible (the _narrowed type_) at any given location for a local variable or parameter that is declared to have a union type.
+TypeScript 2.0实现了对局部变量和参数的控制流类型分析。以前，对类型保护进行类型分析仅限于`if`语句和`?:`条件表达式，并且不包括赋值和控制流结构的影响，例如`return`和`break`语句。使用TypeScript 2.0，类型检查器会分析语句和表达式所有可能的控制流，在任何指定的位置对声明为联合类型的局部变量或参数产生最可能的具体类型（缩小范围的类型）。
 
-##### Example
+#### 示例
 
 ```ts
 function foo(x: string | number | boolean) {
-  if (typeof x === "string") {
-    x; // type of x is string here
-    x = 1;
-    x; // type of x is number here
-  }
-  x; // type of x is number | boolean here
+    if (typeof x === "string") {
+        x; // 这里x的类型是string
+        x = 1;
+        x; // 这里x的类型是number
+    }
+    x; // 这里x的类型是number | boolean
 }
 
 function bar(x: string | number) {
-  if (typeof x === "number") {
-    return;
-  }
-  x; // type of x is string here
+    if (typeof x === "number") {
+        return;
+    }
+    x; // 这里x的类型是string
 }
 ```
 
-Control flow based type analysis is particularly relevant in [`strictNullChecks`](/tsconfig#strictNullChecks) mode because nullable types are represented using union types:
+基于控制流的类型分析在`--strictNullChecks`模式中尤为重要，因为可空类型使用联合类型来表示：
 
 ```ts
 function test(x: string | null) {
-  if (x === null) {
-    return;
-  }
-  x; // type of x is string in remainder of function
+    if (x === null) {
+        return;
+    }
+    x; // 在函数的剩余部分中，x类型是string
 }
 ```
 
-Furthermore, in [`strictNullChecks`](/tsconfig#strictNullChecks) mode, control flow based type analysis includes _definite assignment analysis_ for local variables of types that don't permit the value `undefined`.
+而且，在`--strictNullChecks`模式中，基于控制流的分析包括，对类型不允许为`undefined`的局部变量有_明确赋值_的分析。
 
 ```ts
 function mumble(check: boolean) {
-  let x: number; // Type doesn't permit undefined
-  x; // Error, x is undefined
-  if (check) {
-    x = 1;
-    x; // Ok
-  }
-  x; // Error, x is possibly undefined
-  x = 2;
-  x; // Ok
+    let x: number; // 类型不允许为undefined
+    x; // 错误，x是undefined
+    if (check) {
+        x = 1;
+        x; // 正确
+    }
+    x; // 错误，x可能是undefi
+    x = 2;
+    x; // 正确
 }
 ```
 
-## Tagged union types
+## 标记联合类型
 
-TypeScript 2.0 implements support for tagged (or discriminated) union types.
-Specifically, the TS compiler now support type guards that narrow union types based on tests of a discriminant property and furthermore extend that capability to `switch` statements.
+TypeScript 2.0实现了标记（或区分）联合类型。具体而言，TS编译器现在支持类型保护，基于判别属性的检查来缩小联合类型的范围，并且`switch`语句也支持此特性。
 
-##### Example
+#### 示例
 
 ```ts
 interface Square {
-  kind: "square";
-  size: number;
+    kind: "square";
+    size: number;
 }
 
 interface Rectangle {
-  kind: "rectangle";
-  width: number;
-  height: number;
+    kind: "rectangle";
+    width: number;
+    height: number;
 }
 
 interface Circle {
-  kind: "circle";
-  radius: number;
+    kind: "circle";
+    radius: number;
 }
 
 type Shape = Square | Rectangle | Circle;
 
 function area(s: Shape) {
-  // In the following switch statement, the type of s is narrowed in each case clause
-  // according to the value of the discriminant property, thus allowing the other properties
-  // of that variant to be accessed without a type assertion.
-  switch (s.kind) {
-    case "square":
-      return s.size * s.size;
-    case "rectangle":
-      return s.width * s.height;
-    case "circle":
-      return Math.PI * s.radius * s.radius;
-  }
+    // 在下面的switch语句中，s的类型在每一个case中都被缩小
+    // 根据判别属性的值，变量的其它属性不使用类型断言就可以被访问
+    switch (s.kind) {
+        case "square": return s.size * s.size;
+        case "rectangle": return s.width * s.height;
+        case "circle": return Math.PI * s.radius * s.radius;
+    }
 }
 
 function test1(s: Shape) {
-  if (s.kind === "square") {
-    s; // Square
-  } else {
-    s; // Rectangle | Circle
-  }
+    if (s.kind === "square") {
+        s;  // Square
+    }
+    else {
+        s;  // Rectangle | Circle
+    }
 }
 
 function test2(s: Shape) {
-  if (s.kind === "square" || s.kind === "rectangle") {
-    return;
-  }
-  s; // Circle
+    if (s.kind === "square" || s.kind === "rectangle") {
+        return;
+    }
+    s;  // Circle
 }
 ```
 
-A _discriminant property type guard_ is an expression of the form `x.p == v`, `x.p === v`, `x.p != v`, or `x.p !== v`, where `p` and `v` are a property and an expression of a string literal type or a union of string literal types.
-The discriminant property type guard narrows the type of `x` to those constituent types of `x` that have a discriminant property `p` with one of the possible values of `v`.
+_判别属性类型保护_是`x.p == v`、`x.p === v`、`x.p != v`或者`x.p !== v`其中的一种表达式，`p`和`v`是一个属性和字符串字面量类型或字符串字面量联合类型的表达式。判别属性类型保护缩小`x`的类型到由判别属性`p`和`v`的可能值之一组成的类型。
 
-Note that we currently only support discriminant properties of string literal types.
-We intend to later add support for boolean and numeric literal types.
+请注意，我们目前只支持字符串字面值类型的判别属性。我们打算以后添加对布尔值和数字字面量类型的支持。
 
-## The `never` type
+## `never`类型
 
-TypeScript 2.0 introduces a new primitive type `never`.
-The `never` type represents the type of values that never occur.
-Specifically, `never` is the return type for functions that never return and `never` is the type of variables under type guards that are never true.
+TypeScript 2.0引入了一个新原始类型`never`。`never`类型表示值的类型从不出现。具体而言，`never`是永不返回函数的返回类型，也是变量在类型保护中永不为true的类型。
 
-The `never` type has the following characteristics:
+`never`类型具有以下特征：
 
-- `never` is a subtype of and assignable to every type.
-- No type is a subtype of or assignable to `never` (except `never` itself).
-- In a function expression or arrow function with no return type annotation, if the function has no `return` statements, or only `return` statements with expressions of type `never`, and if the end point of the function is not reachable (as determined by control flow analysis), the inferred return type for the function is `never`.
-- In a function with an explicit `never` return type annotation, all `return` statements (if any) must have expressions of type `never` and the end point of the function must not be reachable.
+* `never`是所有类型的子类型并且可以赋值给所有类型。
+* 没有类型是`never`的子类型或能赋值给`never`（`never`类型本身除外）。
+* 在函数表达式或箭头函数没有返回类型注解时，如果函数没有`return`语句，或者只有`never`类型表达式的`return`语句，并且如果函数是不可执行到终点的（例如通过控制流分析决定的），则推断函数的返回类型是`never`。
+* 在有明确`never`返回类型注解的函数中，所有`return`语句（如果有的话）必须有`never`类型的表达式并且函数的终点必须是不可执行的。
 
-Because `never` is a subtype of every type, it is always omitted from union types and it is ignored in function return type inference as long as there are other types being returned.
+因为`never`是每一个类型的子类型，所以它总是在联合类型中被省略，并且在函数中只要其它类型被返回，类型推断就会忽略`never`类型。
 
-Some examples of functions returning `never`:
+一些返回`never`函数的示例：
 
 ```ts
-// Function returning never must have unreachable end point
+// 函数返回never必须无法执行到终点
 function error(message: string): never {
-  throw new Error(message);
+    throw new Error(message);
 }
 
-// Inferred return type is never
+// 推断返回类型是never
 function fail() {
-  return error("Something failed");
+    return error("Something failed");
 }
 
-// Function returning never must have unreachable end point
+// 函数返回never必须无法执行到终点
 function infiniteLoop(): never {
-  while (true) {}
+    while (true) {
+    }
 }
 ```
 
-Some examples of use of functions returning `never`:
+一些函数返回`never`的使用示例：
 
 ```ts
-// Inferred return type is number
+// 推断返回类型是number
 function move1(direction: "up" | "down") {
-  switch (direction) {
-    case "up":
-      return 1;
-    case "down":
-      return -1;
-  }
-  return error("Should never get here");
+    switch (direction) {
+        case "up":
+            return 1;
+        case "down":
+            return -1;
+    }
+    return error("Should never get here");
 }
 
-// Inferred return type is number
+// 推断返回类型是number
 function move2(direction: "up" | "down") {
-  return direction === "up"
-    ? 1
-    : direction === "down"
-    ? -1
-    : error("Should never get here");
+    return direction === "up" ? 1 :
+        direction === "down" ? -1 :
+        error("Should never get here");
 }
 
-// Inferred return type is T
+// 推断返回类型是T
 function check<T>(x: T | undefined) {
-  return x || error("Undefined value");
+    return x || error("Undefined value");
 }
 ```
 
-Because `never` is assignable to every type, a function returning `never` can be used when a callback returning a more specific type is required:
+因为`never`可以赋值给每一个类型，当需要回调函数返回一个更加具体的类型时，函数返回`never`类型可以用于检测返回类型是否正确：
 
 ```ts
 function test(cb: () => string) {
-  let s = cb();
-  return s;
+    let s = cb();
+    return s;
 }
 
 test(() => "hello");
 test(() => fail());
-test(() => {
-  throw new Error();
-});
+test(() => { throw new Error(); })
 ```
 
-## Read-only properties and index signatures
+## 只读属性和索引签名
 
-A property or index signature can now be declared with the `readonly` modifier.
+属性或索引签名现在可以使用`readonly`修饰符声明为只读的。
 
-Read-only properties may have initializers and may be assigned to in constructors within the same class declaration, but otherwise assignments to read-only properties are disallowed.
+只读属性可以初始化和在同一个类的构造函数中被赋值，但是在其它情况下对只读属性的赋值是不允许的。
 
-In addition, entities are _implicitly_ read-only in several situations:
+此外，有几种情况下实体_隐式_只读的：
 
-- A property declared with a `get` accessor and no `set` accessor is considered read-only.
-- In the type of an enum object, enum members are considered read-only properties.
-- In the type of a module object, exported `const` variables are considered read-only properties.
-- An entity declared in an `import` statement is considered read-only.
-- An entity accessed through an ES2015 namespace import is considered read-only (e.g. `foo.x` is read-only when `foo` is declared as `import * as foo from "foo"`).
+* 属性声明只使用`get`访问器而没有使用`set`访问器被视为只读的。
+* 在枚举类型中，枚举成员被视为只读属性。
+* 在模块类型中，导出的`const`变量被视为只读属性。
+* 在`import`语句中声明的实体被视为只读的。
+* 通过ES2015命名空间导入访问的实体被视为只读的（例如，当`foo`当作`import * as foo from "foo"`声明时，`foo.x`是只读的）。
 
-##### Example
+#### 示例
 
 ```ts
 interface Point {
-  readonly x: number;
-  readonly y: number;
+    readonly x: number;
+    readonly y: number;
 }
 
 var p1: Point = { x: 10, y: 20 };
-p1.x = 5; // Error, p1.x is read-only
+p1.x = 5;  // 错误，p1.x是只读的
 
 var p2 = { x: 1, y: 1 };
-var p3: Point = p2; // Ok, read-only alias for p2
-p3.x = 5; // Error, p3.x is read-only
-p2.x = 5; // Ok, but also changes p3.x because of aliasing
+var p3: Point = p2;  // 正确，p2的只读别名
+p3.x = 5;  // 错误，p3.x是只读的
+p2.x = 5;  // 正确，但是因为别名使用，同时也改变了p3.x
 ```
 
 ```ts
 class Foo {
-  readonly a = 1;
-  readonly b: string;
-  constructor() {
-    this.b = "hello"; // Assignment permitted in constructor
-  }
+    readonly a = 1;
+    readonly b: string;
+    constructor() {
+        this.b = "hello";  // 在构造函数中允许赋值
+    }
 }
 ```
 
 ```ts
 let a: Array<number> = [0, 1, 2, 3, 4];
 let b: ReadonlyArray<number> = a;
-b[5] = 5; // Error, elements are read-only
-b.push(5); // Error, no push method (because it mutates array)
-b.length = 3; // Error, length is read-only
-a = b; // Error, mutating methods are missing
+b[5] = 5;      // 错误，元素是只读的
+b.push(5);     // 错误，没有push方法（因为这会修改数组）
+b.length = 3;  // 错误，length是只读的
+a = b;         // 错误，缺少修改数组的方法
 ```
 
-## Specifying the type of `this` for functions
+## 指定函数中`this`类型
 
-Following up on specifying the type of `this` in a class or an interface, functions and methods can now declare the type of `this` they expect.
+紧跟着类和接口，现在函数和方法也可以声明`this`的类型了。
 
-By default the type of `this` inside a function is `any`.
-Starting with TypeScript 2.0, you can provide an explicit `this` parameter.
-`this` parameters are fake parameters that come first in the parameter list of a function:
+函数中`this`的默认类型是`any`。从TypeScript 2.0开始，你可以提供一个明确的`this`参数。`this`参数是伪参数，它位于函数参数列表的第一位：
 
 ```ts
 function f(this: void) {
-  // make sure `this` is unusable in this standalone function
+    // 确保`this`在这个独立的函数中无法使用
 }
 ```
 
-## `this` parameters in callbacks
+### 回调函数中的`this`参数
 
-Libraries can also use `this` parameters to declare how callbacks will be invoked.
+库也可以使用`this`参数声明回调函数如何被调用。
 
-##### Example
+#### 示例
 
 ```ts
 interface UIElement {
-  addClickListener(onclick: (this: void, e: Event) => void): void;
+    addClickListener(onclick: (this: void, e: Event) => void): void;
 }
 ```
 
-`this: void` means that `addClickListener` expects `onclick` to be a function that does not require a `this` type.
+`this:void`意味着`addClickListener`预计`onclick`是一个`this`参数不需要类型的函数。
 
-Now if you annotate calling code with `this`:
+现在如果你在调用代码中对`this`进行了类型注释：
 
 ```ts
 class Handler {
-  info: string;
-  onClickBad(this: Handler, e: Event) {
-    // oops, used this here. using this callback would crash at runtime
-    this.info = e.message;
-  }
+    info: string;
+    onClickBad(this: Handler, e: Event) {
+        // 哎哟，在这里使用this.在运行中使用这个回调函数将会崩溃。
+        this.info = e.message;
+    };
 }
 let h = new Handler();
-uiElement.addClickListener(h.onClickBad); // error!
+uiElement.addClickListener(h.onClickBad); // 错误！
 ```
 
-## `--noImplicitThis`
+### `--noImplicitThis`
 
-A new flag is also added in TypeScript 2.0 to flag all uses of `this` in functions without an explicit type annotation.
+TypeScript 2.0还增加了一个新的编译选项用来标记函数中所有没有明确类型注释的`this`的使用。
 
-## Glob support in `tsconfig.json`
+## `tsconfig.json`支持文件通配符
 
-Glob support is here!! Glob support has been [one of the most requested features](https://github.com/Microsoft/TypeScript/issues/1927).
+文件通配符来啦！！支持文件通配符一直是[最需要的特性之一](https://github.com/Microsoft/TypeScript/issues/1927)。
 
-Glob-like file patterns are supported two properties [`include`](/tsconfig#include) and [`exclude`](/tsconfig#exclude).
+类似文件通配符的文件模式支持两个属性`"include"`和`"exclude"`。
 
-##### Example
+#### 示例
 
-```json tsconfig
+```js
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "noImplicitAny": true,
-    "removeComments": true,
-    "preserveConstEnums": true,
-    "outFile": "../../built/local/tsc.js",
-    "sourceMap": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
+    "compilerOptions": {
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "outFile": "../../built/local/tsc.js",
+        "sourceMap": true
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ]
 }
 ```
 
-The supported glob wildcards are:
+支持文件通配符的符号有：
 
-- `*` matches zero or more characters (excluding directory separators)
-- `?` matches any one character (excluding directory separators)
-- `**/` recursively matches any subdirectory
+* `*`匹配零个或多个字符（不包括目录）
+* `?`匹配任意一个字符（不包括目录）
+* `**/`递归匹配所有子目录
 
-If a segment of a glob pattern includes only `*` or `.*`, then only files with supported extensions are included (e.g. `.ts`, `.tsx`, and `.d.ts` by default with `.js` and `.jsx` if [`allowJs`](/tsconfig#allowJs) is set to true).
+如果文件通配符模式语句中只包含`*`或`.*`，那么只匹配带有扩展名的文件（例如默认是`.ts`、`.tsx`和`.d.ts`，如果`allowJs`设置为`true`，`.js`和`.jsx`也属于默认）。
 
-If the [`files`](/tsconfig#files) and [`include`](/tsconfig#include) are both left unspecified, the compiler defaults to including all TypeScript (`.ts`, `.d.ts` and `.tsx`) files in the containing directory and subdirectories except those excluded using the [`exclude`](/tsconfig#exclude) property. JS files (`.js` and `.jsx`) are also included if [`allowJs`](/tsconfig#allowJs) is set to true.
+如果`"files"`和`"include"`都没有指定，编译器默认包含所有目录中的TypeScript文件（`.ts`、`.d.ts`和`.tsx`），除了那些使用`exclude`属性排除的文件外。如果`allowJs`设置为true，JS文件（`.js`和`.jsx`）也会被包含进去。
 
-If the [`files`](/tsconfig#files) or [`include`](/tsconfig#include) properties are specified, the compiler will instead include the union of the files included by those two properties.
-Files in the directory specified using the [`outDir`](/tsconfig#outDir) compiler option are always excluded unless explicitly included via the [`files`](/tsconfig#files) property (even when the [`exclude`](/tsconfig#exclude) property is specified).
+如果`"files"`和`"include"`都指定了，编译器将包含这两个属性指定文件的并集。使用`ourDir`编译选项指定的目录文件总是被排除，即使`"exclude"`属性指定的文件也会被删除，但是`files`属性指定的文件不会排除。
 
-Files included using [`include`](/tsconfig#include) can be filtered using the [`exclude`](/tsconfig#exclude) property.
-However, files included explicitly using the [`files`](/tsconfig#files) property are always included regardless of [`exclude`](/tsconfig#exclude).
-The [`exclude`](/tsconfig#exclude) property defaults to excluding the `node_modules`, `bower_components`, and `jspm_packages` directories when not specified.
+`"exclude"`属性指定的文件会对`"include"`属性指定的文件过滤。但是对`"files"`指定的文件没有任何作用。当没有明确指定时，`"exclude"`属性默认会排除`node_modules`、`bower_components`和`jspm_packages`目录。
 
-## Module resolution enhancements: BaseUrl, Path mapping, rootDirs and tracing
+## 模块解析增加：BaseUrl、路径映射、rootDirs和追踪
 
-TypeScript 2.0 provides a set of additional module resolution knops to _inform_ the compiler where to find declarations for a given module.
+TypeScript 2.0提供了一系列额外的模块解析属性告诉编译器去哪里可以找到给定模块的声明。
 
-See [Module Resolution](http://www.typescriptlang.org/docs/handbook/module-resolution.html) documentation for more details.
+更多详情，请参阅[模块解析](../handbook/module-resolution.md)文档。
 
-## Base URL
+### Base URL
 
-Using a [`baseUrl`](/tsconfig#baseUrl) is a common practice in applications using AMD module loaders where modules are "deployed" to a single folder at run-time.
-All module imports with non-relative names are assumed to be relative to the [`baseUrl`](/tsconfig#baseUrl).
+使用了AMD模块加载器并且模块在运行时”部署“到单文件夹的应用程序中使用`baseUrl`是一种常用的做法。所有非相对名称的模块导入被认为是相对于`baseUrl`的。
 
-##### Example
+#### 示例
 
-```json tsconfig
+```js
 {
   "compilerOptions": {
     "baseUrl": "./modules"
@@ -535,46 +511,44 @@ All module imports with non-relative names are assumed to be relative to the [`b
 }
 ```
 
-Now imports to `"moduleA"` would be looked up in `./modules/moduleA`
+现在导入`moduleA`将会在`./modules/moduleA`中查找。
 
 ```ts
 import A from "moduleA";
 ```
 
-## Path mapping
+### 路径映射
 
-Sometimes modules are not directly located under _baseUrl_.
-Loaders use a mapping configuration to map module names to files at run-time, see [RequireJs documentation](http://requirejs.org/docs/api.html#config-paths) and [SystemJS documentation](https://github.com/systemjs/systemjs/blob/main/docs/import-maps.md).
+有时模块没有直接位于_baseUrl_中。加载器使用映射配置在运行时去映射模块名称和文件，请参阅[RequireJs文档](http://requirejs.org/docs/api.html#config-paths)和[SystemJS文档](https://github.com/systemjs/systemjs/blob/master/docs/overview.md#map-config)。
 
-The TypeScript compiler supports the declaration of such mappings using [`paths`](/tsconfig#paths) property in `tsconfig.json` files.
+TypeScript编译器支持`tsconfig`文件中使用`"paths"`属性映射的声明。
 
-##### Example
+#### 示例
 
-For instance, an import to a module `"jquery"` would be translated at runtime to `"node_modules/jquery/dist/jquery.slim.min.js"`.
+例如，导入`"jquery"`模块在运行时会被转换为`"node_modules/jquery/dist/jquery.slim.min.js"`。
 
-```json tsconfig
+```js
 {
-  "compilerOptions": {
-    "baseUrl": "./node_modules",
-    "paths": {
-      "jquery": ["jquery/dist/jquery.slim.min"]
+    "compilerOptions": {
+        "baseUrl": "./node_modules",
+        "paths": {
+        "jquery": ["jquery/dist/jquery.slim.min"]
+        }
     }
 }
 ```
 
-Using [`paths`](/tsconfig#paths) also allow for more sophisticated mappings including multiple fall back locations.
-Consider a project configuration where only some modules are available in one location, and the rest are in another.
+使用`"paths"`也允许更复杂的映射，包括多次后退的位置。考虑一个只有一个地方的模块是可用的，其它的模块都在另一个地方的项目配置。
 
-## Virtual Directories with `rootDirs`
+### `rootDirs`和虚拟目录
 
-Using 'rootDirs', you can inform the compiler of the _roots_ making up this "virtual" directory;
-and thus the compiler can resolve relative modules imports within these "virtual" directories _as if_ they were merged together in one directory.
+使用`rootDirs`，你可以告知编译器的_根目录_组合这些“虚拟”目录。因此编译器在这些“虚拟”目录中解析相对导入模块，仿佛是合并到一个目录中一样。
 
-##### Example
+#### 示例
 
-Given this project structure:
+给定的项目结构
 
-```tree
+```text
  src
  └── views
      └── view1.ts (imports './template1')
@@ -586,68 +560,67 @@ Given this project structure:
              └── template1.ts (imports './view2')
 ```
 
-A build step will copy the files in `/src/views` and `/generated/templates/views` to the same directory in the output.
-At run-time, a view can expect its template to exist next to it, and thus should import it using a relative name as `"./template"`.
+构建步骤将复制`/src/views`和`/generated/templates/views`目录下的文件输出到同一个目录中。在运行时，视图期望它的模板和它存在同一目录中，因此应该使用相对名称`"./template"`导入。
 
-[`rootDirs`](/tsconfig#rootDirs) specify a list of _roots_ whose contents are expected to merge at run-time.
-So following our example, the `tsconfig.json` file should look like:
+`"rootDir"`指定的一组根目录的内容将会在运行时合并。因此在我们的例子，`tsconfig.json`文件应该类似于：
 
-```json tsconfig
+```js
 {
   "compilerOptions": {
-    "rootDirs": ["src/views", "generated/templates/views"]
+    "rootDirs": [
+      "src/views",
+      "generated/templates/views"
+    ]
   }
 }
 ```
 
-## Tracing module resolution
+### 追踪模块解析
 
-[`traceResolution`](/tsconfig#traceResolution) offers a handy way to understand how modules have been resolved by the compiler.
+`--traceResolution`提供了一种方便的方法，以了解模块如何被编译器解析的。
 
-```shell
+```text
 tsc --traceResolution
 ```
 
-## Shorthand ambient module declarations
+## 快捷外部模块声明
 
-If you don't want to take the time to write out declarations before using a new module, you can now just use a shorthand declaration to get started quickly.
+当你使用一个新模块时，如果不想要花费时间书写一个声明时，现在你可以使用快捷声明以便以快速开始。
 
-##### declarations.d.ts
+#### declarations.d.ts
 
 ```ts
 declare module "hot-new-module";
 ```
 
-All imports from a shorthand module will have the any type.
+所有从快捷模块的导入都具有任意类型。
 
 ```ts
-import x, { y } from "hot-new-module";
+import x, {y} from "hot-new-module";
 x(y);
 ```
 
-## Wildcard character in module names
+## 模块名称中的通配符
 
-Importing none-code resources using module loaders extension (e.g. [AMD](https://github.com/amdjs/amdjs-api/blob/master/LoaderPlugins.md) or [SystemJS](https://github.com/systemjs/systemjs/blob/main/docs/module-types.md)) has not been easy before;
-previously an ambient module declaration had to be defined for each resource.
+以前使用模块加载器（例如[AMD](https://github.com/amdjs/amdjs-api/blob/master/LoaderPlugins.md)和[SystemJS](https://github.com/systemjs/systemjs/blob/master/docs/creating-plugins.md)）导入没有代码的资源是不容易的。之前，必须为每个资源定义一个外部模块声明。
 
-TypeScript 2.0 supports the use of the wildcard character (`*`) to declare a "family" of module names;
-this way, a declaration is only required once for an extension, and not for every resource.
+TypeScript 2.0支持使用通配符符号（`*`）定义一类模块名称。这种方式，一个声明只需要一次扩展名，而不再是每一个资源。
 
-##### Example
+#### 示例
 
 ```ts
 declare module "*!text" {
-  const content: string;
-  export default content;
+    const content: string;
+    export default content;
 }
 // Some do it the other way around.
 declare module "json!*" {
-  const value: any;
-  export default value;
+    const value: any;
+    export default value;
 }
 ```
 
-Now you can import things that match `"*!text"` or `"json!*"`.
+现在你可以导入匹配`"*!text"`或`"json!*"`的东西了。
 
 ```ts
 import fileContent from "./xyz.txt!text";
@@ -655,290 +628,254 @@ import data from "json!http://example.com/data.json";
 console.log(data, fileContent);
 ```
 
-Wildcard module names can be even more useful when migrating from an un-typed code base.
-Combined with Shorthand ambient module declarations, a set of modules can be easily declared as `any`.
+当从一个基于非类型化的代码迁移时，通配符模块的名称可能更加有用。结合快捷外部模块声明，一组模块可以很容易地声明为`any`。
 
-##### Example
+#### 示例
 
 ```ts
 declare module "myLibrary/*";
 ```
 
-All imports to any module under `myLibrary` would be considered to have the type `any` by the compiler;
-thus, shutting down any checking on the shapes or types of these modules.
+所有位于`myLibrary`目录之下的模块的导入都被编译器认为是`any`类型，因此这些模块的任何类型检查都会被关闭。
 
 ```ts
 import { readFile } from "myLibrary/fileSystem/readFile`;
 
-readFile(); // readFile is 'any'
+readFile(); // readFile是'any'类型
 ```
 
-## Support for UMD module definitions
+## 支持UMD模块定义
 
-Some libraries are designed to be used in many module loaders, or with no module loading (global variables).
-These are known as [UMD](https://github.com/umdjs/umd) or [Isomorphic](http://isomorphic.net) modules.
-These libraries can be accessed through either an import or a global variable.
+一些库被设计为可以使用多种模块加载器或者不是使用模块加载器（全局变量）来使用，这被称为[UMD](https://github.com/umdjs/umd)或[同构](http://isomorphic.net/)模块。这些库可以通过导入或全局变量访问。
 
-For example:
+举例：
 
-##### math-lib.d.ts
+**math-lib.d.ts**
 
 ```ts
 export const isPrime(x: number): boolean;
 export as namespace mathLib;
 ```
 
-The library can then be used as an import within modules:
+然后，该库可作为模块导入使用：
 
 ```ts
 import { isPrime } from "math-lib";
 isPrime(2);
-mathLib.isPrime(2); // ERROR: can't use the global definition from inside a module
+mathLib.isPrime(2); // 错误：无法在模块内部使用全局定义
 ```
 
-It can also be used as a global variable, but only inside of a script.
-(A script is a file with no imports or exports.)
+它也可以被用来作为一个全局变量，只限于没有`import`和`export`脚本文件中。
 
 ```ts
 mathLib.isPrime(2);
 ```
 
-## Optional class properties
+## 可选类属性
 
-Optional properties and methods can now be declared in classes, similar to what is already permitted in interfaces.
+现在可以在类中声明可选属性和方法，与接口类似。
 
-##### Example
+#### 示例
 
 ```ts
 class Bar {
-  a: number;
-  b?: number;
-  f() {
-    return 1;
-  }
-  g?(): number; // Body of optional method can be omitted
-  h?() {
-    return 2;
-  }
+    a: number;
+    b?: number;
+    f() {
+        return 1;
+    }
+    g?(): number;  // 可选方法的方法体可以省略
+    h?() {
+        return 2;
+    }
 }
 ```
 
-When compiled in [`strictNullChecks`](/tsconfig#strictNullChecks) mode, optional properties and methods automatically have `undefined` included in their type. Thus, the `b` property above is of type `number | undefined` and the `g` method above is of type `(() => number) | undefined`.
-Type guards can be used to strip away the `undefined` part of the type:
+在`--strictNullChecks`模式下编译时，可选属性和方法会自动添加`undefined`到它们的类型中。因此，上面的`b`属性类型是`number | undefined`，上面`g`方法的类型是`(()=> number) | undefined`。使用类型保护可以去除`undefined`。
 
-```ts
-function test(x: Bar) {
-  x.a; // number
-  x.b; // number | undefined
-  x.f; // () => number
-  x.g; // (() => number) | undefined
-  let f1 = x.f(); // number
-  let g1 = x.g && x.g(); // number | undefined
-  let g2 = x.g ? x.g() : 0; // number
-}
-```
+## 私有的和受保护的构造函数
 
-## Private and Protected Constructors
+类的构造函数可以被标记为`private`或`protected`。私有构造函数的类不能在类的外部实例化，并且也不能被继承。受保护构造函数的类不能再类的外部实例化，但是可以被继承。
 
-A class constructor may be marked `private` or `protected`.
-A class with private constructor cannot be instantiated outside the class body, and cannot be extended.
-A class with protected constructor cannot be instantiated outside the class body, but can be extended.
-
-##### Example
+#### 示例
 
 ```ts
 class Singleton {
-  private static instance: Singleton;
+    private static instance: Singleton;
 
-  private constructor() {}
+    private constructor() { }
 
-  static getInstance() {
-    if (!Singleton.instance) {
-      Singleton.instance = new Singleton();
+    static getInstance() {
+        if (!Singleton.instance) {
+            Singleton.instance = new Singleton();
+        }
+        return Singleton.instance;
     }
-    return Singleton.instance;
-  }
 }
 
-let e = new Singleton(); // Error: constructor of 'Singleton' is private.
+let e = new Singleton(); // 错误：Singleton的构造函数是私有的。
 let v = Singleton.getInstance();
 ```
 
-## Abstract properties and accessors
+## 抽象属性和访问器
 
-An abstract class can declare abstract properties and/or accessors.
-Any sub class will need to declare the abstract properties or be marked as abstract.
-Abstract properties cannot have an initializer.
-Abstract accessors cannot have bodies.
+抽象类可以声明抽象属性和、或访问器。所有子类将需要声明抽象属性或者被标记为抽象的。抽象属性不能初始化。抽象访问器不能有具体代码块。
 
-##### Example
+#### 示例
 
 ```ts
 abstract class Base {
-  abstract name: string;
-  abstract get value();
-  abstract set value(v: number);
+    abstract name: string;
+    abstract get value();
+    abstract set value(v: number);
 }
 
 class Derived extends Base {
-  name = "derived";
+    name = "derived";
 
-  value = 1;
+    value = 1;
 }
 ```
 
-## Implicit index signatures
+## 隐式索引签名
 
-An object literal type is now assignable to a type with an index signature if all known properties in the object literal are assignable to that index signature. This makes it possible to pass a variable that was initialized with an object literal as parameter to a function that expects a map or dictionary:
+如果对象字面量中所有已知的属性是赋值给索引签名，那么现在对象字面量类型可以赋值给索引签名类型。这使得一个使用对象字面量初始化的变量作为参数传递给期望参数是map或dictionary的函数成为可能：
 
 ```ts
-function httpService(path: string, headers: { [x: string]: string }) {}
+function httpService(path: string, headers: { [x: string]: string }) { }
 
 const headers = {
-  "Content-Type": "application/x-www-form-urlencoded",
+    "Content-Type": "application/x-www-form-urlencoded"
 };
 
-httpService("", { "Content-Type": "application/x-www-form-urlencoded" }); // Ok
-httpService("", headers); // Now ok, previously wasn't
+httpService("", { "Content-Type": "application/x-www-form-urlencoded" });  // 可以
+httpService("", headers);  // 现在可以，以前不可以。
 ```
 
-## Including built-in type declarations with `--lib`
+## 使用`--lib`编译参数包含内置类型声明
 
-Getting to ES6/ES2015 built-in API declarations were only limited to `target: ES6`.
-Enter [`lib`](/tsconfig#lib); with [`lib`](/tsconfig#lib) you can specify a list of built-in API declaration groups that you can choose to include in your project.
-For instance, if you expect your runtime to have support for `Map`, `Set` and `Promise` (e.g. most evergreen browsers today), just include `--lib es2015.collection,es2015.promise`.
-Similarly you can exclude declarations you do not want to include in your project, e.g. DOM if you are working on a node project using `--lib es5,es6`.
+获取ES6/ES2015内置API声明仅限于`target: ES6`。输入`--lib`，你可以使用`--lib`指定一组项目所需要的内置API。比如说，如果你希望项目运行时支持`Map`、`Set`和`Promise`（例如现在静默更新浏览器），直接写`--lib es2015.collection,es2015.promise`就好了。同样，你也可以排除项目中不需要的声明，例如在node项目中使用`--lib es5,es6`排除DOM。
 
-Here is a list of available API groups:
+下面是列出了可用的API：
 
-- dom
-- webworker
-- es5
-- es6 / es2015
-- es2015.core
-- es2015.collection
-- es2015.iterable
-- es2015.promise
-- es2015.proxy
-- es2015.reflect
-- es2015.generator
-- es2015.symbol
-- es2015.symbol.wellknown
-- es2016
-- es2016.array.include
-- es2017
-- es2017.object
-- es2017.sharedmemory
-- scripthost
+* dom
+* webworker
+* es5
+* es6 / es2015
+* es2015.core
+* es2015.collection
+* es2015.iterable
+* es2015.promise
+* es2015.proxy
+* es2015.reflect
+* es2015.generator
+* es2015.symbol
+* es2015.symbol.wellknown
+* es2016
+* es2016.array.include
+* es2017
+* es2017.object
+* es2017.sharedmemory
+* scripthost
 
-##### Example
+#### 示例
 
-```bash
+```text
 tsc --target es5 --lib es5,es2015.promise
 ```
 
-```json tsconfig
+```js
 "compilerOptions": {
     "lib": ["es5", "es2015.promise"]
 }
 ```
 
-## Flag unused declarations with `--noUnusedParameters` and `--noUnusedLocals`
+## 使用`--noUnusedParameters`和`--noUnusedLocals`标记未使用的声明
 
-TypeScript 2.0 has two new flags to help you maintain a clean code base.
-[`noUnusedParameters`](/tsconfig#noUnusedParameters) flags any unused function or method parameters errors.
-[`noUnusedLocals`](/tsconfig#noUnusedLocals) flags any unused local (un-exported) declaration like variables, functions, classes, imports, etc...
-Also, unused private members of a class would be flagged as errors under [`noUnusedLocals`](/tsconfig#noUnusedLocals).
+TypeScript 2.0有两个新的编译参数来帮助你保持一个干净的代码库。`-noUnusedParameters`编译参数标记所有未使用的函数或方法的参数错误。`--noUnusedLocals`标记所有未使用的局部（未导出）声明像变量、函数、类和导入等等，另外未使用的私有类成员在`--noUnusedLocals`作用下也会标记为错误。
 
-##### Example
+#### 示例
 
 ```ts
 import B, { readFile } from "./b";
-//     ^ Error: `B` declared but never used
+//     ^ 错误：`B`声明了，但是没有使用。
 readFile();
 
+
 export function write(message: string, args: string[]) {
-  //                                 ^^^^  Error: 'arg' declared but never used.
-  console.log(message);
+    //                                 ^^^^  错误：'arg'声明了，但是没有使用。
+    console.log(message);
 }
 ```
 
-Parameters declaration with names starting with `_` are exempt from the unused parameter checking.
-e.g.:
+使用以`_`开头命名的参数声明不会被未使用参数检查。例如：
 
 ```ts
-function returnNull(_a) {
-  // OK
-  return null;
+function returnNull(_a) { // 正确
+    return null;
 }
 ```
 
-## Module identifiers allow for `.js` extension
+## 模块名称允许`.js`扩展名
 
-Before TypeScript 2.0, a module identifier was always assumed to be extension-less;
-for instance, given an import as `import d from "./moduleA.js"`, the compiler looked up the definition of `"moduleA.js"` in `./moduleA.js.ts` or `./moduleA.js.d.ts`.
-This made it hard to use bundling/loading tools like [SystemJS](https://github.com/systemjs/systemjs) that expect URI's in their module identifier.
+TypeScript 2.0之前，模块名称总是被认为是没有扩展名的。例如，导入一个模块`import d from "./moduleA.js"`，则编译器在`./moduleA.js.ts`或`./moduleA.js.d.ts`中查找`"moduleA.js"`的定义。这使得像[SystemJS](https://github.com/systemjs/systemjs)这种期望模块名称是URI的打包或加载工具很难使用。
 
-With TypeScript 2.0, the compiler will look up definition of `"moduleA.js"` in `./moduleA.ts` or `./moduleA.d.t`.
+使用TypeScript 2.0，编译器将在`./moduleA.ts`或`./moduleA.d.ts`中查找`"moduleA.js"`的定义。
 
-## Support 'target : es5' with 'module: es6'
+## 支持编译参数`target : es5`和`module: es6`同时使用
 
-Previously flagged as an invalid flag combination, `target: es5` and 'module: es6' is now supported.
-This should facilitate using ES2015-based tree shakers like [rollup](https://github.com/rollup/rollup).
+之前编译参数`target : es5`和`module: es6`同时使用被认为是无效的，但是现在是有效的。这将有助于使用基于ES2015的tree-shaking（将无用代码移除）比如[rollup](https://github.com/rollup/rollup)。
 
-## Trailing commas in function parameter and argument lists
+## 函数形参和实参列表末尾支持逗号
 
-Trailing comma in function parameter and argument lists are now allowed.
-This is an implementation for a [Stage-3 ECMAScript proposal](https://jeffmo.github.io/es-trailing-function-commas/) that emits down to valid ES3/ES5/ES6.
+现在函数形参和实参列表末尾允许有逗号。这是对[第三阶段的ECMAScript提案](https://jeffmo.github.io/es-trailing-function-commas/)的实现, 并且会编译为可用的 ES3/ES5/ES6。
 
-##### Example
+#### 示例
 
 ```ts
 function foo(
   bar: Bar,
-  baz: Baz // trailing commas are OK in parameter lists
+  baz: Baz, // 形参列表末尾添加逗号是没有问题的。
 ) {
-  // Implementation...
+  // 具体实现……
 }
 
 foo(
   bar,
-  baz // and in argument lists
+  baz, // 实参列表末尾添加逗号同样没有问题
 );
 ```
 
-## New `--skipLibCheck`
+## 新编译参数`--skipLibCheck`
 
-TypeScript 2.0 adds a new [`skipLibCheck`](/tsconfig#skipLibCheck) compiler option that causes type checking of declaration files (files with extension `.d.ts`) to be skipped.
-When a program includes large declaration files, the compiler spends a lot of time type checking declarations that are already known to not contain errors, and compile times may be significantly shortened by skipping declaration file type checks.
+TypeScript 2.0添加了一个新的编译参数`--skipLibCheck`，该参数可以跳过声明文件（以`.d.ts`为扩展名的文件）的类型检查。当一个程序包含有大量的声明文件时，编译器需要花费大量时间对已知不包含错误的声明进行类型检查，通过跳过声明文件的类型检查，编译时间可能会大大缩短。
 
-Since declarations in one file can affect type checking in other files, some errors may not be detected when [`skipLibCheck`](/tsconfig#skipLibCheck) is specified.
-For example, if a non-declaration file augments a type declared in a declaration file, errors may result that are only reported when the declaration file is checked.
-However, in practice such situations are rare.
+由于一个文件中的声明可以影响其他文件中的类型检查，当指定`--skipLibCheck`时，一些错误可能检测不到。比如说, 如果一个非声明文件中的类型被声明文件用到, 可能仅在声明文件被检查时能发现错误. 不过这种情况在实际使用中并不常见。
 
-## Allow duplicate identifiers across declarations
+## 允许在声明中重复标识符
 
-This has been one common source of duplicate definition errors.
-Multiple declaration files defining the same members on interfaces.
+这是重复定义错误的一个常见来源。多个声明文件定义相同的接口成员。
 
-TypeScript 2.0 relaxes this constraint and allows duplicate identifiers across blocks, as long as they have _identical_ types.
+TypeScript 2.0放宽了这一约束，并允许可以不同代码块中出现重复的标识符, 只要它们有_完全相同_的类型。
 
-Within the same block duplicate definitions are still disallowed.
+在同一代码块重复定义仍不允许。
 
-##### Example
+#### 示例
 
 ```ts
 interface Error {
-  stack?: string;
+    stack?: string;
 }
 
+
 interface Error {
-  code?: string;
-  path?: string;
-  stack?: string; // OK
+    code?: string;
+    path?: string;
+    stack?: string;  // OK
 }
 ```
 
-## New `--declarationDir`
+## 新编译参数`--declarationDir`
 
-[`declarationDir`](/tsconfig#declarationDir) allows for generating declaration files in a different location than JavaScript files.
+`--declarationDir`可以使生成的声明文件和JavaScript文件不在同一个位置中。
+

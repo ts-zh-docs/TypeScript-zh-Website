@@ -5,43 +5,38 @@ permalink: /zh/docs/handbook/release-notes/typescript-2-5.html
 oneline: TypeScript 2.5 Release Notes
 ---
 
-## Optional `catch` clause variables
+## 可选的`catch`语句变量
 
-Thanks to work done by [@tinganho](https://github.com/tinganho), TypeScript 2.5 implements a new ECMAScript feature that allows users to omit the variable in `catch` clauses.
-For example, when using `JSON.parse` you may need to wrap calls to the function with a `try`/`catch`, but you may not end up using the `SyntaxError` that gets thrown when input is erroneous.
+得益于[@tinganho](https://github.com/tinganho)所做的工作，TypeScript 2.5实现了一个新的ECMAScript特性，允许用户省略`catch`语句中的变量。 例如，当使用`JSON.parse`时，你可能需要将对应的函数调用放在`try` / `catch`中，但是最后可能并不会用到输入有误时会抛出的`SyntaxError`（语法错误）。
 
 ```ts
 let input = "...";
 try {
-  JSON.parse(input);
-} catch {
-  // ^ Notice that our `catch` clause doesn't declare a variable.
-  console.log("Invalid JSON given\n\n" + input);
+    JSON.parse(input);
+}
+catch {
+    // ^ 注意我们的 `catch` 语句并没有声明一个变量
+    console.log("传入的 JSON 不合法\n\n" + input)
 }
 ```
 
-## Type assertion/cast syntax in `checkJs`/`@ts-check` mode
+## `checkJs`/`@ts-check` 模式中的类型断言/转换语法
 
-TypeScript 2.5 introduces the ability to [assert the type of expressions when using plain JavaScript in your projects](https://github.com/Microsoft/TypeScript/issues/5158).
-The syntax is an `/** @type {...} */` annotation comment followed by a parenthesized expression whose type needs to be re-evaluated.
-For example:
+TypeScript 2.5 引入了在[使用纯 JavaScript 的项目中断言表达式类型](https://github.com/Microsoft/TypeScript/issues/5158)的能力。对应的语法是`/** @type {...} */`标注注释后加上被圆括号括起来，类型需要被重新演算的表达式。举例:
 
 ```ts
-var x = /** @type {SomeType} */ AnyParenthesizedExpression;
+var x = /** @type {SomeType} */ (AnyParenthesizedExpression);
 ```
 
-## Deduplicated and redirected packages
+## 包去重和重定向
 
-When importing using the `Node` module resolution strategy in TypeScript 2.5, the compiler will now check whether files originate from "identical" packages.
-If a file originates from a package with a `package.json` containing the same `name` and `version` fields as a previously encountered package, then TypeScript will redirect itself to the top-most package.
-This helps resolve problems where two packages might contain identical declarations of classes, but which contain `private` members that cause them to be structurally incompatible.
+在 TypeScript 2.5 中使用`Node`模块解析策略进行导入时，编译器现在会检查文件是否来自 "相同" 的包。如果一个文件所在的包的`package.json`包含了与之前读取的包相同的`name`和`version`，那么TypeScript会将它重定向到最顶层的包。这可以解决两个包可能会包含相同的类声明，但因为包含`private`成员导致他们在结构上不兼容的问题.
 
-As a nice bonus, this can also reduce the memory and runtime footprint of the compiler and language service by avoiding loading `.d.ts` files from duplicate packages.
+这也带来一个额外的好处，可以通过避免从重复的包中加载`.d.ts`文件减少内存使用和编译器及语言服务的运行时计算.
 
-## The `--preserveSymlinks` compiler flag
+## `--preserveSymlinks`（保留符号链接）编译器选项
 
-TypeScript 2.5 brings the [`preserveSymlinks`](/tsconfig#preserveSymlinks) flag, which parallels the behavior of [the `--preserve-symlinks` flag in Node.js](https://nodejs.org/api/cli.html#cli_preserve_symlinks).
-This flag also exhibits the opposite behavior to Webpack's `resolve.symlinks` option (i.e. setting TypeScript's [`preserveSymlinks`](/tsconfig#preserveSymlinks) to `true` parallels setting Webpack's `resolve.symlinks` to `false`, and vice-versa).
+TypeScript 2.5带来了`preserveSymlinks`选项，它对应了[Node.js 中 `--preserve-symlinks`选项](https://nodejs.org/api/cli.html#cli_preserve_symlinks)的行为。这一选项也会带来和Webpack的`resolve.symlinks`选项相反的行为（也就是说，将TypeScript的`preserveSymlinks`选项设置为`true`对应了将Webpack的`resolve.symlinks`选项设为`false`，反之亦然）。
 
-In this mode, references to modules and packages (e.g. `import`s and `/// <reference type="..." />` directives) are all resolved relative to the location of the symbolic link file, rather than relative to the path that the symbolic link resolves to.
-For a more concrete example, we'll defer to [the documentation on the Node.js website](https://nodejs.org/api/cli.html#cli_preserve_symlinks).
+在这一模式中，对于模块和包的引用（比如`import`语句和`/// <reference type=".." />`指令）都会以相对符号链接文件的位置被解析，而不是相对于符号链接解析到的路径。更具体的例子，可以参考[Node.js网站的文档](https://nodejs.org/api/cli.html#cli_preserve_symlinks)。
+

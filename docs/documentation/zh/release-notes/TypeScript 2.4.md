@@ -5,112 +5,104 @@ permalink: /zh/docs/handbook/release-notes/typescript-2-4.html
 oneline: TypeScript 2.4 Release Notes
 ---
 
-## Dynamic Import Expressions
+## 动态导入表达式
 
-Dynamic `import` expressions are a new feature and part of ECMAScript that allows users to asynchronously request a module at any arbitrary point in your program.
+动态的`import`表达式是一个新特性，它属于ECMAScript的一部分，允许用户在程序的任何位置异步地请求某个模块。
 
-This means that you can conditionally and lazily import other modules and libraries.
-For example, here's an `async` function that only imports a utility library when it's needed:
+这意味着你可以有条件地延迟加载其它模块和库。 例如下面这个`async`函数，它仅在需要的时候才导入工具库：
 
 ```ts
 async function getZipFile(name: string, files: File[]): Promise<File> {
-  const zipUtil = await import("./utils/create-zip-file");
-  const zipContents = await zipUtil.getContentAsBlob(files);
-  return new File(zipContents, name);
+    const zipUtil = await import('./utils/create-zip-file');
+    const zipContents = await zipUtil.getContentAsBlob(files);
+    return new File(zipContents, name);
 }
 ```
 
-Many bundlers have support for automatically splitting output bundles based on these `import` expressions, so consider using this new feature with the `esnext` module target.
+许多bundlers工具已经支持依照这些`import`表达式自动地分割输出，因此可以考虑使用这个新特性并把输出模块目标设置为`esnext`。
 
-## String Enums
+## 字符串枚举
 
-TypeScript 2.4 now allows enum members to contain string initializers.
+TypeScript 2.4现在支持枚举成员变量包含字符串构造器。
 
 ```ts
 enum Colors {
-  Red = "RED",
-  Green = "GREEN",
-  Blue = "BLUE"
+    Red = "RED",
+    Green = "GREEN",
+    Blue = "BLUE",
 }
 ```
 
-The caveat is that string-initialized enums can't be reverse-mapped to get the original enum member name.
-In other words, you can't write `Colors["RED"]` to get the string `"Red"`.
+需要注意的是字符串枚举成员不能被反向映射到枚举成员的名字。 换句话说，你不能使用`Colors["RED"]`来得到`"Red"`。
 
-## Improved inference for generics
+## 增强的泛型推断
 
-TypeScript 2.4 introduces a few wonderful changes around the way generics are inferred.
+TypeScript 2.4围绕着泛型的推断方式引入了一些很棒的改变。
 
-### Return types as inference targets
+### 返回类型作为推断目标
 
-For one, TypeScript can now make inferences for the return type of a call.
-This can improve your experience and catch errors.
-Something that now works:
+其一，TypeScript能够推断调用的返回值类型。 这可以优化你的体验和方便捕获错误。 如下所示：
 
 ```ts
 function arrayMap<T, U>(f: (x: T) => U): (a: T[]) => U[] {
-  return a => a.map(f);
+    return a => a.map(f);
 }
 
 const lengths: (a: string[]) => number[] = arrayMap(s => s.length);
 ```
 
-As an example of new errors you might spot as a result:
+下面是一个你可能会见到的出错了的例子：
 
 ```ts
 let x: Promise<string> = new Promise(resolve => {
-  resolve(10);
-  //      ~~ Error!
+    resolve(10);
+    //      ~~ Error!
 });
 ```
 
-### Type parameter inference from contextual types
+### 从上下文类型中推断类型参数
 
-Prior to TypeScript 2.4, in the following example
+在TypeScript 2.4之前，在下面的例子里：
 
 ```ts
 let f: <T>(x: T) => T = y => y;
 ```
 
-`y` would have the type `any`.
-This meant the program would type-check, but you could technically do anything with `y`, such as the following:
+`y`将会具有`any`类型。 这意味着虽然程序会检查类型，但是你却可以使用`y`做任何事情，就比如：
 
 ```ts
 let f: <T>(x: T) => T = y => y() + y.foo.bar;
 ```
 
-That last example isn't actually type-safe.
+这个例子实际上并不是类型安全的。
 
-In TypeScript 2.4, the function on the right side implicitly _gains_ type parameters, and `y` is inferred to have the type of that type-parameter.
+在TypeScript 2.4里，右手边的函数会隐式地获得类型参数，并且`y`的类型会被推断为那个类型参数的类型。
 
-If you use `y` in a way that the type parameter's constraint doesn't support, you'll correctly get an error.
-In this case, the constraint of `T` was (implicitly) `{}`, so the last example will appropriately fail.
+如果你使用`y`的方式是这个类型参数所不支持的，那么你会得到一个错误。 在这个例子里，`T`的约束是`{}`（隐式地），所以在最后一个例子里会出错。
 
-### Stricter checking for generic functions
+### 对泛型函数进行更严格的检查
 
-TypeScript now tries to unify type parameters when comparing two single-signature types.
-As a result, you'll get stricter checks when relating two generic signatures, and may catch some bugs.
+TypeScript在比较两个单一签名的类型时会尝试统一类型参数。 因此，在涉及到两个泛型签名的时候会进行更严格的检查，这就可能发现一些bugs。
 
 ```ts
 type A = <T, U>(x: T, y: U) => [T, U];
 type B = <S>(x: S, y: S) => [S, S];
 
 function f(a: A, b: B) {
-  a = b; // Error
-  b = a; // Ok
+    a = b;  // Error
+    b = a;  // Ok
 }
 ```
 
-## Strict contravariance for callback parameters
+## 回调参数的严格抗变
 
-TypeScript has always compared parameters in a bivariant way.
-There are a number of reasons for this, but by-and-large this was not been a huge issue for our users until we saw some of the adverse effects it had with `Promise`s and `Observable`s.
+TypeScript一直是以双变（bivariant）的方式来比较参数。 这样做有很多原因，总体上来说这不会有什么大问题直到我们发现它应用在`Promise`和`Observable`上时有些副作用。
 
-TypeScript 2.4 introduces tightens this up when relating two callback types. For example:
+TypeScript 2.4在处理两个回调类型时引入了收紧机制。例如：
 
 ```ts
 interface Mappable<T> {
-  map<U>(f: (x: T) => U): Mappable<U>;
+    map<U>(f: (x: T) => U): Mappable<U>;
 }
 
 declare let a: Mappable<number>;
@@ -120,51 +112,45 @@ a = b;
 b = a;
 ```
 
-Prior to TypeScript 2.4, this example would succeed.
-When relating the types of `map`, TypeScript would bidirectionally relate their parameters (i.e. the type of `f`).
-When relating each `f`, TypeScript would also bidirectionally relate the type of _those_ parameters.
+在TypeScript 2.4之前，它会成功执行。 当关联`map`的类型时，TypeScript会双向地关联它们的类型（例如`f`的类型）。 当关联每个`f`的类型时，TypeScript也会双向地关联那些参数的类型。
 
-When relating the type of `map` in TS 2.4, the language will check whether each parameter is a callback type, and if so, it will ensure that those parameters are checked in a contravariant manner with respect to the current relation.
+TS 2.4里关联`map`的类型时，TypeScript会检查是否每个参数都是回调类型，如果是的话，它会确保那些参数根据它所在的位置以抗变（contravariant）地方式进行检查。
 
-In other words, TypeScript now catches the above bug, which may be a breaking change for some users, but will largely be helpful.
+换句话说，TypeScript现在可以捕获上面的bug，这对某些用户来说可能是一个破坏性改动，但却是非常帮助的。
 
-## Weak Type Detection
+## 弱类型（Weak Type）探测
 
-TypeScript 2.4 introduces the concept of "weak types".
-Any type that contains nothing but a set of all-optional properties is considered to be _weak_.
-For example, this `Options` type is a weak type:
+TypeScript 2.4引入了“弱类型”的概念。 任何只包含了可选属性的类型被当作是“weak”。 比如，下面的`Options`类型是弱类型：
 
 ```ts
 interface Options {
-  data?: string;
-  timeout?: number;
-  maxRetries?: number;
+    data?: string,
+    timeout?: number,
+    maxRetries?: number,
 }
 ```
 
-In TypeScript 2.4, it's now an error to assign anything to a weak type when there's no overlap in properties.
-For example:
+在TypeScript 2.4里给弱类型赋值时，如果这个值的属性与弱类型的属性没有任何重叠属性时会得到一个错误。 比如：
 
 ```ts
 function sendMessage(options: Options) {
-  // ...
+    // ...
 }
 
 const opts = {
-  payload: "hello world!",
-  retryOnFail: true
-};
+    payload: "hello world!",
+    retryOnFail: true,
+}
 
-// Error!
+// 错误!
 sendMessage(opts);
-// No overlap between the type of 'opts' and 'Options' itself.
-// Maybe we meant to use 'data'/'maxRetries' instead of 'payload'/'retryOnFail'.
+// 'opts' 和 'Options' 没有重叠的属性
+// 可能我们想要用'data'/'maxRetries'来代替'payload'/'retryOnFail'
 ```
 
-You can think of this as TypeScript "toughening up" the weak guarantees of these types to catch what would otherwise be silent bugs.
+因为这是一个破坏性改动，你可能想要知道一些解决方法：
 
-Since this is a breaking change, you may need to know about the workarounds which are the same as those for strict object literal checks:
+1. 确定属性存在时再声明
+2. 给弱类型增加索引签名（比如 `[propName: string]: {}`）
+3. 使用类型断言（比如`opts as Options`）
 
-1. Declare the properties if they really do exist.
-2. Add an index signature to the weak type (i.e. `[propName: string]: {}`).
-3. Use a type assertion (i.e. `opts as Options`).
