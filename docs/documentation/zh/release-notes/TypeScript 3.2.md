@@ -1,114 +1,111 @@
 ---
 title: TypeScript 3.2
 layout: docs
-permalink: /zh/docs/handbook/release-notes/typescript-3-2.html
+permalink: /docs/handbook/release-notes/typescript-3-2.html
 oneline: TypeScript 3.2 Release Notes
 ---
 
 ## `strictBindCallApply`
 
-TypeScript 3.2 introduces a new [`strictBindCallApply`](/tsconfig#strictBindCallApply) compiler option (in the [`strict`](/tsconfig#strict) family of options) with which the `bind`, `call`, and `apply` methods on function objects are strongly typed and strictly checked.
+TypeScript 3.2引入了一个新的`--strictBindCallApply`编译选项（是`--strict`选项家族之一）。在使用了此选项后，函数对象上的`bind`，`call`和`apply`方法将应用强类型并进行严格的类型检查。
 
-```ts
+```typescript
 function foo(a: number, b: string): string {
-  return a + b;
+    return a + b;
 }
 
-let a = foo.apply(undefined, [10]); // error: too few arguments
-let b = foo.apply(undefined, [10, 20]); // error: 2nd argument is a number
+let a = foo.apply(undefined, [10]);              // error: too few argumnts
+let b = foo.apply(undefined, [10, 20]);          // error: 2nd argument is a number
 let c = foo.apply(undefined, [10, "hello", 30]); // error: too many arguments
-let d = foo.apply(undefined, [10, "hello"]); // okay! returns a string
+let d = foo.apply(undefined, [10, "hello"]);     // okay! returns a string
 ```
 
-This is achieved by introducing two new types, `CallableFunction` and `NewableFunction`, in `lib.d.ts`. These types contain specialized generic method declarations for `bind`, `call`, and `apply` for regular functions and constructor functions, respectively. The declarations use generic rest parameters (see #24897) to capture and reflect parameter lists in a strongly typed manner. In [`strictBindCallApply`](/tsconfig#strictBindCallApply) mode these declarations are used in place of the (very permissive) declarations provided by type `Function`.
+它的实现是通过引入了两种新类型来完成的，即`lib.d.ts`里的`CallableFunction`和`NewableFunction`。这些类型包含了针对常规函数和构造函数上`bind`、`call`和`apply`的泛型方法声明。这些声明使用了泛型剩余参数来捕获和反射参数列表，使之具有强类型。在`--strictBindCallApply`模式下，这些声明作用在`Function`类型声明出现的位置。
 
-## Caveats
+### 警告
 
-Since the stricter checks may uncover previously unreported errors, this is a breaking change in [`strict`](/tsconfig#strict) mode.
+由于更严格的检查可能暴露之前没发现的错误，因此这是`--strict`模式下的一个破坏性改动。
 
-Additionally, [another caveat](https://github.com/Microsoft/TypeScript/pull/27028#issuecomment-429334450) of this new functionality is that due to certain limitations, `bind`, `call`, and `apply` can't yet fully model generic functions or functions that have overloads.
-When using these methods on a generic function, type parameters will be substituted with the empty object type (`{}`), and when used on a function with overloads, only the last overload will ever be modeled.
+此外，这个新功能还有[另一个警告](https://github.com/Microsoft/TypeScript/pull/27028#issuecomment-429334450)。由于有这些限制，`bind`、`call`和`apply`无法为重载的泛型函数或重载的函数进行完整地建模。 当在泛型函数上使用这些方法时，类型参数会被替换为空对象类型（`{}`），并且若在有重载的函数上使用这些方法时，只有最后一个重载会被建模。
 
-## Generic spread expressions in object literals
+## 对象字面量的泛型展开表达式
 
-In TypeScript 3.2, object literals now allow generic spread expressions which now produce intersection types, similar to the `Object.assign` function and JSX literals. For example:
+TypeScript 3.2开始，对象字面量允许泛型展开表达式，它产生交叉类型，和`Object.assign`函数或JSX字面量类似。例如：
 
-```ts
+```typescript
 function taggedObject<T, U extends string>(obj: T, tag: U) {
-  return { ...obj, tag }; // T & { tag: U }
+    return { ...obj, tag };  // T & { tag: U }
 }
 
-let x = taggedObject({ x: 10, y: 20 }, "point"); // { x: number, y: number } & { tag: "point" }
+let x = taggedObject({ x: 10, y: 20 }, "point");  // { x: number, y: number } & { tag: "point" }
 ```
 
-Property assignments and non-generic spread expressions are merged to the greatest extent possible on either side of a generic spread expression. For example:
+属性赋值和非泛型展开表达式会最大程度地合并到泛型展开表达式的一侧。例如：
 
-```ts
+```typescript
 function foo1<T>(t: T, obj1: { a: string }, obj2: { b: string }) {
-  return { ...obj1, x: 1, ...t, ...obj2, y: 2 }; // { a: string, x: number } & T & { b: string, y: number }
+    return { ...obj1, x: 1, ...t, ...obj2, y: 2 };  // { a: string, x: number } & T & { b: string, y: number }
 }
 ```
 
-Non-generic spread expressions continue to be processed as before: Call and construct signatures are stripped, only non-method properties are preserved, and for properties with the same name, the type of the rightmost property is used. This contrasts with intersection types which concatenate call and construct signatures, preserve all properties, and intersect the types of properties with the same name. Thus, spreads of the same types may produce different results when they are created through instantiation of generic types:
+非泛型展开表达式与之前的行为相同：函数调用签名和构造签名被移除，仅有非方法的属性被保留，针对同名属性则只有出现在最右侧的会被使用。它与交叉类型不同，交叉类型会连接调用签名和构造签名，保留所有的属性，合并同名属性的类型。因此，当展开使用泛型初始化的相同类型时可能会产生不同的结果：
 
-```ts
+```typescript
 function spread<T, U>(t: T, u: U) {
-  return { ...t, ...u }; // T & U
+    return { ...t, ...u };  // T & U
 }
 
-declare let x: { a: string; b: number };
-declare let y: { b: string; c: boolean };
+declare let x: { a: string, b: number };
+declare let y: { b: string, c: boolean };
 
-let s1 = { ...x, ...y }; // { a: string, b: string, c: boolean }
-let s2 = spread(x, y); // { a: string, b: number } & { b: string, c: boolean }
-let b1 = s1.b; // string
-let b2 = s2.b; // number & string
+let s1 = { ...x, ...y };  // { a: string, b: string, c: boolean }
+let s2 = spread(x, y);    // { a: string, b: number } & { b: string, c: boolean }
+let b1 = s1.b;  // string
+let b2 = s2.b;  // number & string
 ```
 
-## Generic object rest variables and parameters
+## 泛型对象剩余变量和参数
 
-TypeScript 3.2 also allows destructuring a rest binding from a generic variable. This is achieved by using the predefined `Pick` and `Exclude` helper types from `lib.d.ts`, and using the generic type in question as well as the names of the other bindings in the destructuring pattern.
+TypeScript 3.2开始允许从泛型变量中解构剩余绑定。它是通过使用`lib.d.ts`里预定义的`Pick`和`Exclude`助手类型，并结合使用泛型类型和解构式里的其它绑定名实现的。
 
-```ts
+```typescript
 function excludeTag<T extends { tag: string }>(obj: T) {
-  let { tag, ...rest } = obj;
-  return rest; // Pick<T, Exclude<keyof T, "tag">>
+    let { tag, ...rest } = obj;
+    return rest;  // Pick<T, Exclude<keyof T, "tag">>
 }
 
 const taggedPoint = { x: 10, y: 20, tag: "point" };
-const point = excludeTag(taggedPoint); // { x: number, y: number }
+const point = excludeTag(taggedPoint);  // { x: number, y: number }
 ```
 
 ## BigInt
 
-BigInts are part of an upcoming proposal in ECMAScript that allow us to model theoretically arbitrarily large integers.
-TypeScript 3.2 brings type-checking for BigInts, as well as support for emitting BigInt literals when targeting `esnext`.
+BigInt里ECMAScript的一项提案，它在理论上允许我们建模任意大小的整数。 TypeScript 3.2可以为BigInit进行类型检查，并支持在目标为`esnext`时输出BigInit字面量。
 
-BigInt support in TypeScript introduces a new primitive type called the `bigint` (all lowercase).
-You can get a `bigint` by calling the `BigInt()` function or by writing out a BigInt literal by adding an `n` to the end of any integer numeric literal:
+为支持BigInt，TypeScript引入了一个新的原始类型`bigint`（全小写）。 可以通过调用`BigInt()`函数或书写BigInt字面量（在整型数字字面量末尾添加`n`）来获取`bigint`。
 
-```ts
+```typescript
 let foo: bigint = BigInt(100); // the BigInt function
-let bar: bigint = 100n; // a BigInt literal
+let bar: bigint = 100n;        // a BigInt literal
 
 // *Slaps roof of fibonacci function*
 // This bad boy returns ints that can get *so* big!
 function fibonacci(n: bigint) {
-  let result = 1n;
-  for (let last = 0n, i = 0n; i < n; i++) {
-    const current = result;
-    result += last;
-    last = current;
-  }
-  return result;
+    let result = 1n;
+    for (let last = 0n, i = 0n; i < n; i++) {
+        const current = result;
+        result += last;
+        last = current;
+    }
+    return result;
 }
 
-fibonacci(10000n);
+fibonacci(10000n)
 ```
 
-While you might imagine close interaction between `number` and `bigint`, the two are separate domains.
+尽管你可能会认为`number`和`bigint`能互换使用，但它们是不同的东西。
 
-```ts
+```typescript
 declare let foo: number;
 declare let bar: bigint;
 
@@ -116,96 +113,87 @@ foo = bar; // error: Type 'bigint' is not assignable to type 'number'.
 bar = foo; // error: Type 'number' is not assignable to type 'bigint'.
 ```
 
-As specified in ECMAScript, mixing `number`s and `bigint`s in arithmetic operations is an error.
-You'll have to explicitly convert values to `BigInt`s.
+ECMAScript里规定，在算术运算符里混合使用`number`和`bigint`是一个错误。 应该显式地将值转换为`BigInt`。
 
-```ts
-console.log(3.141592 * 10000n); // error
-console.log(3145 * 10n); // error
-console.log(BigInt(3145) * 10n); // okay!
+```typescript
+console.log(3.141592 * 10000n);     // error
+console.log(3145 * 10n);            // error
+console.log(BigInt(3145) * 10n);    // okay!
 ```
 
-Also important to note is that `bigint`s produce a new string when using the `typeof` operator: the string `"bigint"`.
-Thus, TypeScript correctly narrows using `typeof` as you'd expect.
+还有一点要注意的是，对`bigint`使用`typeof`操作符返回一个新的字符串：`"bigint"`。 因此，TypeScript能够正确地使用`typeof`细化类型。
 
-```ts
+```typescript
 function whatKindOfNumberIsIt(x: number | bigint) {
-  if (typeof x === "bigint") {
-    console.log("'x' is a bigint!");
-  } else {
-    console.log("'x' is a floating-point number");
-  }
+    if (typeof x === "bigint") {
+        console.log("'x' is a bigint!");
+    }
+    else {
+        console.log("'x' is a floating-point number");
+    }
 }
 ```
 
-We'd like to extend a huge thanks to [Caleb Sander](https://github.com/calebsander) for all the work on this feature.
-We're grateful for the contribution, and we're sure our users are too!
+感谢[Caleb Sander](https://github.com/calebsander)为实现此功能的付出。
 
-## Caveats
+### 警告
 
-As we mentioned, BigInt support is only available for the `esnext` target.
-It may not be obvious, but because BigInts have different behavior for mathematical operators like `+`, `-`, `*`, etc., providing functionality for older targets where the feature doesn't exist (like `es2017` and below) would involve rewriting each of these operations.
-TypeScript would need to dispatch to the correct behavior depending on the type, and so every addition, string concatenation, multiplication, etc. would involve a function call.
+BigInt仅在目标为`esnext`时才支持。 可能不是很明显的一点是，因为BigInts针对算术运算符`+`, `-`, `*`等具有不同的行为，为老旧版（如`es2017`及以下）提供此功能时意味着重写出现它们的每一个操作。 TypeScript需根据类型和涉及到的每一处加法，字符串拼接，乘法等产生正确的行为。
 
-For that reason, we have no immediate plans to provide downleveling support.
-On the bright side, Node 11 and newer versions of Chrome already support this feature, so you'll be able to use BigInts there when targeting `esnext`.
+因为这个原因，我们不会立即提供向下的支持。 好的一面是，Node 11和较新版本的Chrome已经支持了这个特性，因此你可以在目标为`esnext`时，使用BigInt。
 
-Certain targets may include a polyfill or BigInt-like runtime object.
-For those purposes you may want to add `esnext.bigint` to the [`lib`](/tsconfig#lib) setting in your compiler options.
+一些目标可能包含polyfill或类似BigInt的运行时对象。 基于这些考虑，你可能会想要添加`esnext.bigint`到`lib`编译选项里。
 
 ## Non-unit types as union discriminants
 
-TypeScript 3.2 makes narrowing easier by relaxing rules for what it considers a discriminant property.
-Common properties of unions are now considered discriminants as long as they contain _some_ singleton type (e.g. a string literal, `null`, or `undefined`), and they contain no generics.
+TypeScript 3.2放宽了作为判别式属性的限制，来让类型细化变得容易。 如果联合类型的共同属性包含了_某些_单体类型（如，字面符字面量，`null`或`undefined`）且不包含泛型，那么它就可以做为判别式。
 
-As a result, TypeScript 3.2 considers the `error` property in the following example to be a discriminant, whereas before it wouldn't since `Error` isn't a singleton type.
-Thanks to this, narrowing works correctly in the body of the `unwrap` function.
+因此，TypeScript 3.2认为下例中的`error`属性可以做为判别式。这在之前是不可以的，因为`Error`并非是一个单体类型。 那么，`unwrap`函数体里的类型细化就可以正确地工作了。
 
-```ts
-type Result<T> = { error: Error; data: null } | { error: null; data: T };
+```typescript
+type Result<T> =
+    | { error: Error; data: null }
+    | { error: null; data: T };
 
 function unwrap<T>(result: Result<T>) {
-  if (result.error) {
-    // Here 'error' is non-null
-    throw result.error;
-  }
+    if (result.error) {
+        // Here 'error' is non-null
+        throw result.error;
+    }
 
-  // Now 'data' is non-null
-  return result.data;
+    // Now 'data' is non-null
+    return result.data;
 }
 ```
 
-## `tsconfig.json` inheritance via Node.js packages
+## `tsconfig.json`可以通过Node.js包来继承
 
-TypeScript 3.2 now resolves `tsconfig.json`s from `node_modules`. When using a bare path for the `extends` field in `tsconfig.json`, TypeScript will dive into `node_modules` packages for us.
+TypeScript 3.2现在可以从`node_modules`里解析`tsconfig.json`。如果`tsconfig.json`文件里的`"extends"`设置为空，那么TypeScript会检测`node_modules`包。 When using a bare path for the `"extends"` field in `tsconfig.json`, TypeScript will dive into `node_modules` packages for us.
 
-```jsonc tsconfig
+```text
 {
-  "extends": "@my-team/tsconfig-base",
-  "include": ["./**/*"],
-  "compilerOptions": {
-    // Override certain options on a project-by-project basis.
-    "strictBindCallApply": false
-  }
+    "extends": "@my-team/tsconfig-base",
+    "include": ["./**/*"]
+    "compilerOptions": {
+        // Override certain options on a project-by-project basis.
+        "strictBindCallApply": false,
+    }
 }
 ```
 
-Here, TypeScript will climb up `node_modules` folders looking for a `@my-team/tsconfig-base` package. For each of those packages, TypeScript will first check whether `package.json` contains a `"tsconfig"` field, and if it does, TypeScript will try to load a configuration file from that field. If neither exists, TypeScript will try to read from a `tsconfig.json` at the root. This is similar to the lookup process for `.js` files in packages that Node uses, and the `.d.ts` lookup process that TypeScript already uses.
+这里，TypeScript会去`node_modules`目录里查找`@my-team/tsconfig-base`包。针对每一个包，TypeScript检查`package.json`里是否包含`"tsconfig"`字段，如果是，TypeScript会尝试从那里加载配置文件。如果两者都不存在，TypeScript尝试从根目录读取`tsconfig.json`。这与Nodejs查找`.js`文件或TypeScript查找`.d.ts`文件的已有过程类似。
 
-This feature can be extremely useful for bigger organizations, or projects with lots of distributed dependencies.
+这个特性对于大型组织或具有很多分布的依赖的工程特别有帮助。
 
 ## The new `--showConfig` flag
 
-`tsc`, the TypeScript compiler, supports a new flag called `--showConfig`.
-When running `tsc --showConfig`, TypeScript will calculate the effective `tsconfig.json` (after calculating options inherited from the `extends` field) and print that out.
-This can be useful for diagnosing configuration issues in general.
+`tsc`，TypeScript编译器，支持一个新的标记`--showConfig`。 运行`tsc --showConfig`时，TypeScript计算生效的`tsconfig.json`并打印（继承的配置也会计算在内）。 这对于调试诊断配置问题很有帮助。
 
-## `Object.defineProperty` declarations in JavaScript
+## JavaScript的`Object.defineProperty`声明
 
-When writing in JavaScript files (using [`allowJs`](/tsconfig#allowJs)), TypeScript now recognizes declarations that use `Object.defineProperty`.
-This means you'll get better completions, and stronger type-checking when enabling type-checking in JavaScript files (by turning on the [`checkJs`](/tsconfig#checkJs) option or adding a `// @ts-check` comment to the top of your file).
+在编写JavaScript文件时（使用`allowJs`），TypeScript能识别出使用`Object.defineProperty`声明。 也就是说会有更好的代码补全功能，和强类型检查，这需要在JavaScript文件里启用类型检查功能（打开`checkJs`选项或在文件顶端添加`// @ts-check`注释）。
 
-```js
+```javascript
 // @ts-check
 
 let obj = {};
@@ -222,3 +210,4 @@ obj.x = "world";
 //  error:
 //   Cannot assign to 'x' because it is a read-only property.
 ```
+

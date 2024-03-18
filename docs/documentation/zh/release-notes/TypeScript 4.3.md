@@ -1,187 +1,187 @@
 ---
 title: TypeScript 4.3
 layout: docs
-permalink: /zh/docs/handbook/release-notes/typescript-4-3.html
+permalink: /docs/handbook/release-notes/typescript-4-3.html
 oneline: TypeScript 4.3 Release Notes
 ---
 
-## Separate Write Types on Properties
+## 拆分属性的写入类型
 
-In JavaScript, it's pretty common for APIs to convert values that are passed in before storing them.
-This often happens with getters and setters too.
-For example, let's imagine we've got a class with a setter that always converts a value into a `number` before saving it in a private field.
+在 JavaScript 中，API 经常需要对传入的值进行转换，然后再保存。
+这种情况在 getter 和 setter 中也常出现。
+例如，在某个类中的一个 setter 总是需要将传入的值转换成 `number`，然后再保存到私有字段中。
 
-```js twoslash
+```js
 class Thing {
-  #size = 0;
+    #size = 0;
 
-  get size() {
-    return this.#size;
-  }
-  set size(value) {
-    let num = Number(value);
-
-    // Don't allow NaN and stuff.
-    if (!Number.isFinite(num)) {
-      this.#size = 0;
-      return;
+    get size() {
+        return this.#size;
     }
+    set size(value) {
+        let num = Number(value);
 
-    this.#size = num;
-  }
+        // Don't allow NaN and stuff.
+        if (!Number.isFinite(num)) {
+            this.#size = 0;
+            return;
+        }
+
+        this.#size = num;
+    }
 }
 ```
 
-How would we type this JavaScript code in TypeScript?
-Well, technically we don't have to do anything special here - TypeScript can look at this with no explicit types and can figure out that `size` is a number.
+我们该如何将这段 JavaScript 代码改写为 TypeScript 呢？
+从技术上讲，我们不必进行任何特殊处理 - TypeScript 能够识别出 `size` 是一个数字。
 
-The problem is that `size` allows you to assign more than just `number`s to it.
-We could get around this by saying that `size` has the type `unknown` or `any` like in this snippet:
+但问题在于 `size` 不仅仅是允许将 `number` 赋值给它。
+我们可以通过将 `size` 声明为 `unknown` 或 `any` 来解决这个问题：
 
 ```ts
 class Thing {
-  // ...
-  get size(): unknown {
-    return this.#size;
-  }
+    // ...
+    get size(): unknown {
+        return this.#size;
+    }
 }
 ```
 
-But that's no good - `unknown` forces people reading `size` to do a type assertion, and `any` won't catch any mistakes.
-If we really want to model APIs that convert values, previous versions of TypeScript forced us to pick between being precise (which makes reading values easier, and writing harder) and being permissive (which makes writing values easier, and reading harder).
+但这不太友好 - `unknown` 类型会强制在读取 `size` 值时进行类型断言，同时 `any` 类型也不会去捕获错误。
+如果我们真想要为转换值的 API 进行建模，那么之前版本的 TypeScript 会强制我们在准确性（读取容易，写入难）和自由度（写入方便，读取难）两者之间进行选择。
 
-That's why TypeScript 4.3 allows you to specify types for reading and writing to properties.
+这就是 TypeScript 4.3 允许分别为读取和写入属性值添加类型的原因。
 
-```ts twoslash
+```ts
 class Thing {
-  #size = 0;
+    #size = 0;
 
-  get size(): number {
-    return this.#size;
-  }
-
-  set size(value: string | number | boolean) {
-    let num = Number(value);
-
-    // Don't allow NaN and stuff.
-    if (!Number.isFinite(num)) {
-      this.#size = 0;
-      return;
+    get size(): number {
+        return this.#size;
     }
 
-    this.#size = num;
-  }
+    set size(value: string | number | boolean) {
+        let num = Number(value);
+
+        // Don't allow NaN and stuff.
+        if (!Number.isFinite(num)) {
+            this.#size = 0;
+            return;
+        }
+
+        this.#size = num;
+    }
 }
 ```
 
-In the above example, our `set` accessor takes a broader set of types (`string`s, `boolean`s, and `number`s), but our `get` accessor always guarantees it will be a `number`.
-Now we can finally assign other types to these properties with no errors!
+上例中，`set` 存取器使用了更广泛的类型种类（`string`、`boolean`和`number`），但 `get` 存取器保证它的值为`number`。
+现在，我们再给这类属性赋予其它类型的值就不会报错了！
 
-```ts twoslash
+```ts
 class Thing {
-  #size = 0;
+    #size = 0;
 
-  get size(): number {
-    return this.#size;
-  }
-
-  set size(value: string | number | boolean) {
-    let num = Number(value);
-
-    // Don't allow NaN and stuff.
-    if (!Number.isFinite(num)) {
-      this.#size = 0;
-      return;
+    get size(): number {
+        return this.#size;
     }
 
-    this.#size = num;
-  }
+    set size(value: string | number | boolean) {
+        let num = Number(value);
+
+        // Don't allow NaN and stuff.
+        if (!Number.isFinite(num)) {
+            this.#size = 0;
+            return;
+        }
+
+        this.#size = num;
+    }
 }
 // ---cut---
 let thing = new Thing();
 
-// Assigning other types to `thing.size` works!
-thing.size = "hello";
+// 可以给 `thing.size` 赋予其它类型的值！
+thing.size = 'hello';
 thing.size = true;
 thing.size = 42;
 
-// Reading `thing.size` always produces a number!
+// 读取 `thing.size` 总是返回数字！
 let mySize: number = thing.size;
 ```
 
-When considering how two properties with the same name relate to each other, TypeScript will only use the "reading" type (e.g. the type on the `get` accessor above).
-"Writing" types are only considered when directly writing to a property.
+当需要判定两个同名属性间的关系时，TypeScript 将只考虑“读取的”类型（比如，`get` 存取器上的类型）。
+而“写入”类型只在直接写入属性值时才会考虑。
 
-Keep in mind, this isn't a pattern that's limited to classes.
-You can write getters and setters with different types in object literals.
+注意，这个模式不仅作用于类。
+你也可以在对象字面量中为 getter 和 setter 指定不同的类型。
 
 ```ts
 function makeThing(): Thing {
-  let size = 0;
-  return {
-    get size(): number {
-      return size;
-    },
-    set size(value: string | number | boolean) {
-      let num = Number(value);
+    let size = 0;
+    return {
+        get size(): number {
+            return size;
+        },
+        set size(value: string | number | boolean) {
+            let num = Number(value);
 
-      // Don't allow NaN and stuff.
-      if (!Number.isFinite(num)) {
-        size = 0;
-        return;
-      }
+            // Don't allow NaN and stuff.
+            if (!Number.isFinite(num)) {
+                size = 0;
+                return;
+            }
 
-      size = num;
-    },
-  };
+            size = num;
+        },
+    };
 }
 ```
 
-In fact, we've added syntax to interfaces/object types to support different reading/writing types on properties.
+事实上，我们在接口/对象类型上支持了为属性的读和写指定不同的类型。
 
 ```ts
 // Now valid!
 interface Thing {
-    get size(): number
+    get size(): number;
     set size(value: number | string | boolean);
 }
 ```
 
-One limitation of using different types for reading and writing properties is that the type for reading a property has to be assignable to the type that you're writing.
-In other words, the getter type has to be assignable to the setter.
-This ensures some level of consistency, so that a property is always assignable to itself.
+此处的一个限制是属性的读取类型必须能够赋值给属性的写入类型。
+换句话说，getter 的类型必须能够赋值给 setter。
+这在一定程度上确保了一致性，一个属性应该总是能够赋值给它自身。
 
-For more information on this feature, take a look at [the implementing pull request](https://github.com/microsoft/TypeScript/pull/42425).
+更多详情，请参考[PR](https://github.com/microsoft/TypeScript/pull/42425)。
 
-## `override` and the `--noImplicitOverride` Flag
+## `override` 和 `--noImplicitOverride` 标记
 
-When extending classes in JavaScript, the language makes it super easy (pun intended) to override methods - but unfortunately, there are some mistakes that you can run into.
+当在 JavaScript 中去继承一个类时，覆写方法十分容易 - 但不幸的是可能会犯一些错误。
 
-One big one is missing renames.
-For example, take the following classes:
+其中一个就是会导致丢失重命名。
+例如：
 
 ```ts
 class SomeComponent {
-  show() {
-    // ...
-  }
-  hide() {
-    // ...
-  }
+    show() {
+        // ...
+    }
+    hide() {
+        // ...
+    }
 }
 
 class SpecializedComponent extends SomeComponent {
-  show() {
-    // ...
-  }
-  hide() {
-    // ...
-  }
+    show() {
+        // ...
+    }
+    hide() {
+        // ...
+    }
 }
 ```
 
-`SpecializedComponent` subclasses `SomeComponent`, and overrides the `show` and `hide` methods.
-What happens if someone decides to rip out `show` and `hide` and replace them with a single method?
+`SpecializedComponent` 是 `SomeComponent` 的子类，并且覆写了 `show` 和 `hide` 方法。
+猜一猜，如果有人想要将 `show` 和 `hide` 方法删除并用单个方法代替会发生什么？
 
 ```diff
  class SomeComponent {
@@ -205,12 +205,12 @@ What happens if someone decides to rip out `show` and `hide` and replace them wi
  }
 ```
 
-_Oh no!_
-Our `SpecializedComponent` didn't get updated.
-Now it's just adding these two useless `show` and `hide` methods that probably won't get called.
+_哦，不！_
+`SpecializedComponent` 中的方法没有被更新。
+而是变为添加了两个没用的 `show` 和 `hide` 方法，它们可能都没有被调用。
 
-Part of the issue here is that a user can't make it clear whether they meant to add a new method, or to override an existing one.
-That's why TypeScript 4.3 adds the `override` keyword.
+此处的部分问题在于我们不清楚这里是想添加新的方法，还是想覆写已有的方法。
+因此，TypeScript 4.3 增加了 `override` 关键字。
 
 ```ts
 class SpecializedComponent extends SomeComponent {
@@ -223,11 +223,9 @@ class SpecializedComponent extends SomeComponent {
 }
 ```
 
-When a method is marked with `override`, TypeScript will always make sure that a method with the same name exists in a the base class.
+当一个方法被标记为 `override`，TypeScript 会确保在基类中存在同名的方法。
 
-```ts twoslash
-// @noImplicitOverride
-// @errors: 4113
+```ts
 class SomeComponent {
     setVisible(value: boolean) {
         // ...
@@ -235,88 +233,88 @@ class SomeComponent {
 }
 class SpecializedComponent extends SomeComponent {
     override show() {
-
+        //   ~~~~
+        //   错误
     }
 }
 ```
 
-This is a big improvement, but it doesn't help if you _forget_ to write `override` on a method - and that's a big mistake users can run into also.
+这是一项重大改进，但如果*忘记*在方法前添加 `override` 则不会起作用 - 这也是人们常犯的错误。
 
-For example, you might accidentally "trample over" a method that exists in a base class without realizing it.
+例如，可能会不小心覆写了基类中的方法，并且还没有意识到。
 
 ```ts
 class Base {
-  someHelperMethod() {
-    // ...
-  }
+    someHelperMethod() {
+        // ...
+    }
 }
 
 class Derived extends Base {
-  // Oops! We weren't trying to override here,
-  // we just needed to write a local helper method.
-  someHelperMethod() {
-    // ...
-  }
+    // 不是真正想覆写基类中的方法，
+    // 只是想编写一个本地的帮助方法
+    someHelperMethod() {
+        // ...
+    }
 }
 ```
 
-That's why TypeScript 4.3 _also_ provides a new [`noImplicitOverride`](/tsconfig#noImplicitOverride) flag.
-When this option is turned on, it becomes an error to override any method from a superclass unless you explicitly use an `override` keyword.
-In that last example, TypeScript would error under [`noImplicitOverride`](/tsconfig#noImplicitOverride), and give us a clue that we probably need to rename our method inside of `Derived`.
+因此，TypeScript 4.3 中还增加了一个 `--noImplicitOverride` 选项。
+当启用了该选项，如果覆写了父类中的方法但没有添加 `override` 关键字，则会产生错误。
+在上例中，如果启用了 `--noImplicitOverride`，则 TypeScript 会报错，并提示我们需要重命名 `Derived` 中的方法。
 
-We'd like to extend our thanks to our community for the implementation here.
-The work for these items was implemented in [a pull request](https://github.com/microsoft/TypeScript/pull/39669) by [Wenlu Wang](https://github.com/Kingwl), though an earlier pull request implementing only the `override` keyword by [Paul Cody Johnston](https://github.com/pcj) served as a basis for direction and discussion.
-We extend our gratitude for putting in the time for these features.
+感谢开发者社区的贡献。
+该功能是在[这个 PR](https://github.com/microsoft/TypeScript/pull/39669)中由[Wenlu Wang](https://github.com/Kingwl)实现，一个更早的 `override` 实现是由[Paul Cody Johnston](https://github.com/pcj)完成。
 
-## Template String Type Improvements
+## 模版字符串类型改进
 
-In recent versions, TypeScript introduced a new type construct: template string types.
-These are types that either construct new string-like types by concatenating...
+在近期的版本中，TypeScript 引入了一种新类型，即：模版字符串类型。
+它可以通过连接操作来构造类字符串类型：
 
 ```ts
-type Color = "red" | "blue";
-type Quantity = "one" | "two";
+type Color = 'red' | 'blue';
+type Quantity = 'one' | 'two';
 
 type SeussFish = `${Quantity | Color} fish`;
-// same as
+// 等同于
 //   type SeussFish = "one fish" | "two fish"
 //                  | "red fish" | "blue fish";
 ```
 
-...or match patterns of other string-like types.
+或者与其它类字符串类型进行模式匹配。
 
 ```ts
 declare let s1: `${number}-${number}-${number}`;
 declare let s2: `1-2-3`;
 
-// Works!
+// 正确
 s1 = s2;
 ```
 
-The first change we made is just in when TypeScript will infer a template string type.
-When a template string is _contextually typed_ by a string-literal-like type (i.e. when TypeScript sees we're passing a template string to something that takes a literal type) it will try to give that expression a template type.
+我们做的首个改动是 TypeScript 应该在何时去推断模版字符串类型。
+当一个模版字符串的类型是由类字符串字面量类型进行的按上下文归类（比如，TypeScript 识别出将模版字符串传递给字面量类型时），它会得到模版字符串类型。
 
 ```ts
 function bar(s: string): `hello ${string}` {
-    // Previously an error, now works!
+    // 之前会产生错误，但现在没有问题
     return `hello ${s}`;
 }
 ```
 
-This also kicks in when inferring types, and the type parameter `extends string`
+在类型推断和 `extends string` 的类型参数上也会起作用。
 
 ```ts
 declare let s: string;
 declare function f<T extends string>(x: T): T;
 
-// Previously: string
-// Now       : `hello ${string}`
+// 以前：string
+// 现在：`hello-${string}`
 let x2 = f(`hello ${s}`);
 ```
 
-The second major change here is that TypeScript can now better-relate, and _infer between_, different template string types.
+另一个主要的改动是 TypeScript 会更好地进行类型关联，并在不同的模版字符串之间进行推断。
 
-To see this, take the following example code:
+示例如下：
 
 ```ts
 declare let s1: `${number}-${number}-${number}`;
@@ -327,12 +325,12 @@ s1 = s2;
 s1 = s3;
 ```
 
-When checking against a string literal type like on `s2`, TypeScript could match against the string contents and figure out that `s2` was compatible with `s1` in the first assignment;
-however, as soon as it saw another template string, it just gave up.
-As a result, assignments like `s3` to `s1` just didn't work.
+在检查字符串字面量类型时，例如 `s2`，TypeScript 可以匹配字符串的内容并计算出在第一个赋值语句中 `s2` 与 `s1` 兼容。
+然而，当再次遇到模版字符串类型时，则会直接放弃进行匹配。
+结果就是，像 `s3` 到 `s1` 的赋值语句会出错。
 
-TypeScript now actually does the work to prove whether or not each part of a template string can successfully match.
-You can now mix and match template strings with different substitutions and TypeScript will do a good job to figure out whether they're really compatible.
+现在，TypeScript 会去判断是否模版字符串的每一部分都能够成功匹配。
+你现在可以混合并使用不同的替换字符串来匹配模版字符串，TypeScript 能够更好地计算出它们是否兼容。
 
 ```ts
 declare let s1: `${number}-${number}-${number}`;
@@ -342,7 +340,7 @@ declare let s4: `1-${number}-3`;
 declare let s5: `1-2-${number}`;
 declare let s6: `${number}-2-${number}`;
 
-// Now *all of these* work!
+// 下列均无问题
 s1 = s2;
 s1 = s3;
 s1 = s4;
@@ -350,130 +348,126 @@ s1 = s5;
 s1 = s6;
 ```
 
-In doing this work, we were also sure to add better inference capabilities.
-You can see an example of these in action:
+在这项改进之后，TypeScript 提供了更好的推断能力。
+示例如下：
 
 ```ts
 declare function foo<V extends string>(arg: `*${V}*`): V;
 
 function test<T extends string>(s: string, n: number, b: boolean, t: T) {
-    let x1 = foo("*hello*");            // "hello"
-    let x2 = foo("**hello**");          // "*hello*"
-    let x3 = foo(`*${s}*` as const);    // string
-    let x4 = foo(`*${n}*` as const);    // `${number}`
-    let x5 = foo(`*${b}*` as const);    // "true" | "false"
-    let x6 = foo(`*${t}*` as const);    // `${T}`
-    let x7 = foo(`**${s}**` as const);  // `*${string}*`
+    let x1 = foo('*hello*'); // "hello"
+    let x2 = foo('**hello**'); // "*hello*"
+    let x3 = foo(`*${s}*` as const); // string
+    let x4 = foo(`*${n}*` as const); // `${number}`
+    let x5 = foo(`*${b}*` as const); // "true" | "false"
+    let x6 = foo(`*${t}*` as const); // `${T}`
+    let x7 = foo(`**${s}**` as const); // `*${string}*`
 }
 ```
 
-For more information, see [the original pull request on leveraging contextual types](https://github.com/microsoft/TypeScript/pull/43376), along with [the pull request that improved inference and checking between template types](https://github.com/microsoft/TypeScript/pull/43361).
+更多详情，请参考[PR：利用按上下文归类](https://github.com/microsoft/TypeScript/pull/43376)，以及[PR：改进模版字符串类型的类型推断和检查](https://github.com/microsoft/TypeScript/pull/43361)。
 
-## ECMAScript `#private` Class Elements
+## ECMAScript `#private` 的类成员
 
-TypeScript 4.3 expands which elements in a class can be given `#private` `#names` to make them truly private at run-time.
-In addition to properties, methods and accessors can also be given private names.
+TypeScript 4.3 扩大了在类中可被声明为 `#private` `#names` 的成员的范围，使得它们在运行时成为真正的私有的。
+除属性外，方法和存取器也可进行私有命名。
 
 ```ts
 class Foo {
-  #someMethod() {
-    //...
-  }
+    #someMethod() {
+        //...
+    }
 
-  get #someValue() {
-    return 100;
-  }
+    get #someValue() {
+        return 100;
+    }
 
-  publicMethod() {
-    // These work.
-    // We can access private-named members inside this class.
-    this.#someMethod();
-    return this.#someValue;
-  }
+    publicMethod() {
+        // 可以使用
+        // 可以在类内部访问私有命名成员。
+        this.#someMethod();
+        return this.#someValue;
+    }
 }
 
 new Foo().#someMethod();
 //        ~~~~~~~~~~~
-// error!
-// Property '#someMethod' is not accessible
-// outside class 'Foo' because it has a private identifier.
+// 错误!
+// 属性 '#someMethod' 无法在类 'Foo' 外访问，因为它是私有的。
 
 new Foo().#someValue;
 //        ~~~~~~~~~~
-// error!
-// Property '#someValue' is not accessible
-// outside class 'Foo' because it has a private identifier.
+// 错误!
+// 属性 '#someValue' 无法在类 'Foo' 外访问，因为它是私有的。
 ```
 
-Even more broadly, static members can now also have private names.
+更为广泛地，静态成员也可以有私有命名。
 
 ```ts
 class Foo {
-  static #someMethod() {
-    // ...
-  }
+    static #someMethod() {
+        // ...
+    }
 }
 
 Foo.#someMethod();
 //  ~~~~~~~~~~~
-// error!
-// Property '#someMethod' is not accessible
-// outside class 'Foo' because it has a private identifier.
+// 错误!
+// 属性 '#someMethod' 无法在类 'Foo' 外访问，因为它是私有的。
 ```
 
-This feature was authored [in a pull request](https://github.com/microsoft/TypeScript/pull/42458) from our friends at Bloomberg - written by [Titian Cernicova-Dragomir](https://github.com/dragomirtitian)and [Kubilay Kahveci](https://github.com/mkubilayk), with support and expertise from [Joey Watts](https://github.com/joeywatts), [Rob Palmer](https://github.com/robpalme), and [Tim McClure](https://github.com/tim-mc).
-We'd like to extend our thanks to all of them!
+该功能是由 Bloomberg 的朋友开发的：[PR](https://github.com/microsoft/TypeScript/pull/42458) - 由 [Titian Cernicova-Dragomir](https://github.com/dragomirtitian) 和 [Kubilay Kahveci](https://github.com/mkubilayk) 开发，并得到了 [Joey Watts](https://github.com/joeywatts)，[Rob Palmer](https://github.com/robpalme) 和 [Tim McClure](https://github.com/tim-mc) 的帮助支持。
+感谢他们！
 
-## `ConstructorParameters` Works on Abstract Classes
+## `ConstructorParameters` 可用于抽象类
 
-In TypeScript 4.3, the `ConstructorParameters` type helper now works on `abstract` classes.
+在 TypeScript 4.3 中，`ConstructorParameters`工具类型可以用在 `abstract` 类上。
 
 ```ts
 abstract class C {
-  constructor(a: string, b: number) {
-    // ...
-  }
+    constructor(a: string, b: number) {
+        // ...
+    }
 }
 
-// Has the type '[a: string, b: number]'.
+// 类型为 '[a: string, b: number]'
 type CParams = ConstructorParameters<typeof C>;
 ```
 
-This is thanks to work done in TypeScript 4.2, where construct signatures can be marked as abstract:
+这多亏了 TypeScript 4.2 支持了声明抽象的构造签名：
 
 ```ts
 type MyConstructorOf<T> = {
-    abstract new(...args: any[]): T;
-}
+    new (...args: any[]): T;
+};
 
-// or using the shorthand syntax:
+// 或使用简写形式：
 
 type MyConstructorOf<T> = abstract new (...args: any[]) => T;
 ```
 
-You can [see the change in more detail on GitHub](https://github.com/microsoft/TypeScript/pull/43380).
+更多详情，请参考 [PR](https://github.com/microsoft/TypeScript/pull/43380)。
 
-## Contextual Narrowing for Generics
+## 按上下文细化泛型类型
 
-TypeScript 4.3 now includes some slightly smarter type-narrowing logic on generic values.
-This allows TypeScript to accept more patterns, and sometimes even catch mistakes.
+TypeScript 4.3 能够更智能地对泛型进行类型细化。
+这让 TypeScript 能够支持更多模式，甚至有时还能够发现错误。
 
-For some motivation, let's say we're trying to write a function called `makeUnique`.
-It'll take a `Set` or an `Array` of elements, and if it's given an `Array`, it'll sort that `Array` remove duplicates according to some comparison function.
-After all that, it will return the original collection.
+设想有这样的场景，我们想要编写一个 `makeUnique` 函数。
+它接受一个 `Set` 或 `Array`，如果接收的是 `Array`，则对数组进行排序并去除重复的元素。
+最后返回初始的集合。
 
 ```ts
 function makeUnique<T>(
   collection: Set<T> | T[],
   comparer: (x: T, y: T) => number
 ): Set<T> | T[] {
-  // Early bail-out if we have a Set.
-  // We assume the elements are already unique.
+  // 假设元素已经是唯一的
   if (collection instanceof Set) {
     return collection;
   }
 
-  // Sort the array, then remove consecutive duplicates.
+  // 排序，然后去重
   collection.sort(comparer);
   for (let i = 0; i < collection.length; i++) {
     let j = i;
@@ -489,107 +483,104 @@ function makeUnique<T>(
 }
 ```
 
-Let's leave questions about this function's implementation aside, and assume it arose from the requirements of a broader application.
-Something that you might notice is that the signature doesn't capture the original type of `collection`.
-We can do that by adding a type parameter called `C` in place of where we've written `Set<T> | T[]`.
+暂且不谈该函数的具体实现，假设它就是某应用中的一个需求。
+我们可能会注意到，函数签名没能捕获到 `collection` 的初始类型。
+我们可以定义一个类型参数 `C`，并用它代替 `Set<T> | T[]`。
 
 ```diff
 - function makeUnique<T>(collection: Set<T> | T[], comparer: (x: T, y: T) => number): Set<T> | T[]
 + function makeUnique<T, C extends Set<T> | T[]>(collection: C, comparer: (x: T, y: T) => number): C
 ```
 
-In TypeScript 4.2 and earlier, you'd end up with a bunch of errors as soon as you tried this.
+在 TypeScript 4.2 以及之前的版本中，如果这样做的话会产生很多错误。
 
 ```ts
 function makeUnique<T, C extends Set<T> | T[]>(
   collection: C,
   comparer: (x: T, y: T) => number
 ): C {
-  // Early bail-out if we have a Set.
-  // We assume the elements are already unique.
+  // 假设元素已经是唯一的
   if (collection instanceof Set) {
     return collection;
   }
 
-  // Sort the array, then remove consecutive duplicates.
+  // 排序，然后去重
   collection.sort(comparer);
   //         ~~~~
-  // error: Property 'sort' does not exist on type 'C'.
+  // 错误：属性 'sort' 不存在于类型 'C' 上。
   for (let i = 0; i < collection.length; i++) {
-    //                             ~~~~~~
-    // error: Property 'length' does not exist on type 'C'.
+    //                           ~~~~~~
+    // 错误: 属性 'length' 不存在于类型 'C' 上。
     let j = i;
     while (
       j < collection.length &&
       comparer(collection[i], collection[j + 1]) === 0
     ) {
-      //                    ~~~~~~
-      // error: Property 'length' does not exist on type 'C'.
-      //                                       ~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~
-      // error: Element implicitly has an 'any' type because expression of type 'number'
-      //        can't be used to index type 'Set<T> | T[]'.
+      //             ~~~~~~
+      // 错误: 属性 'length' 不存在于类型 'C' 上。
+      //       ~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~
+      // 错误: 元素具有隐式的 'any' 类型，因为 'number' 类型的表达式不能用来索引 'Set<T> | T[]' 类型。
       j++;
     }
     collection.splice(i + 1, j - i);
     //         ~~~~~~
-    // error: Property 'splice' does not exist on type 'C'.
+    // 错误: 属性 'splice' 不存在于类型 'C' 上。
   }
   return collection;
 }
 ```
 
-Ew, errors!
-Why is TypeScript being so mean to us?
+全是错误！
+为何 TypeScript 要对我们如此刻薄？
 
-The issue is that when we perform our `collection instanceof Set` check, we're expecting that to act as a type guard that narrows the type from `Set<T> | T[]` to `Set<T>` and `T[]` depending on the branch we're in;
-however, we're not dealing with a `Set<T> | T[]`, we're trying to narrow the generic value `collection`, whose type is `C`.
+问题在于进行 `collection instanceof Set` 检查时，我们期望它能够成为类型守卫，并根据条件将 `Set<T> | T[]` 类型细化为 `Set<T>` 和 `T[]` 类型；
+然而，实际上 TypeScript 没有对 `Set<T> | T[]` 进行处理，而是去细化泛型值 `collection`，其类型为 `C`。
 
-It's a very subtle distinction, but it makes a difference.
-TypeScript can't just grab the constraint of `C` (which is `Set<T> | T[]`) and narrow that.
-If TypeScript _did_ try to narrow from `Set<T> | T[]`, it would forget that `collection` is also a `C` in each branch because there's no easy way to preserve that information.
-If hypothetically TypeScript tried that approach, it would break the above example in a different way.
-At the return positions, where the function expects values with the type `C`, we would instead get a `Set<T>` and a `T[]` in each branch, which TypeScript would reject.
+虽是细微的差别，但结果却不同。
+TypeScript 不会去读取 `C` 的泛型约束（即 `Set<T> | T[]`）并细化它。
+如果要让 TypeScript 由 `Set<T> | T[]` 进行类型细化，它就会忘记在每个分支中 `collection` 的类型为 `C`，因为没有比较好的办法去保留这些信息。
+假设 TypeScript 真这样做了，那么上例也会有其它的错误。
+在函数返回的位置期望得到一个 `C` 类型的值，但从每个分支中得到的却是`Set<T>` 和 `T[]`，因此 TypeScript 会拒绝编译。
 
 ```ts
 function makeUnique<T>(
   collection: Set<T> | T[],
   comparer: (x: T, y: T) => number
 ): Set<T> | T[] {
-  // Early bail-out if we have a Set.
-  // We assume the elements are already unique.
+  // 假设元素已经是唯一的
   if (collection instanceof Set) {
     return collection;
     //     ~~~~~~~~~~
-    // error: Type 'Set<T>' is not assignable to type 'C'.
-    //          'Set<T>' is assignable to the constraint of type 'C', but
-    //          'C' could be instantiated with a different subtype of constraint 'Set<T> | T[]'.
+    // 错误：类型 'Set<T>' 不能赋值给类型 'C'。
+    //          'Set<T>' 可以赋值给 'C' 的类型约束，但是
+    //          'C' 可能使用 'Set<T> | T[]' 的不同子类型进行实例化。
   }
 
   // ...
 
   return collection;
   //     ~~~~~~~~~~
-  // error: Type 'T[]' is not assignable to type 'C'.
-  //          'T[]' is assignable to the constraint of type 'C', but
-  //          'C' could be instantiated with a different subtype of constraint 'Set<T> | T[]'.
+  // 错误：类型 'T[]' 不能赋值给类型 'C'。
+  //          'T[]' 可以赋值给 'C' 的类型约束，但是
+  //          'C' 可能使用 'Set<T> | T[]' 的不同子类型进行实例化。
 }
 ```
 
-So how does TypeScript 4.3 change things?
-Well, basically in a few key places when writing code, all the type system really cares about is the constraint of a type.
-For example, when we write `collection.length`, TypeScript doesn't care about the fact that `collection` has the type `C`, it only cares about the properties available, which are determined by the constraint `T[] | Set<T>`.
+TypeScript 4.3 是怎么做的？
+在一些关键的位置，类型系统会去查看类型的约束。
+例如，在遇到 `collection.length` 时，TypeScript 不去关心 `collection` 的类型为 `C`，而是会去查看可访问的属性，而这些是由 `T[] | Set<T>` 泛型约束决定的。
 
-In cases like this, TypeScript will grab the narrowed type of the constraint because that will give you the data you care about;
-however, in any other case, we'll just try to narrow the original generic type (and often end up with the original generic type).
+在类似的地方，TypeScript 会获取由泛型约束细化出的类型，因为它包含了用户关心的信息；
+而在其它的一些地方，TypeScript 会去细化初始的泛型类型（但结果通常也是该泛型类型）。
 
-In other words, based on how you use a generic value, TypeScript will narrow it a little differently.
-The end result is that the entire above example compiles with no type-checking errors.
+换句话说，根据泛型值的使用方式，TypeScript 的处理方式会稍有不同。
+最终结果就是，上例中的代码不会产生编译错误。
 
-For more details, you can [look at the original pull request on GitHub](https://github.com/microsoft/TypeScript/pull/43183).
+更多详情，请参考[PR](https://github.com/microsoft/TypeScript/pull/43183)。
 
-## Always-Truthy Promise Checks
+## 检查总是为真的 Promise
 
-Under [`strictNullChecks`](/tsconfig#strictNullChecks), checking whether a `Promise` is "truthy" in a conditional will trigger an error.
+在 `strictNullChecks` 模式下，在条件语句中检查 `Promise` 是否真时会产生错误。
 
 ```ts
 async function foo(): Promise<boolean> {
@@ -603,133 +594,131 @@ async function bar(): Promise<string> {
     // This condition will always return true since
     // this 'Promise<boolean>' appears to always be defined.
     // Did you forget to use 'await'?
-    return "true";
+    return 'true';
   }
-  return "false";
+  return 'false';
 }
 ```
 
-[This change](https://github.com/microsoft/TypeScript/pull/39175) was contributed by [Jack Works](https://github.com/Jack-Works), and we extend our thanks to them!
+[这项改动](https://github.com/microsoft/TypeScript/pull/39175)是由[Jack Works](https://github.com/Jack-Works)实现。
 
-## `static` Index Signatures
+## `static` 索引签名
 
-Index signatures allow us to set more properties on a value than a type explicitly declares.
+与明确的类型声明相比，索引签名允许我们在一个值上设置更多的属性。
 
 ```ts
 class Foo {
-  hello = "hello";
+  hello = 'hello';
   world = 1234;
 
-  // This is an index signature:
+  // 索引签名：
   [propName: string]: string | number | undefined;
 }
 
 let instance = new Foo();
 
-// Valid assignment
-instance["whatever"] = 42;
+// 没问题
+instance['whatever'] = 42;
 
-// Has type 'string | number | undefined'.
-let x = instance["something"];
+// 类型为 'string | number | undefined'
+let x = instance['something'];
 ```
 
-Up until now, an index signature could only be declared on the instance side of a class.
-Thanks to [a pull request](https://github.com/microsoft/TypeScript/pull/37797) from [Wenlu Wang](https://github.com/microsoft/TypeScript/pull/37797), index signatures can now be declared as `static`.
+目前为止，索引签名只允许在类的实例类型上进行设置。
+感谢 [Wenlu Wang](https://github.com/microsoft/TypeScript/pull/37797) 的 [PR](https://github.com/microsoft/TypeScript/pull/37797)，现在索引签名也可以声明为 `static`。
 
 ```ts
 class Foo {
-  static hello = "hello";
+  static hello = 'hello';
   static world = 1234;
 
   static [propName: string]: string | number | undefined;
 }
 
-// Valid.
-Foo["whatever"] = 42;
+// 没问题
+Foo['whatever'] = 42;
 
-// Has type 'string | number | undefined'
-let x = Foo["something"];
+// 类型为 'string | number | undefined'
+let x = Foo['something'];
 ```
-
-The same sorts of rules apply for index signatures on the static side of a class as they do for the instance side - namely, that every other static property has to be compatible with the index signature.
+类静态类型上的索引签名检查规则与类实例类型上的索引签名的检查规则是相同的，即每个静态属性必须与静态索引签名类型兼容。
 
 ```ts
 class Foo {
   static prop = true;
   //     ~~~~
-  // Error! Property 'prop' of type 'boolean'
-  // is not assignable to string index type
+  // 错误！'boolean' 类型的属性 'prop' 不能赋值给字符串索引类型
   // 'string | number | undefined'.
 
   static [propName: string]: string | number | undefined;
 }
 ```
 
-## `.tsbuildinfo` Size Improvements
+## `.tsbuildinfo` 文件大小改善
 
-In TypeScript 4.3, `.tsbuildinfo` files that are generated as part of [`incremental`](/tsconfig#incremental) builds should be significantly smaller.
-This is thanks to several optimizations in the internal format, creating tables with numeric identifiers to be used throughout the file instead of repeating full paths and similar information.
-This work was spear-headed by [Tobias Koppers](https://github.com/sokra) in [their pull request](https://github.com/microsoft/TypeScript/pull/43079), serving as inspiration for [the ensuing pull request](https://github.com/microsoft/TypeScript/pull/43155) and [further optimizations](https://github.com/microsoft/TypeScript/pull/43695).
+TypeScript 4.3 中，作为 `--incremental` 构建组分部分的 `.tsbuildinfo` 文件会变得非常小。
+这得益于一些内部格式的优化，使用以数值标识的查找表来替代重复多次的完整路径以及类似的信息。
+这项工作的灵感源自于 [Tobias Koppers](https://github.com/sokra) 的 [PR](https://github.com/microsoft/TypeScript/pull/43079)，而后在 [PR](https://github.com/microsoft/TypeScript/pull/43155) 中实现，并在 [PR](https://github.com/microsoft/TypeScript/pull/43695) 中进行优化。
 
-We have seen significant reductions of `.tsbuildinfo` file sizes including
+我们观察到了 `.tsbuildinfo` 文件有如下的变化：
 
-- 1MB to 411 KB
-- 14.9MB to 1MB
-- 1345MB to 467MB
+- 1MB 到 411 KB
+- 14.9MB 到 1MB
+- 1345MB 到 467MB
 
-Needless to say, these sorts of savings in size translate to slightly faster build times as well.
+不用说，缩小文件的尺寸会稍微加快构建速度。
 
-## Lazier Calculations in `--incremental` and `--watch` Compilations
+## 在 `--incremental` 和 `--watch` 中进行惰性计算
 
-One of the issues with [`incremental`](/tsconfig#incremental) and `--watch` modes are that while they make later compilations go faster, the initial compilation can be a bit slower - in some cases, significantly slower.
-This is because these modes have to perform a bunch of book-keeping, computing information about the current project, and sometimes saving that data in a `.tsbuildinfo` file for later builds.
+`--incremental` 和 `--watch` 模式的一个问题是虽然它会加快后续的编译速度，但是首次编译很慢 - 有时会非常地慢。
+这是因为在该模式下需要保存和计算当前工程的一些信息，有时还需要将这些信息写入 `.tsbuildinfo` 文件，以备后续之用。
 
-That's why on top of `.tsbuildinfo` size improvements, TypeScript 4.3 also ships some changes to [`incremental`](/tsconfig#incremental) and `--watch` modes that make the first build of a project with these flags just as fast as an ordinary build!
-To do this, much of the information that would ordinarily be computed up-front is instead done on an on-demand basis for later builds.
-While this can add some overhead to a subsequent build, TypeScript's [`incremental`](/tsconfig#incremental) and `--watch` functionality will still typically operate on a much smaller set of files, and any needed information will be saved afterwards.
-In a sense, [`incremental`](/tsconfig#incremental) and `--watch` builds will "warm up" and get faster at compiling files once you've updated them a few times.
+因此， TypeScript 4.3 也对 `--incremental` 和 `--watch` 进行了首次构建时的优化，让它可以和普通构建一样快。
+为了达到目的，大部分信息会进行按需计算，而不是和往常一样全部一次性计算。
+虽然这会加重后续构建的负担，但是 TypeScript 的 `--incremental` 和 `--watch` 功能会智能地处理一小部分文件，并保存住会对后续构建有用的信息。
+这就好比，`--incremental` 和 `--watch` 构建会进行“预热”，并能够在多次修改文件后加速构建。
 
-In a repository with 3000 files, **this reduced initial build times to almost a third**!
+在一个包含了 3000 个文件的仓库中， **这能节约大概三分之一的构建时间**！
 
-[This work was started](https://github.com/microsoft/TypeScript/pull/42960) by [Tobias Koppers](https://github.com/sokra), whose work ensued in [the resulting final change](https://github.com/microsoft/TypeScript/pull/43314) for this functionality.
-We'd like to extend a great thanks to Tobias for helping us find these opportunities for improvements!
+[这项改进](https://github.com/microsoft/TypeScript/pull/42960) 是由 [Tobias Koppers](https://github.com/sokra) 开启，并在 [PR](https://github.com/microsoft/TypeScript/pull/43314) 里完成。
+感谢他们！
 
-## Import Statement Completions
+## 导入语句的补全
 
-One of the biggest pain-points users run into with import and export statements in JavaScript is the order - specifically that imports are written as
+在 JavaScript 中，关于导入导出语句的一大痛点是其排序问题 - 尤其是导入语句的写法如下：
 
 ```ts
-import { func } from "./module.js";
+import { func } from './module.js';
 ```
 
-instead of
+而非
 
 ```ts
 from "./module.js" import { func };
 ```
 
-This causes some pain when writing out a full import statement from scratch because auto-complete wasn't able to work correctly.
-For example, if you start writing something like `import {`, TypeScript has no idea what module you're planning on importing from, so it couldn't provide any scoped-down completions.
+这导致了在书写完整的导入语句时很难受，因为自动补全无法工作。
+例如，你输入了 `import {` ，TypeScript 不知道你要从哪个模块里导入，因此它不能提供补全信息。
 
-To alleviate this, we've leveraged the power of auto-imports!
-Auto-imports already deal with the issue of not being able to narrow down completions from a specific module - their whole point is to provide every possible export and automatically insert an import statement at the top of your file.
+为缓解该问题，我们可以利用自动导入功能！
+自动导入能够提供每个可能导出并在文件顶端插入一条导入语句。
 
-So when you now start writing an `import` statement that doesn't have a path, we'll provide you with a list of possible imports.
-When you commit a completion, we'll complete the full import statement, including the path that you were going to write.
+因此当你输入 `import` 语句并没提供一个路径时，TypeScript 会提供一个可能的导入列表。
+当你确认了一个补全，TypeScript 会补全完整的导入语句，它包含了你要输入的路径。
 
 ![Import statement completions](https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/2021/05/auto-import-statement-4-3.gif)
 
-This work requires editors that specifically support the feature.
-You'll be able to try this out by using the latest [Insiders versions of Visual Studio Code](https://code.visualstudio.com/insiders/).
+该功能需要编辑器的支持。
+你可以在 [Insiders 版本的 Visual Studio Code](https://code.visualstudio.com/insiders/) 中进行尝试。
 
-For more information, take a look at [the implementing pull request](https://github.com/microsoft/TypeScript/pull/43149)!
+更多详情，请参考 [PR](https://github.com/microsoft/TypeScript/pull/43149)！
 
-## Editor Support for `@link` Tags
+## 编辑器对 `@link` 标签的支持
 
-TypeScript can now understand `@link` tags, and will try to resolve declarations that they link to.
-What this means is that you'll be able to hover over names within `@link` tags and get quick information, or use commands like go-to-definition or find-all-references.
+TypeScript 现在能够理解 `@link` 标签，并会解析它指向的声明。
+也就是说，你将鼠标悬停在 `@link` 标签上会得到一个快速提示，或者使用“跳转到定义”或“查找全部引用”命令。
 
-For example, you'll be able to go-to-definition on `plantCarrot` in `@link plantCarrot` in the example below and a TypeScript-supported editor will jump to `plantCarrot`'s function declaration.
+例如，在支持 TypeScript 的编辑器中你可以在 `@link bar`中的 `bar` 上使用跳转到定义，它会跳转到 `bar` 的函数声明。
 
 ```ts
 /**
@@ -748,118 +737,17 @@ function plantCarrot(seed: Seed) {
 
 ![Jumping to definition and requesting quick info on a `@link` tag for ](https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/2021/05/link-tag-4-3.gif)
 
-For more information, see [the pull request on GitHub](https://github.com/microsoft/TypeScript/pull/41877)!
+更多详情，请参考 [PR](https://github.com/microsoft/TypeScript/pull/41877)！
 
-## Go-to-Definition on Non-JavaScript File Paths
+## 在非 JavaScript 文件上的跳转到定义
 
-Many loaders allow users to include assets in their applications using JavaScript imports.
-They'll typically be written as something like `import "./styles.css"` or the like.
+许多加载器允许用户在 JavaScript 的导入语句中导入资源文件。
+例如典型的 `import "./styles.css"` 语句。
 
-Up until now, TypeScript's editor functionality wouldn't even attempt to read this file, so go-to-definition would typically fail.
-At best, go-to-definition would jump to a declaration like `declare module "*.css"` if it could find something along those lines.
+目前为止，TypeScript 的编辑器功能不会去尝试读取这些文件，因此“跳转到定义”会失败。
+在最好的情况下，“跳转到定义”会跳转到类似 `declare module "*.css"` 这样的声明语句上，如果它能够找到的话。
 
-TypeScript's language service now tries to jump to the correct file when you perform a go-to-definition on relative file paths, even if they're not JavaScript or TypeScript files!
-Try it out with imports to CSS, SVGs, PNGs, font files, Vue files, and more.
+现在，在执行“跳转到定义”命令时，TypeScript 的语言服务会尝试跳转到正确的文件，即使它们不是 JavaScript 或 TypeScript 文件！
+在 CSS，SVGs，PNGs，字体文件，Vue 文件等的导入语句上尝试一下吧。
 
-For more information, you can check out [the implementing pull request](https://github.com/microsoft/TypeScript/pull/42539).
-
-## Breaking Changes
-
-### `lib.d.ts` Changes
-
-As with every TypeScript version, declarations for `lib.d.ts` (especially the declarations generated for web contexts), have changed.
-In this release, we leveraged [Mozilla's browser-compat-data](https://github.com/mdn/browser-compat-data) to remove APIs that no browser implements.
-While it is unlike that you are using them, APIs such as `Account`, `AssertionOptions`, `RTCStatsEventInit`, `MSGestureEvent`, `DeviceLightEvent`, `MSPointerEvent`, `ServiceWorkerMessageEvent`, and `WebAuthentication` have all been removed from `lib.d.ts`.
-This is discussed [in some detail here](https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/991).
-
-https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/991
-
-### `useDefineForClassFields` now defaults to true on `esnext` and eventually on `es2022`
-
-In 2021 the class fields feature was added into the JavaScript specification with behavior which differed from how TypeScript had implemented it. In preparation for this, in TypeScript 3.7, a flag was added ([`useDefineForClassFields`](/tsconfig#useDefineForClassFields)) to migrate to emitted JavaScript to match the JavaScript standard behavior.
-
-Now that the feature is in JavaScript we are changing the default to `true` for ES2022 and above, including ESNext.
-
-### Errors on Always-Truthy Promise Checks
-
-Under [`strictNullChecks`](/tsconfig#strictNullChecks), using a `Promise` that always appears to be defined within a condition check is now considered an error.
-
-```ts
-declare var p: Promise<number>;
-
-if (p) {
-  //  ~
-  // Error!
-  // This condition will always return true since
-  // this 'Promise<number>' appears to always be defined.
-  //
-  // Did you forget to use 'await'?
-}
-```
-
-For more details, [see the original change](https://github.com/microsoft/TypeScript/pull/39175).
-
-### Union Enums Cannot Be Compared to Arbitrary Numbers
-
-Certain `enum`s are considered _union `enum`s_ when their members are either automatically filled in, or trivially written.
-In those cases, an enum can recall each value that it potentially represents.
-
-In TypeScript 4.3, if a value with a union `enum` type is compared with a numeric literal that it could never be equal to, then the type-checker will issue an error.
-
-```ts
-enum E {
-  A = 0,
-  B = 1,
-}
-
-function doSomething(x: E) {
-  // Error! This condition will always return 'false' since the types 'E' and '-1' have no overlap.
-  if (x === -1) {
-    // ...
-  }
-}
-```
-
-As a workaround, you can re-write an annotation to include the appropriate literal type.
-
-```ts
-enum E {
-  A = 0,
-  B = 1,
-}
-
-// Include -1 in the type, if we're really certain that -1 can come through.
-function doSomething(x: E | -1) {
-  if (x === -1) {
-    // ...
-  }
-}
-```
-
-You can also use a type-assertion on the value.
-
-```ts
-enum E {
-  A = 0,
-  B = 1,
-}
-
-function doSomething(x: E) {
-  // Use a type assertion on 'x' because we know we're not actually just dealing with values from 'E'.
-  if ((x as number) === -1) {
-    // ...
-  }
-}
-```
-
-Alternatively, you can re-declare your enum to have a non-trivial initializer so that any number is both assignable and comparable to that enum. This may be useful if the intent is for the enum to specify a few well-known values.
-
-```ts
-enum E {
-  // the leading + on 0 opts TypeScript out of inferring a union enum.
-  A = +0,
-  B = 1,
-}
-```
-
-For more details, [see the original change](https://github.com/microsoft/TypeScript/pull/42472)
+更多详情，请参考 [PR](https://github.com/microsoft/TypeScript/pull/42539)。

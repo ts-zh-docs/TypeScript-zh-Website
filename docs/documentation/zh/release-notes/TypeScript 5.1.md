@@ -1,220 +1,243 @@
 ---
 title: TypeScript 5.1
 layout: docs
-permalink: /zh/docs/handbook/release-notes/typescript-5-1.html
+permalink: /docs/handbook/release-notes/typescript-5-1.html
 oneline: TypeScript 5.1 Release Notes
 ---
 
-## Easier Implicit Returns for `undefined`-Returning Functions
+## 更易用的隐式返回 `undefined` 的函数
 
-In JavaScript, if a function finishes running without hitting a `return`, it returns the value `undefined`.
+在 `JavaScript` 中，如果一个函数运行结束时没有遇到 `return` 语句，它会返回 `undefined` 值。
 
-```ts
+```js
 function foo() {
-    // no return
+  // no return
 }
+
 // x = undefined
 let x = foo();
 ```
 
-However, in previous versions of TypeScript, the *only* functions that could have absolutely no return statements were `void`- and `any`-returning functions.
-That meant that even if you explicitly said "this function returns `undefined`" you were forced to have at least one return statement.
+然而，在之前版本的 TypeScript 中，*只有*返回值类型为 `void` 和 `any` 的函数可以不带 `return` 语句。
+这意味着，就算明知函数返回 `undefined`，你也必须包含 `return` 语句。
 
 ```ts
-// ✅ fine - we inferred that 'f1' returns 'void'
+//  fine - we inferred that 'f1' returns 'void'
 function f1() {
-    // no returns
+  // no returns
 }
-// ✅ fine - 'void' doesn't need a return statement
+
+//  fine - 'void' doesn't need a return statement
 function f2(): void {
-    // no returns
+  // no returns
 }
-// ✅ fine - 'any' doesn't need a return statement
+
+//  fine - 'any' doesn't need a return statement
 function f3(): any {
-    // no returns
+  // no returns
 }
-// ❌ error!
+
+//  error!
 // A function whose declared type is neither 'void' nor 'any' must return a value.
 function f4(): undefined {
-    // no returns
+  // no returns
 }
 ```
 
-This could be a pain if some API expected a function returning `undefined` - you would need to have either at least one explicit return of `undefined` or a `return` statement *and* an explicit annotation.
+如果某些 API 期望函数返回 `undefined` 值，这可能会让人感到痛苦 —— 你需要至少有一个显式的返回 `undefined` 语句，或者一个带有显式注释的 `return` 语句。
 
 ```ts
 declare function takesFunction(f: () => undefined): undefined;
-// ❌ error!
+
+//  error!
 // Argument of type '() => void' is not assignable to parameter of type '() => undefined'.
 takesFunction(() => {
-    // no returns
+  // no returns
 });
-// ❌ error!
+
+//  error!
 // A function whose declared type is neither 'void' nor 'any' must return a value.
 takesFunction((): undefined => {
-    // no returns
+  // no returns
 });
-// ❌ error!
+
+//  error!
 // Argument of type '() => void' is not assignable to parameter of type '() => undefined'.
 takesFunction(() => {
-    return;
+  return;
 });
-// ✅ works
+
+//  works
 takesFunction(() => {
-    return undefined;
+  return undefined;
 });
-// ✅ works
+
+//  works
 takesFunction((): undefined => {
-    return;
+  return;
 });
 ```
 
-This behavior was frustrating and confusing, especially when calling functions outside of one's control.
-Understanding the interplay between inferring `void` over `undefined`, whether an `undefined`-returning function needs a `return` statement, etc. seems like a distraction.
+这种行为非常令人沮丧和困惑，尤其是在调用自己无法控制的函数时。
+理解推断 `void`与 `undefined` 之间的相互作用，以及一个返回 `undefined` 的函数是否需要 `return` 语句等等，似乎会分散注意力。
 
-First, TypeScript 5.1 now allows `undefined`-returning functions to have no return statement.
+首先，TypeScript 5.1 允许返回 `undefined` 的函数不包含返回语句。
 
 ```ts
-// ✅ Works in TypeScript 5.1!
+//  Works in TypeScript 5.1!
 function f4(): undefined {
-    // no returns
+  // no returns
 }
-// ✅ Works in TypeScript 5.1!
+
+//  Works in TypeScript 5.1!
 takesFunction((): undefined => {
-    // no returns
+  // no returns
 });
 ```
 
-Second, if a function has no return expressions and is being passed to something expecting a function that returns `undefined`, TypeScript infers `undefined` for that function's return type.
+其次，如果一个函数没有返回表达式，并且被传递给期望返回 `undefined` 值的函数的地方，TypeScript 会推断该函数的返回类型为 `undefined`。
 
 ```ts
-// ✅ Works in TypeScript 5.1!
+//  Works in TypeScript 5.1!
 takesFunction(function f() {
-    //                 ^ return type is undefined
-    // no returns
+  //                 ^ return type is undefined
+  // no returns
 });
-// ✅ Works in TypeScript 5.1!
+
+//  Works in TypeScript 5.1!
 takesFunction(function f() {
-    //                 ^ return type is undefined
-    return;
+  //                 ^ return type is undefined
+
+  return;
 });
 ```
 
-To address another similar pain-point, under TypeScript's `--noImplicitReturns` option, functions returning *only* `undefined` now have a similar exception to `void`, in that not every single code path must end in an explicit `return`.
+为了解决另一个类似的痛点，在 TypeScript 的 `--noImplicitReturns` 选项下，只返回 `undefined` 的函数现在有了类似于 `void` 的例外情况，在这种情况下，并不是每个代码路径都必须以显式的返回语句结束。
 
 ```ts
-// ✅ Works in TypeScript 5.1 under '--noImplicitReturns'!
+//  Works in TypeScript 5.1 under '--noImplicitReturns'!
 function f(): undefined {
-    if (Math.random()) {
-        // do some stuff...
-        return;
-    }
+  if (Math.random()) {
+    // do some stuff...
+    return;
+  }
 }
 ```
 
-For more information, you can read up on [the original issue](https://github.com/microsoft/TypeScript/issues/36288) and [the implementing pull request](https://github.com/microsoft/TypeScript/pull/53607).
+更多详情请参考 [Issue](https://github.com/microsoft/TypeScript/issues/36288)，[PR](https://github.com/microsoft/TypeScript/pull/53607)
 
-## Unrelated Types for Getters and Setters
+## 不相关的存取器类型
 
-TypeScript 4.3 made it possible to say that a `get` and `set` accessor pair might specify two different types.
+TypeScript 4.3 支持将成对的 `get` 和 `set` 定义为不同的类型。
 
 ```ts
 interface Serializer {
-    set value(v: string | number | boolean);
-    get value(): string;
+  set value(v: string | number | boolean);
+  get value(): string;
 }
+
 declare let box: Serializer;
+
 // Allows writing a 'boolean'
 box.value = true;
+
 // Comes out as a 'string'
 console.log(box.value.toUpperCase());
 ```
 
-Initially we required that the `get` type had to be a subtype of the `set` type.
-This meant that writing
+最初，我们要求 `get` 的类型是 `set` 类型的子类型。这意味着：
 
 ```ts
 box.value = box.value;
 ```
 
-would always be valid.
+永远是合法的。
 
-However, there are plenty of existing and proposed APIs that have completely unrelated types between their getters and setters.
-For example, consider one of the most common examples - the `style` property in the DOM and [`CSSStyleRule`](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleRule) API.
-Every style rule has [a `style` property](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleRule/style) that is a [`CSSStyleDeclaration`](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration);
-however, if you try to write to that property, it will only work correctly with a string!
+然而，大量现存的和提议的 API 带有毫无关联的 `get` 和 `set` 类型。
+例如，考虑一个常见的情况 - DOM 中的 `style` 属性和 [`CSSStyleRule`](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleRule) API。
+每条样式规则都有[一个 `style` 属性](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleRule/style)，它是一个 [`CSSStyleDeclaration`](https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration)；
+然而，如果你尝试给该属性写值，它仅支持字符串。
 
-TypeScript 5.1 now allows completely unrelated types for `get` and `set` accessor properties, provided that they have explicit type annotations.
-And while this version of TypeScript does not yet change the types for these built-in interfaces, `CSSStyleRule` can now be defined in the following way:
+TypeScript 5.1 现在允许为 `get` 和 `set` 访问器属性指定完全不相关的类型，前提是它们具有显式的类型注解。
+虽然这个版本的 TypeScript 还没有改变这些内置接口的类型，但 `CSSStyleRule` 现在可以按以下方式定义：
 
 ```ts
 interface CSSStyleRule {
-    // ...
-    /** Always reads as a `CSSStyleDeclaration` */
-    get style(): CSSStyleDeclaration;
-    /** Can only write a `string` here. */
-    set style(newValue: string);
-    // ...
+  // ...
+
+  /** Always reads as a `CSSStyleDeclaration` */
+  get style(): CSSStyleDeclaration;
+
+  /** Can only write a `string` here. */
+  set style(newValue: string);
+
+  // ...
 }
 ```
 
-This also allows other patterns like requiring `set` accessors to accept only "valid" data, but specifying that `get` accessors may return `undefined` if some underlying state hasn't been initialized yet.
+这也允许其他模式，比如要求 `set` 访问器只接受“有效”的数据，但指定 `get` 访问器可以返回 `undefined`，如果某些基础状态还没有被初始化。
 
 ```ts
 class SafeBox {
-    #value: string | undefined;
-    // Only accepts strings!
-    set value(newValue: string) {
-    }
-    // Must check for 'undefined'!
-    get value(): string | undefined {
-        return this.#value;
-    }
+  #value: string | undefined;
+
+  // Only accepts strings!
+  set value(newValue: string) {}
+
+  // Must check for 'undefined'!
+  get value(): string | undefined {
+    return this.#value;
+  }
 }
 ```
 
-In fact, this is similar to how optional properties are checked under `--exactOptionalProperties`.
+实际上，这与在 `--exactOptionalProperties` 选项下可选属性的检查方式类似。
 
-You can read up more on [the implementing pull request](https://github.com/microsoft/TypeScript/pull/53417).
+更多详情请参考 [PR](https://github.com/microsoft/TypeScript/pull/53417)。
 
-## Decoupled Type-Checking Between JSX Elements and JSX Tag Types
+## 解耦 JSX 元素和 JSX 标签类型之间的类型检查
 
-One pain point TypeScript had with JSX was its requirements on the type of every JSX element's tag.
+TypeScript 在 JSX 方面的一个痛点是对每个 JSX 元素标签的类型要求。
+这个 TypeScript 版本使得 JSX 库更准确地描述了 JSX 组件可以返回的内容。
+对于许多人来说，这具体意味着可以在 React 中使用[异步服务器组件](https://github.com/reactjs/rfcs/blob/7f8492f6a177fc33fe807d242319f2f96353bf68/text/0188-server-components.md)。
 
-For context, a JSX element is either of the following:
+做为背景知识，JSX 元素是下列其一：
 
 ```tsx
 // A self-closing JSX tag
 <Foo />
+
 // A regular element with an opening/closing tag
 <Bar></Bar>
 ```
 
-When type-checking `<Foo />` or `<Bar></Bar>`, TypeScript always looks up a namespace called `JSX` and fetches a type out of it called `Element` - or more directly, it looks up `JSX.Element`.
+在类型检查 `<Foo />` 或 `<Bar></Bar>` 时，TypeScript 总是查找名为 `JSX` 的命名空间，并且获取名为 `Element` 的类型。
+换句话说，它查找 `JSX.Element`。
 
-But to check whether `Foo` or `Bar` themselves were valid to use as tag names, TypeScript would roughly just grab the types returned or constructed by `Foo` or `Bar` and check for compatibility with `JSX.Element` (or another type called `JSX.ElementClass` if the type is constructable).
+但是为了检查 `Foo`或 `Bar` 是否是有效的标签名，TypeScript 大致上只需获取由 `Foo` 或 `Bar` 返回或构造的类型，并检查其与 `JSX.Element`（或另一种叫做 `JSX.ElementClass` 的类型，如果该类型可构造）的兼容性。
 
-The limitations here meant that components could not be used if they returned or "rendered" a more broad type than just `JSX.Element`.
-For example, a JSX library might be fine with a component returning `string`s or `Promise`s.
+这里的限制意味着如果组件返回或 “render” 比 `JSX.Element` 更宽泛的类型，则无法使用组件。
+例如，一个 `JSX` 库可能会允许组件返回 `string`s 或 `Promise`s。
 
-As a more concrete example, [React is considering adding limited support for components that return `Promise`s](https://github.com/acdlite/rfcs/blob/first-class-promises/text/0000-first-class-support-for-promises.md), but existing versions of TypeScript cannot express that without someone drastically loosening the type of `JSX.Element`.
+作为一个更具体的例子，[未来版本](https://github.com/reactjs/rfcs/blob/7f8492f6a177fc33fe807d242319f2f96353bf68/text/0188-server-components.md)的 React 已经提出了对返回 `Promise` 的组件的有限支持，但是现有版本的 TypeScript 无法表达这一点，除非有人大幅放宽 `JSX.Element` 类型。
 
 ```tsx
-import * as React from "react";
+import * as React from 'react';
+
 async function Foo() {
-    return <div></div>;
+  return <div></div>;
 }
+
 let element = <Foo />;
 //             ~~~
 // 'Foo' cannot be used as a JSX component.
 //   Its return type 'Promise<Element>' is not a valid JSX element.
 ```
 
-To provide libraries with a way to express this, TypeScript 5.1 now looks up a type called `JSX.ElementType`.
-`ElementType` specifies precisely what is valid to use as a tag in a JSX element.
-So it might be typed today as something like
+为了给 library 提供一种表达这种情况的方法，TypeScript 5.1 现在查找一个名为 `JSX.ElementType` 的类型。`ElementType` 精确地指定了在 JSX 元素中作为标签使用的内容。
+因此现在可以像如下这样定义：
 
-```tsx
+```ts
 namespace JSX {
     export type ElementType =
         // All the valid lowercase tags
@@ -223,209 +246,112 @@ namespace JSX {
         (props: any) => Element
         // Class components
         new (props: any) => ElementClass;
-    export interface IntrinsicAttributes extends /*...*/ {}
+
+    export interface IntrinsictAttributes extends /*...*/ {}
     export type Element = /*...*/;
-    export type ElementClass = /*...*/;
+    export type ClassElement = /*...*/;
 }
 ```
 
-We'd like to extend our thanks to [Sebastian Silbermann](https://github.com/eps1lon) who contributed [this change](https://github.com/microsoft/TypeScript/pull/51328)!
+感谢 [Sebastian Silbermann](https://github.com/eps1lon) 的 [PR](https://github.com/microsoft/TypeScript/pull/51328)。
 
-## Namespaced JSX Attributes
+## 带有命名空间的 JSX 属性
 
-TypeScript now supports namespaced attribute names when using JSX.
+TypeScript 支持在 JSX 里使用带有命名空间的属性。
 
 ```tsx
 import * as React from "react";
+
 // Both of these are equivalent:
 const x = <Foo a:b="hello" />;
 const y = <Foo a : b="hello" />;
+
 interface FooProps {
     "a:b": string;
 }
+
 function Foo(props: FooProps) {
     return <div>{props["a:b"]}</div>;
 }
 ```
 
-Namespaced tag names are looked up in a similar way on `JSX.IntrinsicAttributes` when the first segment of the name is a lowercase name.
+当名字的第一段是小写名称时，在 `JSX.IntrinsicAttributes` 上查找带命名空间的标记名是类似的。
 
 ```tsx
 // In some library's code or in an augmentation of that library:
 namespace JSX {
-    interface IntrinsicElements {
-        ["a:b"]: { prop: string };
-    }
+  interface IntrinsicElements {
+    ['a:b']: { prop: string };
+  }
 }
+
 // In our code:
 let x = <a:b prop="hello!" />;
 ```
 
-[This contribution](https://github.com/microsoft/TypeScript/pull/53799) was provided thanks to [Oleksandr Tarasiuk](https://github.com/a-tarasyuk).
+感谢 [Oleksandr Tarasiuk](https://github.com/a-tarasyuk) 的 [PR](https://github.com/microsoft/TypeScript/pull/53799)。
 
-## `typeRoots` Are Consulted In Module Resolution
+## 模块解析时考虑 `typeRoots`
 
-When TypeScript's specified module lookup strategy is unable to resolve a path, it will now resolve packages relative to the specified `typeRoots`.
+当 TypeScript 的模块解析策略无法解析一个路径时，它现在会相对于 `typeRoots` 继续解析。
 
-See [this pull request](https://github.com/microsoft/TypeScript/pull/51715) for more details.
+更多详情请参考 [PR](https://github.com/microsoft/TypeScript/pull/51715)。
 
-## Move Declarations to Existing Files
+## 在 JSX 标签上链接光标
 
-In addition to moving declarations to new files, TypeScript now ships a preview feature for moving declarations to existing files as well.
-You can try this functionality out in a recent version of Visual Studio Code.
+TypeScript 现在支持 _链接编辑_ JSX 标签名。
+链接编辑（有时称作“光标镜像”）允许编辑器同时自动编辑多个位置。
 
-![Moving a function 'getThanks' to an existing file in the workspace.](https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/2023/05/moveToFile-5.1-preview.gif)
+这个新特性在 TypeScript 和 JavaScript 里都可用，并且可以在 Visual Studio Code Insiders 版本中启用。
+在 Visual Studio Code 里，你既可以用设置界面的 `Editor: Linked Editing` 配置：
 
-Keep in mind that this feature is currently in preview, and we are seeking further feedback on it.
+![](https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/2023/04/linkedEditing-5.1-vscode-ui-1.png)
 
-https://github.com/microsoft/TypeScript/pull/53542
+也可以用 JSON 配置文件中的 `editor.linkedEditing`：
 
-## Linked Cursors for JSX Tags
-
-TypeScript now supports *linked editing* for JSX tag names.
-Linked editing (occasionally called "mirrored cursors") allows an editor to edit multiple locations at the same time automatically.
-
-![An example of JSX tags with linked editing modifying a JSX fragment and a div element.](https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/2023/04/linkedEditingJsx-5.1-1.gif)
-
-This new feature should work in both TypeScript and JavaScript files, and can be enabled in Visual Studio Code Insiders.
-In Visual Studio Code, you can either edit the `Editor: Linked Editing` option in the Settings UI:
-
-![Visual Studio Code's Editor: Linked Editing` option](https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/2023/04/linkedEditing-5.1-vscode-ui-1.png)
-
-or configure `editor.linkedEditing` in your JSON settings file:
-
-```jsonc
+```json
 {
-    // ...
-    "editor.linkedEditing": true,
+  // ...
+  "editor.linkedEditing": true
 }
 ```
 
-This feature will also be supported by Visual Studio 17.7 Preview 1.
+这个功能也将在 Visual Studio 17.7 Preview 1 中得到支持。
 
-You can take a look at [our implementation of linked editing](https://github.com/microsoft/TypeScript/pull/53284) here!
+## `@param` JSDoc 标记的代码片段自动补全
 
-## Snippet Completions for `@param` JSDoc Tags
+现在，在 TypeScript 和 JavaScript 文件中输入 `@param` 标签时，TypeScript 提供代码片段自动补全。
+这可以帮助在为代码编写文档和添加 JSDoc 类型时，减少打字和文本跳转次数。
 
-TypeScript now provides snippet completions when typing out a `@param` tag in both TypeScript and JavaScript files.
-This can help cut down on some typing and jumping around text as you document your code or add JSDoc types in JavaScript.
+更多详情请参考 [PR](https://github.com/microsoft/TypeScript/pull/53260)。
 
-![An example of completing JSDoc `param` comments on an 'add' function.](https://devblogs.microsoft.com/typescript/wp-content/uploads/sites/11/2023/04/paramTagSnippets-5-1-1.gif)
+## 优化
 
-You can [check out how this new feature was implemented on GitHub](https://github.com/microsoft/TypeScript/pull/53260).
+### 避免非必要的类型初始化
 
-## Optimizations
+TypeScript 5.1 现在避免在已知不包含对外部类型参数的引用的对象类型中执行类型实例化。
+这有可能减少许多不必要的计算，并将 [`material-ui`](https://github.com/mui/material-ui/tree/b0351248fb396001a30330daac86d0e0794a0c1d/docs) 的文档目录的类型检查时间缩短了 50% 以上。
 
-### Avoiding Unnecessary Type Instantiation
+更多详情请参考 [PR](https://github.com/microsoft/TypeScript/pull/53246)。
 
-TypeScript 5.1 now avoids performing type instantiation within object types that are known not to contain references to outer type parameters.
-This has the potential to cut down on many unnecessary computations, and reduced the type-checking time of [material-ui's docs directory](https://github.com/mui/material-ui/tree/b0351248fb396001a30330daac86d0e0794a0c1d/docs) by over 50%.
+### 联合字面量的反面情况检查
 
-You can [see the changes involved for this change on GitHub](https://github.com/microsoft/TypeScript/pull/53246).
+当检查源类型是否是联合类型的一部分时，TypeScript 首先使用该源类型的内部类型标识符进行快速查找。
+如果查找失败，则 TypeScript 会检查与联合类型中的每个类型的兼容性。
 
-### Negative Case Checks for Union Literals
+当将字面量类型与纯字面量类型的联合类型进行关联时，TypeScript 现在可以避免针对联合中的每个其他类型进行完整遍历。
+这个假设是安全的，因为 TypeScript 总是将字面量类型内部化/缓存 —— 虽然有一些与“全新”字面量类型相关的边缘情况需要处理。
 
-When checking if a source type is part of a union type, TypeScript will first do a fast look-up using an internal type identifier for that source.
-If that look-up fails, then TypeScript checks for compatibility against every type within the union.
+[这个优化](https://github.com/microsoft/TypeScript/pull/53192)可以减少[问题代码](https://github.com/microsoft/TypeScript/issues/53191)的类型检查时间从 45 秒到 0.4 秒。
 
-When relating a literal type to a union of purely literal types, TypeScript can now avoid that full walk against every other type in the union.
-This assumption is safe because TypeScript always interns/caches literal types - though there are some edge cases to handle relating to "fresh" literal types.
+### 减少在解析 JSDoc 时的扫描函数调用
 
-[This optimization](https://github.com/microsoft/TypeScript/pull/53192) was able to reduce the type-checking time of [the code in this issue](https://github.com/microsoft/TypeScript/issues/53191) from about 45 seconds to about 0.4 seconds.
+在旧版本的 TypeScript 中解析 JSDoc 注释时，它们会使用扫描器/标记化程序将注释分解为细粒度的标记，然后将内容拼回到一起。
+这对于规范化注释文本可能是有帮助的，使多个空格只折叠成一个；
+但这样做会极大地增加“对话”量，意味着解析器和扫描器会非常频繁地来回跳跃，从而增加了 JSDoc 解析的开销。
 
-### Reduced Calls into Scanner for JSDoc Parsing
+TypeScript 5.1 已经移动了更多的逻辑来分解 JSDoc 注释到扫描器/标记化程序中。
+现在，扫描器直接将更大的内容块返回给解析器，以便根据需要进行处理。
 
-When older versions of TypeScript parsed out a JSDoc comment, they would use the scanner/tokenizer to break the comment into fine-grained tokens and piece the contents back together.
-This could be helpful for normalizing comment text, so that multiple spaces would just collapse into one;
-but it was extremely "chatty" and meant the parser and scanner would jump back and forth very often, adding overhead to JSDoc parsing.
-
-TypeScript 5.1 has moved more logic around breaking down JSDoc comments into the scanner/tokenizer.
-The scanner now returns larger chunks of content directly to the parser to do as it needs.
-
-[These changes](https://github.com/microsoft/TypeScript/pull/53081) have brought down the parse time of several 10Mb mostly-prose-comment JavaScript files by about half.
-For a more realistic example, our performance suite's snapshot of [xstate](https://github.com/statelyai/xstate) dropped about 300ms of parse time, making it faster to load and analyze.
-
-## Breaking Changes
-
-### ES2020 and Node.js 14.17 as Minimum Runtime Requirements
-
-TypeScript 5.1 now ships JavaScript functionality that was introduced in ECMAScript 2020.
-As a result, at minimum TypeScript must be run in a reasonably modern runtime.
-For most users, this means TypeScript now only runs on Node.js 14.17 and later.
-
-If you try running TypeScript 5.1 under an older version of Node.js such as Node 10 or 12, you may see an error like the following from running either `tsc.js` or `tsserver.js`:
-
-```
-node_modules/typescript/lib/tsserver.js:2406
-  for (let i = startIndex ?? 0; i < array.length; i++) {
-                           ^
- 
-SyntaxError: Unexpected token '?'
-    at wrapSafe (internal/modules/cjs/loader.js:915:16)
-    at Module._compile (internal/modules/cjs/loader.js:963:27)
-    at Object.Module._extensions..js (internal/modules/cjs/loader.js:1027:10)
-    at Module.load (internal/modules/cjs/loader.js:863:32)
-    at Function.Module._load (internal/modules/cjs/loader.js:708:14)
-    at Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:60:12)
-    at internal/main/run_main_module.js:17:47
-```
-
-Additionally, if you try installing TypeScript you'll get something like the following error messages from npm:
-
-```
-npm WARN EBADENGINE Unsupported engine {
-npm WARN EBADENGINE   package: 'typescript@5.1.1-rc',
-npm WARN EBADENGINE   required: { node: '>=14.17' },
-npm WARN EBADENGINE   current: { node: 'v12.22.12', npm: '8.19.2' }
-npm WARN EBADENGINE }
-```
-
-from Yarn:
-
-```
-error typescript@5.1.1-rc: The engine "node" is incompatible with this module. Expected version ">=14.17". Got "12.22.12"
-error Found incompatible module.
-```
-
-<!-- or from pnpm -->
-
-[See more information around this change here](https://github.com/microsoft/TypeScript/pull/53291).
-
-### Explicit `typeRoots` Disables Upward Walks for `node_modules/@types`
-
-Previously, when the `typeRoots` option was specified in a `tsconfig.json` but resolution to any `typeRoots` directories had failed, TypeScript would still continue walking up parent directories, trying to resolve packages within each parent's `node_modules/@types` folder.
-
-This behavior could prompt excessive look-ups and has been disabled in TypeScript 5.1.
-As a result, you may begin to see errors like the following based on entries in your `tsconfig.json`'s `types` option or `/// <reference >` directives
-
-```
-error TS2688: Cannot find type definition file for 'node'.
-error TS2688: Cannot find type definition file for 'mocha'.
-error TS2688: Cannot find type definition file for 'jasmine'.
-error TS2688: Cannot find type definition file for 'chai-http'.
-error TS2688: Cannot find type definition file for 'webpack-env"'.
-```
-
-The solution is typically to add specific entries for `node_modules/@types` to your `typeRoots`:
-
-```jsonc
-{
-    "compilerOptions": {
-        "types": [
-            "node",
-            "mocha"
-        ],
-        "typeRoots": [
-            // Keep whatever you had around before.
-            "./some-custom-types/",
-            // You might need your local 'node_modules/@types'.
-            "./node_modules/@types",
-            // You might also need to specify a shared 'node_modules/@types'
-            // if you're using a "monorepo" layout.
-            "../../node_modules/@types",
-        ]
-    }
-}
-```
-
-More information is available [on the original change on our issue tracker](https://github.com/microsoft/TypeScript/pull/51715).
+[这些更改](https://github.com/microsoft/TypeScript/pull/53081)将几个大约 10Mb 的大部分为散文评论的 JavaScript 文件的解析时间减少了约一半。
+对于一个更现实的例子，我们的性能套件对 [xstate](https://github.com/statelyai/xstate) 的快照减少了约 300 毫秒的解析时间，使其更快地加载和分析。

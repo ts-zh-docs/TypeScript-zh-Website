@@ -1,355 +1,328 @@
 ---
 title: TypeScript 2.8
 layout: docs
-permalink: /zh/docs/handbook/release-notes/typescript-2-8.html
+permalink: /docs/handbook/release-notes/typescript-2-8.html
 oneline: TypeScript 2.8 Release Notes
 ---
 
-## Conditional Types
+## 有条件类型
 
-TypeScript 2.8 introduces _conditional types_ which add the ability to express non-uniform type mappings.
-A conditional type selects one of two possible types based on a condition expressed as a type relationship test:
+TypeScript 2.8引入了_有条件类型_，它能够表示非统一的类型。 有条件的类型会以一个条件表达式进行类型关系检测，从而在两种类型中选择其一：
 
-```ts
+```typescript
 T extends U ? X : Y
 ```
 
-The type above means when `T` is assignable to `U` the type is `X`, otherwise the type is `Y`.
+上面的类型意思是，若`T`能够赋值给`U`，那么类型是`X`，否则为`Y`。
 
-A conditional type `T extends U ? X : Y` is either _resolved_ to `X` or `Y`, or _deferred_ because the condition depends on one or more type variables.
-Whether to resolve or defer is determined as follows:
+有条件的类型`T extends U ? X : Y`或者_解析_为`X`，或者_解析_为`Y`，再或者_延迟_解析，因为它可能依赖一个或多个类型变量。 是否直接解析或推迟取决于：
 
-- First, given types `T'` and `U'` that are instantiations of `T` and `U` where all occurrences of type parameters are replaced with `any`, if `T'` is not assignable to `U'`, the conditional type is resolved to `Y`. Intuitively, if the most permissive instantiation of `T` is not assignable to the most permissive instantiation of `U`, we know that no instantiation will be and we can just resolve to `Y`.
-- Next, for each type variable introduced by an `infer` (more later) declaration within `U` collect a set of candidate types by inferring from `T` to `U` (using the same inference algorithm as type inference for generic functions). For a given `infer` type variable `V`, if any candidates were inferred from co-variant positions, the type inferred for `V` is a union of those candidates. Otherwise, if any candidates were inferred from contra-variant positions, the type inferred for `V` is an intersection of those candidates. Otherwise, the type inferred for `V` is `never`.
-- Then, given a type `T''` that is an instantiation of `T` where all `infer` type variables are replaced with the types inferred in the previous step, if `T''` is _definitely assignable_ to `U`, the conditional type is resolved to `X`. The definitely assignable relation is the same as the regular assignable relation, except that type variable constraints are not considered. Intuitively, when a type is definitely assignable to another type, we know that it will be assignable for _all instantiations_ of those types.
-- Otherwise, the condition depends on one or more type variables and the conditional type is deferred.
+* 首先，令`T'`和`U'`分别为`T`和`U`的实例，并将所有类型参数替换为`any`，如果`T'`不能赋值给`U'`，则将有条件的类型解析成`Y`。直观上讲，如果最宽泛的`T`的实例不能赋值给最宽泛的`U`的实例，那么我们就可以断定不存在可以赋值的实例，因此可以解析为`Y`。
+* 其次，针对每个在`U`内由`推断`声明引入的类型变量，依据从`T`推断到`U`来收集一组候选类型（使用与泛型函数类型推断相同的推断算法）。对于给定的`推断`类型变量`V`，如果有候选类型是从协变的位置上推断出来的，那么`V`的类型是那些候选类型的联合。反之，如果有候选类型是从逆变的位置上推断出来的，那么`V`的类型是那些候选类型的交叉类型。否则`V`的类型是`never`。
+* 然后，令`T''`为`T`的一个实例，所有`推断`的类型变量用上一步的推断结果替换，如果`T''`_明显可赋值_给`U`，那么将有条件的类型解析为`X`。除去不考虑类型变量的限制之外，_明显可赋值_的关系与正常的赋值关系一致。直观上，当一个类型明显可赋值给另一个类型，我们就能够知道它可以赋值给那些类型的_所有_实例。
+* 否则，这个条件依赖于一个或多个类型变量，有条件的类型解析被推迟进行。
 
-##### Example
+#### 例子
 
-```ts
-type TypeName<T> = T extends string
-  ? "string"
-  : T extends number
-  ? "number"
-  : T extends boolean
-  ? "boolean"
-  : T extends undefined
-  ? "undefined"
-  : T extends Function
-  ? "function"
-  : "object";
+```typescript
+type TypeName<T> =
+    T extends string ? "string" :
+    T extends number ? "number" :
+    T extends boolean ? "boolean" :
+    T extends undefined ? "undefined" :
+    T extends Function ? "function" :
+    "object";
 
-type T0 = TypeName<string>; // "string"
-type T1 = TypeName<"a">; // "string"
-type T2 = TypeName<true>; // "boolean"
-type T3 = TypeName<() => void>; // "function"
-type T4 = TypeName<string[]>; // "object"
+type T0 = TypeName<string>;  // "string"
+type T1 = TypeName<"a">;  // "string"
+type T2 = TypeName<true>;  // "boolean"
+type T3 = TypeName<() => void>;  // "function"
+type T4 = TypeName<string[]>;  // "object"
 ```
 
-## Distributive conditional types
+### 分布式有条件类型
 
-Conditional types in which the checked type is a naked type parameter are called _distributive conditional types_.
-Distributive conditional types are automatically distributed over union types during instantiation.
-For example, an instantiation of `T extends U ? X : Y` with the type argument `A | B | C` for `T` is resolved as `(A extends U ? X : Y) | (B extends U ? X : Y) | (C extends U ? X : Y)`.
+如果有条件类型里待检查的类型是`naked type parameter`，那么它也被称为“分布式有条件类型”。 分布式有条件类型在实例化时会自动分发成联合类型。 例如，实例化`T extends U ? X : Y`，`T`的类型为`A | B | C`，会被解析为`(A extends U ? X : Y) | (B extends U ? X : Y) | (C extends U ? X : Y)`。
 
-##### Example
+#### 例子
 
-```ts
-type T10 = TypeName<string | (() => void)>; // "string" | "function"
-type T12 = TypeName<string | string[] | undefined>; // "string" | "object" | "undefined"
-type T11 = TypeName<string[] | number[]>; // "object"
+```typescript
+type T10 = TypeName<string | (() => void)>;  // "string" | "function"
+type T12 = TypeName<string | string[] | undefined>;  // "string" | "object" | "undefined"
+type T11 = TypeName<string[] | number[]>;  // "object"
 ```
 
-In instantiations of a distributive conditional type `T extends U ? X : Y`, references to `T` within the conditional type are resolved to individual constituents of the union type (i.e. `T` refers to the individual constituents _after_ the conditional type is distributed over the union type).
-Furthermore, references to `T` within `X` have an additional type parameter constraint `U` (i.e. `T` is considered assignable to `U` within `X`).
+在`T extends U ? X : Y`的实例化里，对`T`的引用被解析为联合类型的一部分（比如，`T`指向某一单个部分，在有条件类型分布到联合类型之后）。 此外，在`X`内对`T`的引用有一个附加的类型参数约束`U`（例如，`T`被当成在`X`内可赋值给`U`）。
 
-##### Example
+#### 例子
 
-```ts
+```typescript
 type BoxedValue<T> = { value: T };
 type BoxedArray<T> = { array: T[] };
 type Boxed<T> = T extends any[] ? BoxedArray<T[number]> : BoxedValue<T>;
 
-type T20 = Boxed<string>; // BoxedValue<string>;
-type T21 = Boxed<number[]>; // BoxedArray<number>;
-type T22 = Boxed<string | number[]>; // BoxedValue<string> | BoxedArray<number>;
+type T20 = Boxed<string>;  // BoxedValue<string>;
+type T21 = Boxed<number[]>;  // BoxedArray<number>;
+type T22 = Boxed<string | number[]>;  // BoxedValue<string> | BoxedArray<number>;
 ```
 
-Notice that `T` has the additional constraint `any[]` within the true branch of `Boxed<T>` and it is therefore possible to refer to the element type of the array as `T[number]`. Also, notice how the conditional type is distributed over the union type in the last example.
+注意在`Boxed<T>`的`true`分支里，`T`有个额外的约束`any[]`，因此它适用于`T[number]`数组元素类型。同时也注意一下有条件类型是如何分布成联合类型的。
 
-The distributive property of conditional types can conveniently be used to _filter_ union types:
+有条件类型的分布式的属性可以方便地用来_过滤_联合类型：
 
-```ts
-type Diff<T, U> = T extends U ? never : T; // Remove types from T that are assignable to U
-type Filter<T, U> = T extends U ? T : never; // Remove types from T that are not assignable to U
+```typescript
+type Diff<T, U> = T extends U ? never : T;  // Remove types from T that are assignable to U
+type Filter<T, U> = T extends U ? T : never;  // Remove types from T that are not assignable to U
 
-type T30 = Diff<"a" | "b" | "c" | "d", "a" | "c" | "f">; // "b" | "d"
-type T31 = Filter<"a" | "b" | "c" | "d", "a" | "c" | "f">; // "a" | "c"
-type T32 = Diff<string | number | (() => void), Function>; // string | number
-type T33 = Filter<string | number | (() => void), Function>; // () => void
+type T30 = Diff<"a" | "b" | "c" | "d", "a" | "c" | "f">;  // "b" | "d"
+type T31 = Filter<"a" | "b" | "c" | "d", "a" | "c" | "f">;  // "a" | "c"
+type T32 = Diff<string | number | (() => void), Function>;  // string | number
+type T33 = Filter<string | number | (() => void), Function>;  // () => void
 
-type NonNullable<T> = Diff<T, null | undefined>; // Remove null and undefined from T
+type NonNullable<T> = Diff<T, null | undefined>;  // Remove null and undefined from T
 
-type T34 = NonNullable<string | number | undefined>; // string | number
-type T35 = NonNullable<string | string[] | null | undefined>; // string | string[]
+type T34 = NonNullable<string | number | undefined>;  // string | number
+type T35 = NonNullable<string | string[] | null | undefined>;  // string | string[]
 
 function f1<T>(x: T, y: NonNullable<T>) {
-  x = y; // Ok
-  y = x; // Error
+    x = y;  // Ok
+    y = x;  // Error
 }
 
 function f2<T extends string | undefined>(x: T, y: NonNullable<T>) {
-  x = y; // Ok
-  y = x; // Error
-  let s1: string = x; // Error
-  let s2: string = y; // Ok
+    x = y;  // Ok
+    y = x;  // Error
+    let s1: string = x;  // Error
+    let s2: string = y;  // Ok
 }
 ```
 
-Conditional types are particularly useful when combined with mapped types:
+有条件类型与映射类型结合时特别有用：
 
-```ts
-type FunctionPropertyNames<T> = {
-  [K in keyof T]: T[K] extends Function ? K : never;
-}[keyof T];
+```typescript
+type FunctionPropertyNames<T> = { [K in keyof T]: T[K] extends Function ? K : never }[keyof T];
 type FunctionProperties<T> = Pick<T, FunctionPropertyNames<T>>;
 
-type NonFunctionPropertyNames<T> = {
-  [K in keyof T]: T[K] extends Function ? never : K;
-}[keyof T];
+type NonFunctionPropertyNames<T> = { [K in keyof T]: T[K] extends Function ? never : K }[keyof T];
 type NonFunctionProperties<T> = Pick<T, NonFunctionPropertyNames<T>>;
 
 interface Part {
-  id: number;
-  name: string;
-  subparts: Part[];
-  updatePart(newName: string): void;
+    id: number;
+    name: string;
+    subparts: Part[];
+    updatePart(newName: string): void;
 }
 
-type T40 = FunctionPropertyNames<Part>; // "updatePart"
-type T41 = NonFunctionPropertyNames<Part>; // "id" | "name" | "subparts"
-type T42 = FunctionProperties<Part>; // { updatePart(newName: string): void }
-type T43 = NonFunctionProperties<Part>; // { id: number, name: string, subparts: Part[] }
+type T40 = FunctionPropertyNames<Part>;  // "updatePart"
+type T41 = NonFunctionPropertyNames<Part>;  // "id" | "name" | "subparts"
+type T42 = FunctionProperties<Part>;  // { updatePart(newName: string): void }
+type T43 = NonFunctionProperties<Part>;  // { id: number, name: string, subparts: Part[] }
 ```
 
-Similar to union and intersection types, conditional types are not permitted to reference themselves recursively.
-For example the following is an error.
+与联合类型和交叉类型相似，有条件类型不允许递归地引用自己。比如下面的错误。
 
-##### Example
+#### 例子
 
-```ts
-type ElementType<T> = T extends any[] ? ElementType<T[number]> : T; // Error
+```typescript
+type ElementType<T> = T extends any[] ? ElementType<T[number]> : T;  // Error
 ```
 
-## Type inference in conditional types
+### 有条件类型中的类型推断
 
-Within the `extends` clause of a conditional type, it is now possible to have `infer` declarations that introduce a type variable to be inferred.
-Such inferred type variables may be referenced in the true branch of the conditional type.
-It is possible to have multiple `infer` locations for the same type variable.
+现在在有条件类型的`extends`子语句中，允许出现`infer`声明，它会引入一个待推断的类型变量。 这个推断的类型变量可以在有条件类型的true分支中被引用。 允许出现多个同类型变量的`infer`。
 
-For example, the following extracts the return type of a function type:
+例如，下面代码会提取函数类型的返回值类型：
 
-```ts
+```typescript
 type ReturnType<T> = T extends (...args: any[]) => infer R ? R : any;
 ```
 
-Conditional types can be nested to form a sequence of pattern matches that are evaluated in order:
+有条件类型可以嵌套来构成一系列的匹配模式，按顺序进行求值：
 
-```ts
-type Unpacked<T> = T extends (infer U)[]
-  ? U
-  : T extends (...args: any[]) => infer U
-  ? U
-  : T extends Promise<infer U>
-  ? U
-  : T;
+```typescript
+type Unpacked<T> =
+    T extends (infer U)[] ? U :
+    T extends (...args: any[]) => infer U ? U :
+    T extends Promise<infer U> ? U :
+    T;
 
-type T0 = Unpacked<string>; // string
-type T1 = Unpacked<string[]>; // string
-type T2 = Unpacked<() => string>; // string
-type T3 = Unpacked<Promise<string>>; // string
-type T4 = Unpacked<Promise<string>[]>; // Promise<string>
-type T5 = Unpacked<Unpacked<Promise<string>[]>>; // string
+type T0 = Unpacked<string>;  // string
+type T1 = Unpacked<string[]>;  // string
+type T2 = Unpacked<() => string>;  // string
+type T3 = Unpacked<Promise<string>>;  // string
+type T4 = Unpacked<Promise<string>[]>;  // Promise<string>
+type T5 = Unpacked<Unpacked<Promise<string>[]>>;  // string
 ```
 
-The following example demonstrates how multiple candidates for the same type variable in co-variant positions causes a union type to be inferred:
+下面的例子解释了在协变位置上，同一个类型变量的多个候选类型会被推断为联合类型：
 
-```ts
-type Foo<T> = T extends { a: infer U; b: infer U } ? U : never;
-type T10 = Foo<{ a: string; b: string }>; // string
-type T11 = Foo<{ a: string; b: number }>; // string | number
+```typescript
+type Foo<T> = T extends { a: infer U, b: infer U } ? U : never;
+type T10 = Foo<{ a: string, b: string }>;  // string
+type T11 = Foo<{ a: string, b: number }>;  // string | number
 ```
 
-Likewise, multiple candidates for the same type variable in contra-variant positions causes an intersection type to be inferred:
+相似地，在抗变位置上，同一个类型变量的多个候选类型会被推断为交叉类型：
 
-```ts
-type Bar<T> = T extends { a: (x: infer U) => void; b: (x: infer U) => void }
-  ? U
-  : never;
-type T20 = Bar<{ a: (x: string) => void; b: (x: string) => void }>; // string
-type T21 = Bar<{ a: (x: string) => void; b: (x: number) => void }>; // string & number
+```typescript
+type Bar<T> = T extends { a: (x: infer U) => void, b: (x: infer U) => void } ? U : never;
+type T20 = Bar<{ a: (x: string) => void, b: (x: string) => void }>;  // string
+type T21 = Bar<{ a: (x: string) => void, b: (x: number) => void }>;  // string & number
 ```
 
-When inferring from a type with multiple call signatures (such as the type of an overloaded function), inferences are made from the _last_ signature (which, presumably, is the most permissive catch-all case).
-It is not possible to perform overload resolution based on a list of argument types.
+当推断具有多个调用签名（例如函数重载类型）的类型时，用_最后_的签名（大概是最自由的包含所有情况的签名）进行推断。 无法根据参数类型列表来解析重载。
 
-```ts
+```typescript
 declare function foo(x: string): number;
 declare function foo(x: number): string;
 declare function foo(x: string | number): string | number;
-type T30 = ReturnType<typeof foo>; // string | number
+type T30 = ReturnType<typeof foo>;  // string | number
 ```
 
-It is not possible to use `infer` declarations in constraint clauses for regular type parameters:
+无法在正常类型参数的约束子语句中使用`infer`声明：
 
-```ts
-type ReturnType<T extends (...args: any[]) => infer R> = R; // Error, not supported
+```typescript
+type ReturnType<T extends (...args: any[]) => infer R> = R;  // 错误，不支持
 ```
 
-However, much the same effect can be obtained by erasing the type variables in the constraint and instead specifying a conditional type:
+但是，可以这样达到同样的效果，在约束里删掉类型变量，用有条件类型替换：
 
-```ts
+```typescript
 type AnyFunction = (...args: any[]) => any;
-type ReturnType<T extends AnyFunction> = T extends (...args: any[]) => infer R
-  ? R
-  : any;
+type ReturnType<T extends AnyFunction> = T extends (...args: any[]) => infer R ? R : any;
 ```
 
-## Predefined conditional types
+### 预定义的有条件类型
 
-TypeScript 2.8 adds several predefined conditional types to `lib.d.ts`:
+TypeScript 2.8在`lib.d.ts`里增加了一些预定义的有条件类型：
 
-- `Exclude<T, U>` -- Exclude from `T` those types that are assignable to `U`.
-- `Extract<T, U>` -- Extract from `T` those types that are assignable to `U`.
-- `NonNullable<T>` -- Exclude `null` and `undefined` from `T`.
-- `ReturnType<T>` -- Obtain the return type of a function type.
-- `InstanceType<T>` -- Obtain the instance type of a constructor function type.
-
-##### Example
-
-```ts
-type T00 = Exclude<"a" | "b" | "c" | "d", "a" | "c" | "f">; // "b" | "d"
-type T01 = Extract<"a" | "b" | "c" | "d", "a" | "c" | "f">; // "a" | "c"
-
-type T02 = Exclude<string | number | (() => void), Function>; // string | number
-type T03 = Extract<string | number | (() => void), Function>; // () => void
-
-type T04 = NonNullable<string | number | undefined>; // string | number
-type T05 = NonNullable<(() => string) | string[] | null | undefined>; // (() => string) | string[]
-
-function f1(s: string) {
-  return { a: 1, b: s };
-}
-
-class C {
-  x = 0;
-  y = 0;
-}
-
-type T10 = ReturnType<() => string>; // string
-type T11 = ReturnType<(s: string) => void>; // void
-type T12 = ReturnType<<T>() => T>; // {}
-type T13 = ReturnType<<T extends U, U extends number[]>() => T>; // number[]
-type T14 = ReturnType<typeof f1>; // { a: number, b: string }
-type T15 = ReturnType<any>; // any
-type T16 = ReturnType<never>; // any
-type T17 = ReturnType<string>; // Error
-type T18 = ReturnType<Function>; // Error
-
-type T20 = InstanceType<typeof C>; // C
-type T21 = InstanceType<any>; // any
-type T22 = InstanceType<never>; // any
-type T23 = InstanceType<string>; // Error
-type T24 = InstanceType<Function>; // Error
-```
-
-> Note: The `Exclude` type is a proper implementation of the `Diff` type suggested [here](https://github.com/Microsoft/TypeScript/issues/12215#issuecomment-307871458). We've used the name `Exclude` to avoid breaking existing code that defines a `Diff`, plus we feel that name better conveys the semantics of the type. We did not include the `Omit<T, K>` type because it is trivially written as `Pick<T, Exclude<keyof T, K>>`.
-
-## Improved control over mapped type modifiers
-
-Mapped types support adding a `readonly` or `?` modifier to a mapped property, but they did not provide support the ability to _remove_ modifiers.
-This matters in [_homomorphic mapped types_](https://github.com/Microsoft/TypeScript/pull/12563) which by default preserve the modifiers of the underlying type.
-
-TypeScript 2.8 adds the ability for a mapped type to either add or remove a particular modifier.
-Specifically, a `readonly` or `?` property modifier in a mapped type can now be prefixed with either `+` or `-` to indicate that the modifier should be added or removed.
+* `Exclude<T, U>` -- 从`T`中剔除可以赋值给`U`的类型。
+* `Extract<T, U>` -- 提取`T`中可以赋值给`U`的类型。
+* `NonNullable<T>` -- 从`T`中剔除`null`和`undefined`。
+* `ReturnType<T>` -- 获取函数返回值类型。
+* `InstanceType<T>` -- 获取构造函数类型的实例类型。
 
 #### Example
 
-```ts
-type MutableRequired<T> = { -readonly [P in keyof T]-?: T[P] }; // Remove readonly and ?
-type ReadonlyPartial<T> = { +readonly [P in keyof T]+?: T[P] }; // Add readonly and ?
+```typescript
+type T00 = Exclude<"a" | "b" | "c" | "d", "a" | "c" | "f">;  // "b" | "d"
+type T01 = Extract<"a" | "b" | "c" | "d", "a" | "c" | "f">;  // "a" | "c"
+
+type T02 = Exclude<string | number | (() => void), Function>;  // string | number
+type T03 = Extract<string | number | (() => void), Function>;  // () => void
+
+type T04 = NonNullable<string | number | undefined>;  // string | number
+type T05 = NonNullable<(() => string) | string[] | null | undefined>;  // (() => string) | string[]
+
+function f1(s: string) {
+    return { a: 1, b: s };
+}
+
+class C {
+    x = 0;
+    y = 0;
+}
+
+type T10 = ReturnType<() => string>;  // string
+type T11 = ReturnType<(s: string) => void>;  // void
+type T12 = ReturnType<(<T>() => T)>;  // {}
+type T13 = ReturnType<(<T extends U, U extends number[]>() => T)>;  // number[]
+type T14 = ReturnType<typeof f1>;  // { a: number, b: string }
+type T15 = ReturnType<any>;  // any
+type T16 = ReturnType<never>;  // any
+type T17 = ReturnType<string>;  // Error
+type T18 = ReturnType<Function>;  // Error
+
+type T20 = InstanceType<typeof C>;  // C
+type T21 = InstanceType<any>;  // any
+type T22 = InstanceType<never>;  // any
+type T23 = InstanceType<string>;  // Error
+type T24 = InstanceType<Function>;  // Error
 ```
 
-A modifier with no `+` or `-` prefix is the same as a modifier with a `+` prefix. So, the `ReadonlyPartial<T>` type above corresponds to
+> 注意：`Exclude`类型是[建议的](https://github.com/Microsoft/TypeScript/issues/12215#issuecomment-307871458)`Diff`类型的一种实现。我们使用`Exclude`这个名字是为了避免破坏已经定义了`Diff`的代码，并且我们感觉这个名字能更好地表达类型的语义。我们没有增加`Omit<T, K>`类型，因为它可以很容易的用`Pick<T, Exclude<keyof T, K>>`来表示。
 
-```ts
-type ReadonlyPartial<T> = { readonly [P in keyof T]?: T[P] }; // Add readonly and ?
+## 改进对映射类型修饰符的控制
+
+映射类型支持在属性上添加`readonly`或`?`修饰符，但是它们不支持_移除_修饰符。 这对于[_同态映射类型_](https://github.com/Microsoft/TypeScript/pull/12563)有些影响，因为同态映射类型默认保留底层类型的修饰符。
+
+TypeScript 2.8为映射类型增加了增加或移除特定修饰符的能力。 特别地，映射类型里的`readonly`或`?`属性修饰符现在可以使用`+`或`-`前缀，来表示修饰符是添加还是移除。
+
+#### 例子
+
+```typescript
+type MutableRequired<T> = { -readonly [P in keyof T]-?: T[P] };  // 移除readonly和?
+type ReadonlyPartial<T> = { +readonly [P in keyof T]+?: T[P] };  // 添加readonly和?
 ```
 
-Using this ability, `lib.d.ts` now has a new `Required<T>` type.
-This type strips `?` modifiers from all properties of `T`, thus making all properties required.
+不带`+`或`-`前缀的修饰符与带`+`前缀的修饰符具有相同的作用。因此上面的`ReadonlyPartial<T>`类型与下面的一致
 
-##### Example
+```typescript
+type ReadonlyPartial<T> = { readonly [P in keyof T]?: T[P] };  // 添加readonly和?
+```
 
-```ts
+利用这个特性，`lib.d.ts`现在有了一个新的`Required<T>`类型。 它移除了`T`的所有属性的`?`修饰符，因此所有属性都是必需的。
+
+#### 例子
+
+```typescript
 type Required<T> = { [P in keyof T]-?: T[P] };
 ```
 
-Note that in [`strictNullChecks`](/tsconfig#strictNullChecks) mode, when a homomorphic mapped type removes a `?` modifier from a property in the underlying type it also removes `undefined` from the type of that property:
+注意在`--strictNullChecks`模式下，当同态映射类型移除了属性底层类型的`?`修饰符，它同时也移除了那个属性上的`undefined`类型：
 
-##### Example
+#### 例子
 
-```ts
-type Foo = { a?: string }; // Same as { a?: string | undefined }
-type Bar = Required<Foo>; // Same as { a: string }
+```typescript
+type Foo = { a?: string };  // 等同于 { a?: string | undefined }
+type Bar = Required<Foo>;  // 等同于 { a: string }
 ```
 
-## Improved `keyof` with intersection types
+## 改进交叉类型上的`keyof`
 
-With TypeScript 2.8 `keyof` applied to an intersection type is transformed to a union of `keyof` applied to each intersection constituent.
-In other words, types of the form `keyof (A & B)` are transformed to be `keyof A | keyof B`.
-This change should address inconsistencies with inference from `keyof` expressions.
+TypeScript 2.8作用于交叉类型的`keyof`被转换成作用于交叉成员的`keyof`的联合。 换句话说，`keyof (A & B)`会被转换成`keyof A | keyof B`。 这个改动应该能够解决`keyof`表达式推断不一致的问题。
 
-##### Example
+#### 例子
 
-```ts
+```typescript
 type A = { a: string };
 type B = { b: string };
 
-type T1 = keyof (A & B); // "a" | "b"
-type T2<T> = keyof (T & B); // keyof T | "b"
-type T3<U> = keyof (A & U); // "a" | keyof U
-type T4<T, U> = keyof (T & U); // keyof T | keyof U
-type T5 = T2<A>; // "a" | "b"
-type T6 = T3<B>; // "a" | "b"
-type T7 = T4<A, B>; // "a" | "b"
+type T1 = keyof (A & B);  // "a" | "b"
+type T2<T> = keyof (T & B);  // keyof T | "b"
+type T3<U> = keyof (A & U);  // "a" | keyof U
+type T4<T, U> = keyof (T & U);  // keyof T | keyof U
+type T5 = T2<A>;  // "a" | "b"
+type T6 = T3<B>;  // "a" | "b"
+type T7 = T4<A, B>;  // "a" | "b"
 ```
 
-## Better handling for namespace patterns in `.js` files
+## 更好的处理`.js`文件中的命名空间模式
 
-TypeScript 2.8 adds support for understanding more namespace patterns in `.js` files.
-Empty object literals declarations on top level, just like functions and classes, are now recognized as as namespace declarations in JavaScript.
+TypeScript 2.8加强了识别`.js`文件里的命名空间模式。 JavaScript顶层的空对象字面量声明，就像函数和类，会被识别成命名空间声明。
 
-```js
-var ns = {}; // recognized as a declaration for a namespace `ns`
+```javascript
+var ns = {};     // recognized as a declaration for a namespace `ns`
 ns.constant = 1; // recognized as a declaration for var `constant`
 ```
 
-Assignments at the top-level should behave the same way; in other words, a `var` or `const` declaration is not required.
+顶层的赋值应该有一致的行为；也就是说，`var`或`const`声明不是必需的。
 
-```js
+```javascript
 app = {}; // does NOT need to be `var app = {}`
-app.C = class {};
-app.f = function() {};
+app.C = class {
+};
+app.f = function() {
+};
 app.prop = 1;
 ```
 
-## IIFEs as namespace declarations
+### 立即执行的函数表达式做为命名空间
 
-An IIFE returning a function, class or empty object literal, is also recognized as a namespace:
+立即执行的函数表达式返回一个函数，类或空的对象字面量，也会被识别为命名空间：
 
-```js
-var C = (function() {
+```javascript
+var C = (function () {
   function C(n) {
     this.p = n;
   }
@@ -358,21 +331,21 @@ var C = (function() {
 C.staticProperty = 1;
 ```
 
-## Defaulted declarations
+### 默认声明
 
-"Defaulted declarations" allow initializers that reference the declared name in the left side of a logical or:
+“默认声明”允许引用了声明的名称的初始化器出现在逻辑或的左边：
 
-```js
+```javascript
 my = window.my || {};
 my.app = my.app || {};
 ```
 
-## Prototype assignment
+### 原型赋值
 
-You can assign an object literal directly to the prototype property. Individual prototype assignments still work too:
+你可以把一个对象字面量直接赋值给原型属性。独立的原型赋值也可以：
 
-```ts
-var C = function(p) {
+```typescript
+var C = function (p) {
   this.p = p;
 };
 C.prototype = {
@@ -385,43 +358,39 @@ C.prototype.q = function(r) {
 };
 ```
 
-## Nested and merged declarations
+### 嵌套与合并声明
 
-Nesting works to any level now, and merges correctly across files. Previously neither was the case.
+现在嵌套的层次不受限制，并且多文件之间的声明合并也没有问题。以前不是这样的。
 
-```js
+```javascript
 var app = window.app || {};
-app.C = class {};
+app.C = class { };
 ```
 
-## Per-file JSX factories
+## 各文件的JSX工厂
 
-TypeScript 2.8 adds support for a per-file configurable JSX factory name using `@jsx dom` pragma.
-JSX factory can be configured for a compilation using [`jsxFactory`](/tsconfig#jsxFactory) (default is `React.createElement`). With TypeScript 2.8 you can override this on a per-file-basis by adding a comment to the beginning of the file.
+TypeScript 2.8增加了使用`@jsx dom`指令为每个文件设置JSX工厂名。 JSX工厂也可以使用`--jsxFactory`编译参数设置（默认值为`React.createElement`）。TypeScript 2.8你可以基于文件进行覆写。
 
-##### Example
+#### 例子
 
-```ts
+```typescript
 /** @jsx dom */
-import { dom } from "./renderer";
-<h></h>;
+import { dom } from "./renderer"
+<h></h>
 ```
 
-Generates:
+生成：
 
-```js
+```javascript
 var renderer_1 = require("./renderer");
 renderer_1.dom("h", null);
 ```
 
-## Locally scoped JSX namespaces
+## 本地范围的JSX命名空间
 
-JSX type checking is driven by definitions in a JSX namespace, for instance `JSX.Element` for the type of a JSX element, and `JSX.IntrinsicElements` for built-in elements.
-Before TypeScript 2.8 the `JSX` namespace was expected to be in the global namespace, and thus only allowing one to be defined in a project.
-Starting with TypeScript 2.8 the `JSX` namespace will be looked under the `jsxNamespace` (e.g. `React`) allowing for multiple jsx factories in one compilation.
-For backward compatibility the global `JSX` namespace is used as a fallback if none was defined on the factory function.
-Combined with the per-file `@jsx` pragma, each file can have a different JSX factory.
+JSX类型检查基于JSX命名空间里的定义，比如`JSX.Element`用于JSX元素的类型，`JSX.IntrinsicElements`用于内置的元素。 在TypeScript 2.8之前`JSX`命名空间被视为全局命名空间，并且一个工程只允许存在一个。 TypeScript 2.8开始，`JSX`命名空间将在`jsxNamespace`下面查找（比如`React`），允许在一次编译中存在多个jsx工厂。 为了向后兼容，全局的`JSX`命名空间被当做回退选项。 使用独立的`@jsx`指令，每个文件可以有自己的JSX工厂。
 
-## New `--emitDeclarationOnly`
+## 新的`--emitDeclarationsOnly`
 
-[`emitDeclarationOnly`](/tsconfig#emitDeclarationOnly) allows for _only_ generating declaration files; `.js`/`.jsx` output generation will be skipped with this flag. The flag is useful when the `.js` output generation is handled by a different transpiler like Babel.
+`--emitDeclarationsOnly`允许_仅_生成声明文件；使用这个标记`.js`/`.jsx`输出会被跳过。当使用其它的转换工具如Babel处理`.js`输出的时候，可以使用这个标记。
+
