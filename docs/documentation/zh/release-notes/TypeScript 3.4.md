@@ -54,7 +54,7 @@ TypeScript 3.4 引入了一个名为 `--incremental` 的新标志，它告诉 Ty
 
 为了更具体，让我们建立一些动机并考虑以下 `compose` 函数：
 
-```typescript
+```ts
 function compose<A, B, C>(f: (arg: A) => B, g: (arg: B) => C): (arg: A) => C {
   return x => g(f(x));
 }
@@ -69,7 +69,7 @@ function compose<A, B, C>(f: (arg: A) => B, g: (arg: B) => C): (arg: A) => C {
 
 调用此函数时，TypeScript 将尝试通过一个名为 _type argument inference_ 的进程来计算出 `A`，`B` 和 `C` 的类型。 这个推断过程通常很有效：
 
-```typescript
+```ts
 interface Person {
   name: string;
   age: number;
@@ -95,7 +95,7 @@ getDisplayNameLength({ name: "Person McPersonface", age: 42 });
 
 推断过程在这里相当简单，因为 `getDisplayName` 和 `getLength` 使用的是可以轻松引用的类型。 但是，在 TypeScript 3.3 及更早版本中，泛型函数如 `compose` 在传递其他泛型函数时效果不佳。
 
-```typescript
+```ts
 interface Box<T> {
   value: T;
 }
@@ -125,19 +125,19 @@ makeBoxedArray("hello!").value[0].toUpperCase();
 
 换句话说，而不是生成类型
 
-```typescript
+```ts
 (arg: {}) => Box<{}[]>
 ```
 
 TypeScript 3.4 生成的类型
 
-```typescript
+```ts
 <T>(arg: T) => Box<T[]>
 ```
 
 注意，`T` 已从 `makeArray` 传递到结果类型的类型参数列表中。 这意味着来自 `compose` 参数的泛型已被保留，我们的 `makeBoxedArray` 示例将正常运行！
 
-```typescript
+```ts
 interface Box<T> {
   value: T;
 }
@@ -172,7 +172,7 @@ TypeScript 3.4 让使用只读的类似数组的类型更简单了。
 
 任何带有 `ReadonlyArray` 引用的变量不能被添加、移除或者替换数组中的任何元素。
 
-```typescript
+```ts
 function foo(arr: ReadonlyArray<string>) {
   arr.slice();        // okay
   arr.push("hello!"); // error!
@@ -183,7 +183,7 @@ function foo(arr: ReadonlyArray<string>) {
 
 TypeScript 3.4 为 `ReadonlyArray` 引入了一个新的语法，就是在数组类型上使用了新的 `readonly` 修饰语。
 
-```typescript
+```ts
 function foo(arr: readonly string[]) {
   arr.slice();        // okay
   arr.push("hello!"); // 错误！
@@ -194,7 +194,7 @@ function foo(arr: readonly string[]) {
 
 TypeScript 3.4 同样引入了对 `readonly` 元祖的支持。 我们可以在任何元祖类型上加上前置 `readonly` 关键字用来表示它是 `readonly` 元祖，非常像我们现在可以对数组使用的省略版语法。 就像你可能期待的，不像插槽可写的普通元祖，`readonly` 元祖只允许从那些位置读。
 
-```typescript
+```ts
 function foo(pair: readonly [string, string]) {
   console.log(pair[0]);   // okay
   pair[1] = "hello!";     // 错误
@@ -209,7 +209,7 @@ function foo(pair: readonly [string, string]) {
 
 这意味着，一个映射类型像 `Boxify` 可以在数组上生效，元祖也是。
 
-```typescript
+```ts
 interface Box<T> { value: T }
 
 type Boxify<T> = {
@@ -227,7 +227,7 @@ type C = Boxify<[string, boolean]>;
 
 不幸的是，映射类型像 `Readonly` 实用类型在数组和元祖类型上实际上是无用的。
 
-```typescript
+```ts
 // lib.d.ts
 type Readonly<T> = {
   readonly [K in keyof T]: T[K]
@@ -247,7 +247,7 @@ type C = Readonly<[string, boolean]>;
 
 在 TypeScript 3.4，在映射类型中的 `readonly` 修饰符将自动的转换类似数组结构到他们相符合的 `readonly` 副本。
 
-```typescript
+```ts
 // 在 TypeScript 3.4 中代码会如何运行
 
 // { readonly a: string, readonly b: number }
@@ -262,7 +262,7 @@ type C = Readonly<[string, boolean]>;
 
 类似地，你可以编写一个类似 `Writable` 映射类型的实用程序类型来移除 `readonly`-ness，并将 `readonly` 数组容器转换回它们的可变等价物。
 
-```typescript
+```ts
 type Writable<T> = {
   -readonly [K in keyof T]: T[K]
 }
@@ -284,7 +284,7 @@ type C = Writable<readonly [string, boolean]>;
 
 它不是一个通用型操作，尽管它看起来像。 `readonly` 类型修饰符只能用于数组类型和元组类型的语法。
 
-```typescript
+```ts
 let err1: readonly Set<number>; // 错误！
 let err2: readonly Array<boolean>; // 错误！
 
@@ -301,7 +301,7 @@ TypeScript 3.4 引入了一个叫 _`const`_ 断言的字面量值的新构造。
 * 对象字面量获得 `readonly` 属性
 * 数组字面量成为 `readonly` 元组
 
-```typescript
+```ts
 // Type '"hello"'
 let x = "hello" as const;
 
@@ -314,7 +314,7 @@ let z = { text: "hello" } as const;
 
 也可以使用尖括号断言语法，除了 `.tsx` 文件之外。
 
-```typescript
+```ts
 // Type '"hello"'
 let x = <const>"hello";
 
@@ -327,7 +327,7 @@ let z = <const>{ text: "hello" };
 
 此功能意味着通常可以省略掉仅用于将不可变性示意给编译器的类型。
 
-```typescript
+```ts
 // 不使用引用或声明的类型。
 // 我们只需要一个 const 断言。
 function getShapes() {
@@ -354,7 +354,7 @@ for (const shape of getShapes()) {
 
 如果你选择不使用 TypeScript 的 `enum` 结构，这甚至可以用于在纯 JavaScript 代码中使用类似 `enum` 的模式。
 
-```typescript
+```ts
 export const Colors = {
   red: "RED",
   blue: "BLUE",
@@ -374,7 +374,7 @@ export default {
 
 需要注意的是，`const` 断言只能直接应用于简单的字面量表达式上。
 
-```typescript
+```ts
 // 错误！'const' 断言只能用在 string, number, boolean, array, object literal。
 let a = (Math.random() < 0.5 ? 0 : 1) as const;
 
@@ -386,7 +386,7 @@ let b = Math.random() < 0.5 ?
 
 另一件得记住的事是 `const` 上下文不会直接将表达式转换为完全不可变的。
 
-```typescript
+```ts
 let arr = [1, 2, 3, 4];
 
 let foo = {
@@ -406,7 +406,7 @@ foo.contents.push(5); // ...有效！
 
 TypeScript 3.4 引入了对 ECMAScript 新 `globalThis` 全局变量的类型检查的支持，它指向的是全局作用域。 与上述解决方案不同，`globalThis` 提供了一种访问全局作用域的标准方法，可以在不同环境中使用。
 
-```typescript
+```ts
 // 在一个全局文件里:
 
 var abc = 100;
@@ -417,7 +417,7 @@ globalThis.abc = 200;
 
 注意，使用 `let` 和 `const` 声明的全局变量不会显示在 `globalThis` 上。
 
-```typescript
+```ts
 let answer = 42;
 
 // 错误！'typeof globalThis' 没有 'answer' 属性。

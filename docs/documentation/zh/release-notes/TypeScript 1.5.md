@@ -13,7 +13,7 @@ TypeScript 1.5 支持 ECMAScript 6 \(ES6\) 模块. ES6 模块可以看做之前 
 
 作为 TypeScript 已有的 `export` 前缀支持, 模块成员也可以使用单独导出的声明导出, 如果需要, `as` 语句可以指定不同的导出名称.
 
-```typescript
+```ts
 interface Stream { ... }
 function writeToStream(stream: Stream, data: string) { ... }
 export { Stream, writeToStream as write };  // writeToStream 导出为 write
@@ -21,7 +21,7 @@ export { Stream, writeToStream as write };  // writeToStream 导出为 write
 
 引入声明也可以使用 `as` 语句来指定一个不同的导入名称. 比如:
 
-```typescript
+```ts
 import { read, write, standardOutput as stdout } from "./inout";
 var s = read(stdout);
 write(stdout, s);
@@ -29,7 +29,7 @@ write(stdout, s);
 
 作为单独导入的候选项, 命名空间导入可以导入整个模块:
 
-```typescript
+```ts
 import * as io from "./inout";
 var s = io.read(io.standardOutput);
 io.write(io.standardOutput, s);
@@ -39,13 +39,13 @@ io.write(io.standardOutput, s);
 
 使用 `from` 语句一个模块可以复制指定模块的导出项到当前模块, 而无需创建本地名称.
 
-```typescript
+```ts
 export { read, write, standardOutput as stdout } from "./inout";
 ```
 
 `export *` 可以用来重新导出另一个模块的所有导出项. 在创建一个聚合了其他几个模块导出项的模块时很方便.
 
-```typescript
+```ts
 export function transform(s: string): string { ... }
 export * from "./mod1";
 export * from "./mod2";
@@ -55,7 +55,7 @@ export * from "./mod2";
 
 一个 export default 声明表示一个表达式是这个模块的默认导出项.
 
-```typescript
+```ts
 export default class Greeter {
     sayHello() {
         console.log("Greetings!");
@@ -65,7 +65,7 @@ export default class Greeter {
 
 对应的可以使用默认导入:
 
-```typescript
+```ts
 import Greeter from "./greeter";
 var g = new Greeter();
 g.sayHello();
@@ -75,7 +75,7 @@ g.sayHello();
 
 "无导入加载" 可以被用来加载某些只需要其副作用的模块.
 
-```typescript
+```ts
 import "./polyfills";
 ```
 
@@ -91,19 +91,19 @@ TypeScript 1.5 添加了对 ES6 解构声明与赋值的支持.
 
 比如说, 下面的例子声明了变量 `x`, `y` 和 `z`, 并且分别将它们的值初始化为 `getSomeObject().x`, `getSomeObject().y` 和 `getSomeObject().z`:
 
-```typescript
+```ts
 var { x, y, z } = getSomeObject();
 ```
 
 解构声明也可以用于从数组中得到值.
 
-```typescript
+```ts
 var [x, y, z = 10] = getSomeArray();
 ```
 
 相似的, 解构可以用在函数的参数声明中:
 
-```typescript
+```ts
 function drawText({ text = "", location: [x, y] = [0, 0], bold = false }) {
     // 画出文本
 }
@@ -117,7 +117,7 @@ drawText(item);
 
 解构也可以被用于普通的赋值表达式. 举例来讲, 交换两个变量的值可以被写作一个解构赋值:
 
-```typescript
+```ts
 var x = 1;
 var y = 2;
 [x, y] = [y, x];
@@ -131,7 +131,7 @@ var y = 2;
 
 **之前**:
 
-```typescript
+```ts
 module Math {
     export function add(x, y) { ... }
 }
@@ -139,7 +139,7 @@ module Math {
 
 **之后**:
 
-```typescript
+```ts
 namespace Math {
     export function add(x, y) { ... }
 }
@@ -151,7 +151,7 @@ ES6 的 `let` 和 `const` 声明现在支持编译到 ES3 和 ES5.
 
 ### Const
 
-```typescript
+```ts
 const MAX = 100;
 
 ++MAX; // 错误: 自增/减运算符不能用于一个常量
@@ -159,7 +159,7 @@ const MAX = 100;
 
 ### 块级作用域
 
-```typescript
+```ts
 if (true) {
   let a = 4;
   // 使用变量 a
@@ -180,13 +180,13 @@ TypeScript 1.5 增加了 ES6 `for...of` 循环编译到 ES3/ES5 时对数组的�
 
 TypeScript 编译器会转译 `for...of` 数组到具有语义的 ES3/ES5 JavaScript \(如果被设置为编译到这些版本\).
 
-```typescript
+```ts
 for (var v of expr) { }
 ```
 
 会输出为:
 
-```javascript
+```js
 for (var _i = 0, _a = expr; _i < _a.length; _i++) {
     var v = _a[_i];
 }
@@ -209,7 +209,7 @@ for (var _i = 0, _a = expr; _i < _a.length; _i++) {
 
 装饰器 `readonly` 和 `enumerable(false)` 会在属性 `method` 添加到类 `C` 上之前被应用. 这使得装饰器可以修改其实现, 具体到这个例子, 设置了 `descriptor` 为 `writable: false` 以及 `enumerable: false`.
 
-```typescript
+```ts
 class C {
   @readonly
   @enumerable(false)
@@ -231,7 +231,7 @@ function enumerable(value) {
 
 使用动态的属性初始化一个对象可能会很麻烦. 参考下面的例子:
 
-```typescript
+```ts
 type NeighborMap = { [name: string]: Node };
 type Node = { name: string; neighbors: NeighborMap;}
 
@@ -244,7 +244,7 @@ function makeNode(name: string, initialNeighbor: Node): Node {
 
 这里我们需要创建一个包含了 neighbor-map 的变量, 便于我们初始化它. 使用 TypeScript 1.5, 我们可以让编译器来干重活:
 
-```typescript
+```ts
 function makeNode(name: string, initialNeighbor: Node): Node {
     return {
         name: name,
@@ -281,7 +281,7 @@ TypeScript 1.4 中, 我们添加了模板字符串编译到所有 ES 版本的�
 
 当编译到 ES3/ES5 时, 下面的代码:
 
-```typescript
+```ts
 function oddRawStrings(strs: TemplateStringsArray, n1, n2) {
     return strs.raw.filter((raw, index) => index % 2 === 1);
 }
@@ -291,7 +291,7 @@ oddRawStrings `Hello \n${123} \t ${456}\n world`
 
 会被输出为:
 
-```typescript
+```ts
 function oddRawStrings(strs, n1, n2) {
     return strs.raw.filter(function (raw, index) {
         return index % 2 === 1;
@@ -307,7 +307,7 @@ var _a;
 
 新的 `amd-dependency name` 属性允许为 AMD 依赖传递一个可选的名称.
 
-```typescript
+```ts
 /// <amd-dependency path="legacy/moduleA" name="moduleA"/>
 declare var moduleA:MyType
 moduleA.callStuff()
@@ -315,7 +315,7 @@ moduleA.callStuff()
 
 生成的 JS 代码:
 
-```typescript
+```ts
 define(["require", "exports", "legacy/moduleA"], function (require, exports, moduleA) {
     moduleA.callStuff()
 });
@@ -330,7 +330,7 @@ define(["require", "exports", "legacy/moduleA"], function (require, exports, mod
 
 ### 例子
 
-```javascript
+```js
 {
     "compilerOptions": {
         "module": "commonjs",

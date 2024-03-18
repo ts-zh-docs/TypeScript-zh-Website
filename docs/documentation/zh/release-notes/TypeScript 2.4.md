@@ -11,7 +11,7 @@ oneline: TypeScript 2.4 Release Notes
 
 这意味着你可以有条件地延迟加载其它模块和库。 例如下面这个`async`函数，它仅在需要的时候才导入工具库：
 
-```typescript
+```ts
 async function getZipFile(name: string, files: File[]): Promise<File> {
     const zipUtil = await import('./utils/create-zip-file');
     const zipContents = await zipUtil.getContentAsBlob(files);
@@ -25,7 +25,7 @@ async function getZipFile(name: string, files: File[]): Promise<File> {
 
 TypeScript 2.4现在支持枚举成员变量包含字符串构造器。
 
-```typescript
+```ts
 enum Colors {
     Red = "RED",
     Green = "GREEN",
@@ -43,7 +43,7 @@ TypeScript 2.4围绕着泛型的推断方式引入了一些很棒的改变。
 
 其一，TypeScript能够推断调用的返回值类型。 这可以优化你的体验和方便捕获错误。 如下所示：
 
-```typescript
+```ts
 function arrayMap<T, U>(f: (x: T) => U): (a: T[]) => U[] {
     return a => a.map(f);
 }
@@ -53,7 +53,7 @@ const lengths: (a: string[]) => number[] = arrayMap(s => s.length);
 
 下面是一个你可能会见到的出错了的例子：
 
-```typescript
+```ts
 let x: Promise<string> = new Promise(resolve => {
     resolve(10);
     //      ~~ Error!
@@ -64,13 +64,13 @@ let x: Promise<string> = new Promise(resolve => {
 
 在TypeScript 2.4之前，在下面的例子里：
 
-```typescript
+```ts
 let f: <T>(x: T) => T = y => y;
 ```
 
 `y`将会具有`any`类型。 这意味着虽然程序会检查类型，但是你却可以使用`y`做任何事情，就比如：
 
-```typescript
+```ts
 let f: <T>(x: T) => T = y => y() + y.foo.bar;
 ```
 
@@ -84,7 +84,7 @@ let f: <T>(x: T) => T = y => y() + y.foo.bar;
 
 TypeScript在比较两个单一签名的类型时会尝试统一类型参数。 因此，在涉及到两个泛型签名的时候会进行更严格的检查，这就可能发现一些bugs。
 
-```typescript
+```ts
 type A = <T, U>(x: T, y: U) => [T, U];
 type B = <S>(x: S, y: S) => [S, S];
 
@@ -100,7 +100,7 @@ TypeScript一直是以双变（bivariant）的方式来比较参数。 这样做
 
 TypeScript 2.4在处理两个回调类型时引入了收紧机制。例如：
 
-```typescript
+```ts
 interface Mappable<T> {
     map<U>(f: (x: T) => U): Mappable<U>;
 }
@@ -122,7 +122,7 @@ TS 2.4里关联`map`的类型时，TypeScript会检查是否每个参数都是�
 
 TypeScript 2.4引入了“弱类型”的概念。 任何只包含了可选属性的类型被当作是“weak”。 比如，下面的`Options`类型是弱类型：
 
-```typescript
+```ts
 interface Options {
     data?: string,
     timeout?: number,
@@ -132,7 +132,7 @@ interface Options {
 
 在TypeScript 2.4里给弱类型赋值时，如果这个值的属性与弱类型的属性没有任何重叠属性时会得到一个错误。 比如：
 
-```typescript
+```ts
 function sendMessage(options: Options) {
     // ...
 }

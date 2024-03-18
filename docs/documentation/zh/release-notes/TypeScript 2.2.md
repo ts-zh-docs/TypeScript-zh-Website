@@ -24,7 +24,7 @@ TypeScript 2.2 增加了对 ECMAScript 2015 混合类模式 \(见[MDN混合类�
 
 #### 将以上规则放到一个例子中
 
-```typescript
+```ts
 class Point {
     constructor(public x: number, public y: number) {}
 }
@@ -61,7 +61,7 @@ customer.accountBalance = 0;
 
 混合类可以通过在类型参数中限定构造函数签名的返回值类型来限制它们可以被混入的类的类型。举例来说，下面的`WithLocation`函数实现了一个为满足`Point`接口 （也就是有类型为`number`的`x`和`y`属性）的类添加`getLocation`方法的子类工厂。
 
-```typescript
+```ts
 interface Point {
     x: number;
     y: number;
@@ -81,7 +81,7 @@ TypeScript没有表示非基本类型的类型，即不是`number` \| `string` \
 
 使用`object`类型，可以更好地表示类似`Object.create`这样的API。例如：
 
-```typescript
+```ts
 declare function create(o: object | null): void;
 
 create({ prop: 0 }); // OK
@@ -101,7 +101,7 @@ create(undefined); // Error
 
 ### 示例
 
-```typescript
+```ts
 class CustomError extends Error {
     constructor(message?: string) {
         super(message); // 'Error' breaks prototype chain here
@@ -112,7 +112,7 @@ class CustomError extends Error {
 
 生成JS代码：
 
-```javascript
+```js
 var CustomError = (function (_super) {
   __extends(CustomError, _super);
   function CustomError() {
@@ -127,7 +127,7 @@ var CustomError = (function (_super) {
 
 new.target也适用于编写可构造的函数，例如：
 
-```typescript
+```ts
 function f() {
   if (new.target) { /* called via 'new' */ }
 }
@@ -135,7 +135,7 @@ function f() {
 
 编译为：
 
-```javascript
+```js
 function f() {
   var _newTarget = this && this instanceof f ? this.constructor : void 0;
   if (_newTarget) { /* called via 'new' */ }
@@ -158,7 +158,7 @@ TypeScript 2.2改进了对表达式中可空操作数的检查。具体来说，
 
 具有字符串索引签名的类型可以使用`[]`符号访问，但不允许使用`.`符号访问。从TypeScript 2.2开始两种方式都允许使用。
 
-```typescript
+```ts
 interface StringMap<T> {
     [x: string]: T;
 }
@@ -177,7 +177,7 @@ TypeScript 2.2增加了对在JSX子元素上使用扩展运算符的支持。更
 
 ### 示例
 
-```typescript
+```ts
 function Todo(prop: { key: number, todo: string }) {
     return <div>{prop.key.toString() + prop.todo}</div>;
 }

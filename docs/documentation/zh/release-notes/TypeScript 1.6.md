@@ -13,7 +13,7 @@ JSX 是一种可嵌入的类似 XML 的语法. 它将最终被转换为合法的
 
 TypeScript 1.6 引入了新的 `.tsx` 文件扩展名. 这一扩展名一方面允许 TypeScript 文件中的 JSX 语法, 一方面将 `as` 运算符作为默认的类型转换方式 \(避免 JSX 表达式和 TypeScript 前置类型转换运算符之间的歧义\). 比如:
 
-```typescript
+```ts
 var x = <any> foo;
 // 与如下等价:
 var x = foo as any;
@@ -23,7 +23,7 @@ var x = foo as any;
 
 使用 React 及 JSX 支持, 你需要使用 [React 类型声明](https://github.com/borisyankov/DefinitelyTyped/tree/master/react). 这些类型定义了 `JSX` 命名空间, 以便 TypeScript 能正确地检查 React 的 JSX 表达式. 比如:
 
-```typescript
+```ts
 /// <reference path="react.d.ts" />
 
 interface Props {
@@ -59,7 +59,7 @@ TypeScript 1.6 引入了交叉类型作为联合类型 \(union types\) 逻辑上
 
 ### 例子
 
-```typescript
+```ts
 function extend<T, U>(first: T, second: U): T & U {
     let result = <T & U> {};
     for (let id in first) {
@@ -78,7 +78,7 @@ var s = x.a;
 var n = x.b;
 ```
 
-```typescript
+```ts
 type LinkedList<T> = T & { next: LinkedList<T> };
 
 interface Person {
@@ -106,7 +106,7 @@ abc.c = "hello";
 
 本地的类, 接口, 枚举和类型别名现在可以在函数声明中出现. 本地类型为块级作用域, 与 `let` 和 `const` 声明的变量类似. 比如说:
 
-```typescript
+```ts
 function f() {
     if (true) {
         interface T { x: number }
@@ -123,7 +123,7 @@ function f() {
 
 推导出的函数返回值类型可能在函数内部声明的. 调用函数的地方无法引用到这样的本地类型, 但是它当然能从类型结构上匹配. 比如:
 
-```typescript
+```ts
 interface Point {
     x: number;
     y: number;
@@ -146,7 +146,7 @@ var p3 = new PointOne();
 
 本地的类型可以引用类型参数, 本地的类和接口本身即可能是泛型. 比如:
 
-```typescript
+```ts
 function f3() {
     function f<X, Y>(x: X, y: Y) {
         class C {
@@ -166,7 +166,7 @@ function f3() {
 
 TypeScript 1.6 增加了对 ES6 类表达式的支持. 在一个类表达式中, 类的名称是可选的, 如果指明, 作用域仅限于类表达式本身. 这和函数表达式可选的名称类似. 在类表达式外无法引用其实例类型, 但是自然也能够从类型结构上匹配. 比如:
 
-```typescript
+```ts
 let Point = class {
     constructor(public x: number, public y: number) { }
     public length() {
@@ -185,7 +185,7 @@ TypeScript 1.6 增加了对类继承任意值为一个构造函数的表达式�
 
 一些例子:
 
-```typescript
+```ts
 // 继承内建类
 
 class MyArray extends Array<number> { }
@@ -226,7 +226,7 @@ TypeScript 1.6 为类和它们的方法增加了 `abstract` 关键字. 一个抽
 
 ### 例子
 
-```typescript
+```ts
 abstract class Base {
     abstract getThing(): string;
     getOtherThing() { return 'hello'; }
@@ -254,7 +254,7 @@ y.getOtherThing(); // 正确
 
 TypeScript 1.6 中, 类型别名支持泛型. 比如:
 
-```typescript
+```ts
 type Lazy<T> = T | (() => T);
 
 var s: Lazy<string>;
@@ -275,7 +275,7 @@ type Pair<T> = Tuple<T, T>;
 
 ### 例子
 
-```typescript
+```ts
 var x: { foo: number };
 x = { foo: 1, baz: 2 };  // 错误, 多余的属性 `baz`
 
@@ -285,7 +285,7 @@ y = { foo: 1, baz: 2 };  // 错误, 多余或者拼错的属性 `baz`
 
 一个类型可以通过包含一个索引签名来显示指明未出现在类型中的属性是被允许的.
 
-```typescript
+```ts
 var x: { foo: number, [x: string]: any };
 x = { foo: 1, baz: 2 };  // 现在 `baz` 匹配了索引签名
 ```
@@ -296,7 +296,7 @@ TypeScript 1.6 添加了对于 ES6 输出的生成器支持.
 
 一个生成器函数可以有返回值类型标注, 就像普通的函数. 标注表示生成器函数返回的生成器的类型. 这里有个例子:
 
-```typescript
+```ts
 function *g(): Iterable<string> {
     for (var i = 0; i < 100; i++) {
         yield ""; // string 可以赋值给 string
@@ -307,7 +307,7 @@ function *g(): Iterable<string> {
 
 没有标注类型的生成器函数会有自动推演的类型. 在下面的例子中, 类型会由 yield 语句推演出来:
 
-```typescript
+```ts
 function *g() {
     for (var i = 0; i < 100; i++) {
         yield ""; // 推导出 string
@@ -324,7 +324,7 @@ TypeScript 1.6 增加了编译到 ES6 时对 `async` 函数试验性的支持. �
 
 ### 例子
 
-```typescript
+```ts
 var p: Promise<number> = /* ... */;
 async function fn(): Promise<number> {
   var i = await p; // 暂停执行直到 'p' 得到结果. 'i' 的类型为 "number"
@@ -370,7 +370,7 @@ npm install -g typescript@next
 
 外围类的实例类型可以通过接口声明来扩展. 类构造函数对象不会被修改. 比如说:
 
-```typescript
+```ts
 declare class Foo {
     public x : number;
 }
@@ -391,7 +391,7 @@ TypeScript 1.6 增加了一个新的在 `if` 语句中收窄变量类型的方�
 
 ### 例子
 
-```typescript
+```ts
 function isCat(a: any): a is Cat {
   return a.name === 'kitty';
 }
@@ -406,7 +406,7 @@ if(isCat(x)) {
 
 一个没有写明 `files` 属性的 `tsconfig.json` 文件 \(默认会引用所有子目录下的 \*.ts 文件\) 现在可以包含一个 `exclude` 属性, 指定需要在编译中排除的文件或者目录列表. `exclude` 属性必须是一个字符串数组, 其中每一个元素指定对应的一个文件或者文件夹名称对于 `tsconfig.json` 文件所在位置的相对路径. 举例来说:
 
-```javascript
+```js
 {
     "compilerOptions": {
         "out": "test.js"

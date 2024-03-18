@@ -9,7 +9,7 @@ oneline: TypeScript 3.6 Release Notes
 
 TypeScript 3.6 对迭代器和生成器函数引入了更严格的检查。在之前的版本中，用户无法区分一个值是生成的还是被返回的。
 
-```typescript
+```ts
 function* foo() {
   if (Math.random() < 0.5) yield 100;
   return "Finished!"
@@ -26,7 +26,7 @@ if (curr.done) {
 
 另外，生成器只假定 `yield` 的类型为 `any`。
 
-```typescript
+```ts
 function* bar() {
   let x: { hello(): void } = yield;
   x.hello();
@@ -41,7 +41,7 @@ iter.next(123); // 不好! 运行时错误!
 
 类型 `Iterator` 现在允许用户明确的定义生成的类型，返回的类型和 `next` 能够接收的类型。
 
-```typescript
+```ts
 interface Iterator<T, TReturn = any, TNext = undefined> {
   // 接受 0 或者 1 个参数 - 不接受 'undefined'
   next(...args: [] | [TNext]): IteratorResult<T, TReturn>;
@@ -52,7 +52,7 @@ interface Iterator<T, TReturn = any, TNext = undefined> {
 
 以此为基础，新的 `Generator` 类型是一个迭代器，它总是有 `return` 和 `throw` 方法，并且也是可迭代的。
 
-```typescript
+```ts
 interface Generator<T = unknown, TReturn = any, TNext = unknown> extends Iterator<T, TReturn, TNext> {
   next(...args: [] | [TNext]): IteratorResult<T, TReturn>;
   return(value: TReturn): IteratorResult<T, TReturn>;
@@ -63,7 +63,7 @@ interface Generator<T = unknown, TReturn = any, TNext = unknown> extends Iterato
 
 为了允许在返回值和生成值之间进行区分，TypeScript 3.6 转变 `IteratorResult` 类型为一个区别对待的联合类型：
 
-```typescript
+```ts
 type IteratorResult<T, TReturn = any> = IteratorYieldResult<T> | IteratorReturnResult<TReturn>;
 
 interface IteratorYieldResult<TYield> {
@@ -81,7 +81,7 @@ interface IteratorReturnResult<TReturn> {
 
 为了正确的表示在调用生成器的 `next()` 方法的时候能被传入的类型，TypeScript 3.6 还可以在生成器函数内推断出 `yield` 的某些用法。
 
-```typescript
+```ts
 function* foo() {
   let x: string = yield;
   console.log(x.toUpperCase());
@@ -94,7 +94,7 @@ x.next(42); // 错啦！'number' 和 'string' 不匹配
 
 如果你更喜欢显示的，你还可以使用显示的返回类型强制申明从生成表达式返回的、生成的和计算的的值的类型。下面，`next()` 只能被 `booleans` 值调用，并且根据 `done` 的值，`value` 可以是 `string` 或者 `number`。
 
-```typescript
+```ts
 /**
  * - yields numbers
  * - returns strings
@@ -139,25 +139,25 @@ console.log(curr.value.toUpperCase());
 
 例如，以下示例：
 
-```typescript
+```ts
 [...Array(5)]
 ```
 
 相当于以下数组：
 
-```typescript
+```ts
 [undefined, undefined, undefined, undefined, undefined]
 ```
 
 但是，TypeScript 会将原始代码转换为此代码：
 
-```typescript
+```ts
 Array(5).slice();
 ```
 
 这略有不同。 `Array(5)` 生成一个长度为 5 的数组，但并没有在其中插入任何元素！
 
-```typescript
+```ts
 1 in [undefined, undefined, undefined] // true
 1 in Array(3) // false
 ```
@@ -174,7 +174,7 @@ Array(5).slice();
 
 例如，在将它传递给另一个函数之前忘记 `.then()` 或等待 `Promise` 的完成通常是很常见的。TypeScript 的错误消息现在是专门的，并告知用户他们可能应该考虑使用 `await` 关键字。
 
-```typescript
+```ts
 interface User {
   name: string;
   age: number;
@@ -195,7 +195,7 @@ async function f() {
 
 在等待或 `.then()` - `Promise` 之前尝试访问方法也很常见。这是另一个例子，在许多其他方面，我们能够做得更好。
 
-```typescript
+```ts
 async function getCuteAnimals() {
   fetch("https://reddit.com/r/aww.json")
     .json()
@@ -217,7 +217,7 @@ async function getCuteAnimals() {
 
 当发射到 ES2015 及更高版本的目标时，TypeScript 3.6 在标识符中包含对 Unicode 字符的更好支持。
 
-```typescript
+```ts
 const 𝓱𝓮𝓵𝓵𝓸 = "world"; // previously disallowed, now allowed in '--target es2015'
 // 以前不允许，现在在 '--target es2015' 中允许
 ```
@@ -226,7 +226,7 @@ const 𝓱𝓮𝓵𝓵𝓸 = "world"; // previously disallowed, now allowed in '
 
 当模块目标设置为 `system` 时，TypeScript 3.6 支持将 `import.meta` 转换为 `context.meta`。
 
-```typescript
+```ts
 // 此模块:
 console.log(import.meta.url)
 
@@ -247,7 +247,7 @@ System.register([], function (exports, context) {
 
 因此，用户可以在 TypeScript 3.6 中的环境上下文中编写 `getter` 和 `setter`。
 
-```typescript
+```ts
 declare class Foo {
   // 3.6+ 允许
   get x(): number;
@@ -261,7 +261,7 @@ declare class Foo {
 
 在以前版本的 TypeScript 中，在任何情况下合并类和函数都是错误的。现在，环境类和函数（具有 `declare` 修饰符的类/函数或 `.d.ts` 文件中）可以合并。这意味着现在您可以编写以下内容：
 
-```typescript
+```ts
 export declare function Point2D(x: number, y: number): Point2D;
 export declare class Point2D {
   x: number;
@@ -272,7 +272,7 @@ export declare class Point2D {
 
 而不需要使用
 
-```typescript
+```ts
 export interface Point2D {
     x: number;
     y: number;

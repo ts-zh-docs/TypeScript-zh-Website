@@ -9,7 +9,7 @@ oneline: TypeScript 2.8 Release Notes
 
 TypeScript 2.8引入了_有条件类型_，它能够表示非统一的类型。 有条件的类型会以一个条件表达式进行类型关系检测，从而在两种类型中选择其一：
 
-```typescript
+```ts
 T extends U ? X : Y
 ```
 
@@ -24,7 +24,7 @@ T extends U ? X : Y
 
 #### 例子
 
-```typescript
+```ts
 type TypeName<T> =
     T extends string ? "string" :
     T extends number ? "number" :
@@ -46,7 +46,7 @@ type T4 = TypeName<string[]>;  // "object"
 
 #### 例子
 
-```typescript
+```ts
 type T10 = TypeName<string | (() => void)>;  // "string" | "function"
 type T12 = TypeName<string | string[] | undefined>;  // "string" | "object" | "undefined"
 type T11 = TypeName<string[] | number[]>;  // "object"
@@ -56,7 +56,7 @@ type T11 = TypeName<string[] | number[]>;  // "object"
 
 #### 例子
 
-```typescript
+```ts
 type BoxedValue<T> = { value: T };
 type BoxedArray<T> = { array: T[] };
 type Boxed<T> = T extends any[] ? BoxedArray<T[number]> : BoxedValue<T>;
@@ -70,7 +70,7 @@ type T22 = Boxed<string | number[]>;  // BoxedValue<string> | BoxedArray<number>
 
 有条件类型的分布式的属性可以方便地用来_过滤_联合类型：
 
-```typescript
+```ts
 type Diff<T, U> = T extends U ? never : T;  // Remove types from T that are assignable to U
 type Filter<T, U> = T extends U ? T : never;  // Remove types from T that are not assignable to U
 
@@ -99,7 +99,7 @@ function f2<T extends string | undefined>(x: T, y: NonNullable<T>) {
 
 有条件类型与映射类型结合时特别有用：
 
-```typescript
+```ts
 type FunctionPropertyNames<T> = { [K in keyof T]: T[K] extends Function ? K : never }[keyof T];
 type FunctionProperties<T> = Pick<T, FunctionPropertyNames<T>>;
 
@@ -123,7 +123,7 @@ type T43 = NonFunctionProperties<Part>;  // { id: number, name: string, subparts
 
 #### 例子
 
-```typescript
+```ts
 type ElementType<T> = T extends any[] ? ElementType<T[number]> : T;  // Error
 ```
 
@@ -133,13 +133,13 @@ type ElementType<T> = T extends any[] ? ElementType<T[number]> : T;  // Error
 
 例如，下面代码会提取函数类型的返回值类型：
 
-```typescript
+```ts
 type ReturnType<T> = T extends (...args: any[]) => infer R ? R : any;
 ```
 
 有条件类型可以嵌套来构成一系列的匹配模式，按顺序进行求值：
 
-```typescript
+```ts
 type Unpacked<T> =
     T extends (infer U)[] ? U :
     T extends (...args: any[]) => infer U ? U :
@@ -156,7 +156,7 @@ type T5 = Unpacked<Unpacked<Promise<string>[]>>;  // string
 
 下面的例子解释了在协变位置上，同一个类型变量的多个候选类型会被推断为联合类型：
 
-```typescript
+```ts
 type Foo<T> = T extends { a: infer U, b: infer U } ? U : never;
 type T10 = Foo<{ a: string, b: string }>;  // string
 type T11 = Foo<{ a: string, b: number }>;  // string | number
@@ -164,7 +164,7 @@ type T11 = Foo<{ a: string, b: number }>;  // string | number
 
 相似地，在抗变位置上，同一个类型变量的多个候选类型会被推断为交叉类型：
 
-```typescript
+```ts
 type Bar<T> = T extends { a: (x: infer U) => void, b: (x: infer U) => void } ? U : never;
 type T20 = Bar<{ a: (x: string) => void, b: (x: string) => void }>;  // string
 type T21 = Bar<{ a: (x: string) => void, b: (x: number) => void }>;  // string & number
@@ -172,7 +172,7 @@ type T21 = Bar<{ a: (x: string) => void, b: (x: number) => void }>;  // string &
 
 当推断具有多个调用签名（例如函数重载类型）的类型时，用_最后_的签名（大概是最自由的包含所有情况的签名）进行推断。 无法根据参数类型列表来解析重载。
 
-```typescript
+```ts
 declare function foo(x: string): number;
 declare function foo(x: number): string;
 declare function foo(x: string | number): string | number;
@@ -181,13 +181,13 @@ type T30 = ReturnType<typeof foo>;  // string | number
 
 无法在正常类型参数的约束子语句中使用`infer`声明：
 
-```typescript
+```ts
 type ReturnType<T extends (...args: any[]) => infer R> = R;  // 错误，不支持
 ```
 
 但是，可以这样达到同样的效果，在约束里删掉类型变量，用有条件类型替换：
 
-```typescript
+```ts
 type AnyFunction = (...args: any[]) => any;
 type ReturnType<T extends AnyFunction> = T extends (...args: any[]) => infer R ? R : any;
 ```
@@ -204,7 +204,7 @@ TypeScript 2.8在`lib.d.ts`里增加了一些预定义的有条件类型：
 
 #### Example
 
-```typescript
+```ts
 type T00 = Exclude<"a" | "b" | "c" | "d", "a" | "c" | "f">;  // "b" | "d"
 type T01 = Extract<"a" | "b" | "c" | "d", "a" | "c" | "f">;  // "a" | "c"
 
@@ -250,14 +250,14 @@ TypeScript 2.8为映射类型增加了增加或移除特定修饰符的能力。
 
 #### 例子
 
-```typescript
+```ts
 type MutableRequired<T> = { -readonly [P in keyof T]-?: T[P] };  // 移除readonly和?
 type ReadonlyPartial<T> = { +readonly [P in keyof T]+?: T[P] };  // 添加readonly和?
 ```
 
 不带`+`或`-`前缀的修饰符与带`+`前缀的修饰符具有相同的作用。因此上面的`ReadonlyPartial<T>`类型与下面的一致
 
-```typescript
+```ts
 type ReadonlyPartial<T> = { readonly [P in keyof T]?: T[P] };  // 添加readonly和?
 ```
 
@@ -265,7 +265,7 @@ type ReadonlyPartial<T> = { readonly [P in keyof T]?: T[P] };  // 添加readonly
 
 #### 例子
 
-```typescript
+```ts
 type Required<T> = { [P in keyof T]-?: T[P] };
 ```
 
@@ -273,7 +273,7 @@ type Required<T> = { [P in keyof T]-?: T[P] };
 
 #### 例子
 
-```typescript
+```ts
 type Foo = { a?: string };  // 等同于 { a?: string | undefined }
 type Bar = Required<Foo>;  // 等同于 { a: string }
 ```
@@ -284,7 +284,7 @@ TypeScript 2.8作用于交叉类型的`keyof`被转换成作用于交叉成员�
 
 #### 例子
 
-```typescript
+```ts
 type A = { a: string };
 type B = { b: string };
 
@@ -301,14 +301,14 @@ type T7 = T4<A, B>;  // "a" | "b"
 
 TypeScript 2.8加强了识别`.js`文件里的命名空间模式。 JavaScript顶层的空对象字面量声明，就像函数和类，会被识别成命名空间声明。
 
-```javascript
+```js
 var ns = {};     // recognized as a declaration for a namespace `ns`
 ns.constant = 1; // recognized as a declaration for var `constant`
 ```
 
 顶层的赋值应该有一致的行为；也就是说，`var`或`const`声明不是必需的。
 
-```javascript
+```js
 app = {}; // does NOT need to be `var app = {}`
 app.C = class {
 };
@@ -321,7 +321,7 @@ app.prop = 1;
 
 立即执行的函数表达式返回一个函数，类或空的对象字面量，也会被识别为命名空间：
 
-```javascript
+```js
 var C = (function () {
   function C(n) {
     this.p = n;
@@ -335,7 +335,7 @@ C.staticProperty = 1;
 
 “默认声明”允许引用了声明的名称的初始化器出现在逻辑或的左边：
 
-```javascript
+```js
 my = window.my || {};
 my.app = my.app || {};
 ```
@@ -344,7 +344,7 @@ my.app = my.app || {};
 
 你可以把一个对象字面量直接赋值给原型属性。独立的原型赋值也可以：
 
-```typescript
+```ts
 var C = function (p) {
   this.p = p;
 };
@@ -362,7 +362,7 @@ C.prototype.q = function(r) {
 
 现在嵌套的层次不受限制，并且多文件之间的声明合并也没有问题。以前不是这样的。
 
-```javascript
+```js
 var app = window.app || {};
 app.C = class { };
 ```
@@ -373,7 +373,7 @@ TypeScript 2.8增加了使用`@jsx dom`指令为每个文件设置JSX工厂名�
 
 #### 例子
 
-```typescript
+```ts
 /** @jsx dom */
 import { dom } from "./renderer"
 <h></h>
@@ -381,7 +381,7 @@ import { dom } from "./renderer"
 
 生成：
 
-```javascript
+```js
 var renderer_1 = require("./renderer");
 renderer_1.dom("h", null);
 ```

@@ -11,7 +11,7 @@ TypeScript 2.7 新增了以常量（包括ECMAScript symbols）作为类属性�
 
 #### 例子
 
-```typescript
+```ts
 // Lib
 export const SERIALIZE = Symbol("serialize-method-key");
 
@@ -20,7 +20,7 @@ export interface Serializable {
 }
 ```
 
-```typescript
+```ts
 // consumer
 import { SERIALIZE, Serializable } from "lib";
 
@@ -35,7 +35,7 @@ class JSONSerializableItem implements Serializable {
 
 #### 例子
 
-```typescript
+```ts
 const Foo = "Foo";
 const Bar = "Bar";
 
@@ -54,7 +54,7 @@ let b = x[Bar]; // b类型为'string';
 
 #### 例子
 
-```typescript
+```ts
 // Works
 declare const Foo: unique symbol;
 
@@ -74,7 +74,7 @@ class C {
 
 #### Example
 
-```typescript
+```ts
 const Foo = Symbol();
 const Bar = Symbol();
 
@@ -88,7 +88,7 @@ if (Foo === Bar) {
 
 TypeScript 2.7引入了一个新的控制严格性的标记`--strictPropertyInitialization`。 使用这个标记后，TypeScript要求类的所有实例属性在构造函数里或属性初始化器中都得到初始化。比如：
 
-```typescript
+```ts
 class C {
     foo: number;
     bar = "hello";
@@ -105,7 +105,7 @@ class C {
 
 在某些场景下，属性会被间接地初始化（使用辅助方法或依赖注入库）。 这种情况下，你可以在属性上使用_显式赋值断言_（_definite assignment assertion modifiers_）来帮助类型系统识别类型（下面会讨论）
 
-```typescript
+```ts
 class C {
     foo!: number;
     // ^
@@ -129,7 +129,7 @@ class C {
 
 #### 例子
 
-```typescript
+```ts
 let x: number;
 initialize();
 console.log(x + x);
@@ -143,7 +143,7 @@ function initialize() {
 
 使用显式类型断言在`x`的声明后加上`!`，Typescript可以认为变量`x`确实已被赋值
 
-```typescript
+```ts
 // Notice the '!'
 let x!: number;
 initialize();
@@ -158,7 +158,7 @@ function initialize() {
 
 在某种意义上，显式类型断言运算符是非空断言运算符（在表达式后缀的`!`）的对偶，就像下面这个例子
 
-```typescript
+```ts
 let x: number;
 initialize();
 
@@ -179,7 +179,7 @@ TypeScript 2.6之前，`[number, string, string]`被当作`[number, string]`的�
 
 概念上讲，你可以把`[number, string]`类型等同于下面的`NumStrTuple`声明：
 
-```typescript
+```ts
 interface NumStrTuple extends Array<number | string> {
     0: number;
     1: string;
@@ -189,7 +189,7 @@ interface NumStrTuple extends Array<number | string> {
 
 请注意，这是一个破坏性改动。 如果你想要和以前一样，让元组仅限制最小长度，那么你可以使用一个类似的声明但不显式指定`length`属性，这样`length`属性的类型就会回退为`number`
 
-```typescript
+```ts
 interface MinimumNumStrTuple extends Array<number | string> {
     0: number;
     1: string;
@@ -204,7 +204,7 @@ TypeScript 2.7改进了在同一上下文中的多对象字面量的类型推断
 
 考虑这样的情形:
 
-```typescript
+```ts
 const obj = test ? { text: "hello" } : {};  // { text: string } | { text?: undefined }
 const s = obj.text;  // string | undefined
 ```
@@ -213,7 +213,7 @@ const s = obj.text;  // string | undefined
 
 **例子**
 
-```typescript
+```ts
 // let obj: { a: number, b: number } |
 //     { a: string, b?: undefined } |
 //     { a?: undefined, b?: undefined }
@@ -224,7 +224,7 @@ obj.b;  // number | undefined
 
 多个对象字面量中的同一属性的所有推断类型，会合并成一个规范化的联合类型：
 
-```typescript
+```ts
 declare function f<T>(...items: T[]): T;
 // let obj: { a: number, b: number } |
 //     { a: string, b?: undefined } |
@@ -246,7 +246,7 @@ TypeScript 2.7对联合类型中结构相同的类和`instanceof`表达式的处
 
 **例子**
 
-```typescript
+```ts
 class A {}
 class B extends A {}
 class C extends A {}
@@ -281,7 +281,7 @@ function f1(x: B | C | D) {
 
 #### 例子
 
-```typescript
+```ts
 interface A { a: number };
 interface B { b: string };
 
@@ -313,14 +313,14 @@ function foo(x: A | B) {
 
 使用 `--esModuleInterop` 后，会生成两个新的辅助量 `__importStar` and `__importDefault` ，分别对应导入`*`和导入`default`，比如这样的输入：
 
-```typescript
+```ts
 import * as foo from "foo";
 import b from "bar";
 ```
 
 会生成：
 
-```typescript
+```ts
 "use strict";
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
@@ -341,7 +341,7 @@ var bar_1 = __importDefault(require("bar"));
 
 TypeScript 2.7支持ECMAScript的[数字分隔符提案](https://github.com/tc39/proposal-numeric-separator)。 这个特性允许用户在数字之间使用下划线`_`来对数字分组。
 
-```typescript
+```ts
 const million = 1_000_000;
 const phone = 555_734_2231;
 const bytes = 0xFF_0C_00_FF;

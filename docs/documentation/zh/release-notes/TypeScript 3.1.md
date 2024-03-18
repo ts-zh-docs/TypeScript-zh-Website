@@ -9,7 +9,7 @@ oneline: TypeScript 3.1 Release Notes
 
 TypeScript 3.1，在元组和数组上的映射对象类型现在会生成新的元组/数组，而非创建一个新的类型并且这个类型上具有如`push()`，`pop()`和`length`这样的成员。 例子：
 
-```typescript
+```ts
 type MapToPromise<T> = { [K in keyof T]: Promise<T[K]> };
 
 type Coordinate = [number, number]
@@ -23,7 +23,7 @@ type PromiseCoordinate = MapToPromise<Coordinate>; // [Promise<number>, Promise<
 
 TypeScript 3.1提供了在函数声明上定义属性的能力，还支持`const`声明的函数。只需要在函数直接给属性赋值就可以了。 这样我们就可以规范JavaScript代码，不必再借助于`namespace`。 例子：
 
-```typescript
+```ts
 function readImage(path: string, callback: (err: any, image: Image) => void) {
     // ...
 }
@@ -38,7 +38,7 @@ readImage.sync = (path: string) => {
 
 一般来说，使用ECMAScript导出是个更好的方式，但这个新功能支持此风格的代码能够在TypeScript里执行。 此外，这种属性声明的方式允许我们表达一些常见的模式，例如React函数组件（之前叫做SFC）里的`defaultProps`和`propTpes` 。
 
-```typescript
+```ts
 export const FooComponent = ({ name }) => (
     <div>Hello! I am {name}</div>
 );
@@ -56,7 +56,7 @@ FooComponent.defaultProps = {
 
 在TypeScript 3.1里使用Node模块解析时，TypeScript会读取`package.json`文件，找到它需要读取的文件，它首先会查看名字为`typesVersions`的字段。 一个带有`typesVersions`字段的`package.json`文件：
 
-```javascript
+```js
 {
   "name": "package-name",
   "version": "1.0",
@@ -81,7 +81,7 @@ TypeScript使用Node的[semver ranges](https://github.com/npm/node-semver#ranges
 
 `typesVersions`支持多个字段，每个字段都指定了一个匹配范围。
 
-```javascript
+```js
 {
   "name": "package-name",
   "version": "1.0",

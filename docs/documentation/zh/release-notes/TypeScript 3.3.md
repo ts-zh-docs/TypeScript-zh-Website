@@ -9,7 +9,7 @@ oneline: TypeScript 3.3 Release Notes
 
 在 TypeScript 之前的版本中，将可调用类型联合后仅在它们具有相同的参数列表时才能被调用。
 
-```typescript
+```ts
 type Fruit = "apple" | "orange";
 type Color = "red" | "orange";
 
@@ -27,7 +27,7 @@ f("orange");
 
 在 TypeScript 3.3 里，这个错误不存在了。
 
-```typescript
+```ts
 type Fruit = "apple" | "orange";
 type Color = "red" | "orange";
 
@@ -58,7 +58,7 @@ TypeScript 3.3，这些签名的参数被连结在一起构成了一个新的签
 
 另一方面，像`forEach`就可以调用，因为它不是泛型函数，但在`noImplicitAny`模式可能有些问题。
 
-```typescript
+```ts
 interface Dog {
   kind: "dog";
   dogProp: any;
@@ -78,7 +78,7 @@ catOrDogArray.forEach(animal => {
 
 添加显式的类型信息可以解决。
 
-```typescript
+```ts
 interface Dog {
   kind: "dog";
   dogProp: any;

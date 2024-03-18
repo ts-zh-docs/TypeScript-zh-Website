@@ -15,7 +15,7 @@ TypeScript 2.6引入了新的类型检查选项，`--strictFunctionTypes`。`--s
 
 考虑下面这个 Animal 是 Dog 和 Cat 的父类型的例子：
 
-```typescript
+```ts
 declare let f1: (x: Animal) => void;
 declare let f2: (x: Dog) => void;
 declare let f3: (x: Cat) => void;
@@ -30,7 +30,7 @@ f2 = f3;  // 错误
 
 ### 例子
 
-```typescript
+```ts
 interface Comparer<T> {
     compare: (a: T, b: T) => number;
 }
@@ -50,7 +50,7 @@ dogComparer = animalComparer;  // 正确
 
 启用`--strictFunctionTypes`时，如果`compare`被声明为方法，则第一个赋值依然是被允许的。 更明确的说，`Comparer<T>`中的`T`因为仅在方法参数的位置被使用所以是双变的。
 
-```typescript
+```ts
 interface Comparer<T> {
     compare(a: T, b: T): number;
 }
@@ -64,7 +64,7 @@ dogComparer = animalComparer;  // 正确
 
 TypeScript 2.6 还改进了与抗变位置相关的类型推导：
 
-```typescript
+```ts
 function combine<T>(...funcs: ((x: ）=> void)[]): (x: T) => void {
     return x => {
         for (const f of funcs) f(x);
@@ -85,7 +85,7 @@ TypeScript 2.6修复了标签字符串模板的输出，以更好地遵循ECMASc
 
 ### 例子
 
-```typescript
+```ts
 export function id(x: TemplateStringsArray) {
     return x;
 }
@@ -99,7 +99,7 @@ let result = templateObjectFactory() === templateObjectFactory(); // TS 2.6 为 
 
 编译后的代码：
 
-```javascript
+```js
 "use strict";
 var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
     if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
@@ -193,7 +193,7 @@ TypeScript 2.6支持在.ts文件中通过在报错一行上方使用`// @ts-igno
 
 ### 例子
 
-```typescript
+```ts
 if (false) {
     // @ts-ignore：无法被执行的代码的错误
     console.log("hello");
@@ -218,7 +218,7 @@ TypeScript 2.6加入了修正的`--noUnusedLocals`和`--noUnusedParameters`[编�
 
 下面`n`和`m`都会被标记为未使用，因为它们的值从未被_读取_。之前 TypeScript 只会检查它们的值是否被_引用_。
 
-```typescript
+```ts
 function f(n: number) {
     n = 0;
 }
@@ -235,7 +235,7 @@ class C {
 
 ### 例子
 
-```typescript
+```ts
 function f() {
     f(); // 错误：'f' 被声明，但它的值从未被使用
 }

@@ -19,7 +19,7 @@ TypeScript现在有两个特殊的类型：Null和Undefined, 它们的值分别�
 
 #### 示例
 
-```typescript
+```ts
 // 使用--strictNullChecks参数进行编译的
 let x: number;
 let y: number | undefined;
@@ -47,7 +47,7 @@ z = y;  // 正确
 
 #### 示例
 
-```typescript
+```ts
 // 使用--strictNullChecks参数进行编译
 let x: number;
 let y: number | null;
@@ -67,7 +67,7 @@ y;  // 正确
 
 可选参数和属性会自动把`undefined`添加到他们的类型中，即使他们的类型注解明确不包含`undefined`。例如，下面两个类型是完全相同的：
 
-```typescript
+```ts
 // 使用--strictNullChecks参数进行编译
 type T1 = (x?: number) => string;              // x的类型是 number | undefined
 type T2 = (x?: number | undefined) => string;  // x的类型是 number | undefined
@@ -79,7 +79,7 @@ type T2 = (x?: number | undefined) => string;  // x的类型是 number | undefin
 
 #### 示例
 
-```typescript
+```ts
 // 使用--strictNullChecks参数进行编译
 declare function f(x: number): string;
 let x: number | null | undefined;
@@ -101,7 +101,7 @@ let b = x && f(x);  // b的类型是 string | 0 | null | undefined
 
 #### 示例
 
-```typescript
+```ts
 interface Options {
     location?: {
         x?: number;
@@ -124,7 +124,7 @@ function foo(options?: Options) {
 
 表达式操作符允许运算对象的类型包含`null`和/或`undefined`，但是总是产生非null和非undefined类型的结果值。
 
-```javascript
+```js
 // 使用--strictNullChecks参数进行编译
 function sum(a: number | null, b: number | null) {
     return a + b;  // 计算的结果值类型是number
@@ -133,7 +133,7 @@ function sum(a: number | null, b: number | null) {
 
 `&&`操作符添加`null`和/或`undefined`到右边操作对象的类型中取决于当前左边操作对象的类型，`||`操作符从左边联合类型的操作对象的类型中将`null`和`undefined`同时删除。
 
-```typescript
+```ts
 // 使用--strictNullChecks参数进行编译
 interface Entity {
     name: string;
@@ -147,7 +147,7 @@ let y = x || { name: "test" };  // y的类型是Entity
 
 在严格空检查模式中，`null`和`undefined`类型是_不会_扩展到`any`类型中的。
 
-```typescript
+```ts
 let z = null;  // z的类型是null
 ```
 
@@ -157,7 +157,7 @@ let z = null;  // z的类型是null
 
 在上下文中当类型检查器无法断定类型时，一个新的后缀表达式操作符`!`可以用于断言操作对象是非null和非undefined类型的。具体而言，运算`x!`产生一个不包含`null`和`undefined`的`x`的值。断言的形式类似于`<T>x`和`x as T`，`!`非空断言操作符会从编译成的JavaScript代码中移除。
 
-```typescript
+```ts
 // 使用--strictNullChecks参数进行编译
 function validateEntity(e?: Entity) {
     // 如果e是null或者无效的实体，就会抛出异常
@@ -181,7 +181,7 @@ TypeScript 2.0实现了对局部变量和参数的控制流类型分析。以前
 
 #### 示例
 
-```typescript
+```ts
 function foo(x: string | number | boolean) {
     if (typeof x === "string") {
         x; // 这里x的类型是string
@@ -201,7 +201,7 @@ function bar(x: string | number) {
 
 基于控制流的类型分析在`--strictNullChecks`模式中尤为重要，因为可空类型使用联合类型来表示：
 
-```typescript
+```ts
 function test(x: string | null) {
     if (x === null) {
         return;
@@ -212,7 +212,7 @@ function test(x: string | null) {
 
 而且，在`--strictNullChecks`模式中，基于控制流的分析包括，对类型不允许为`undefined`的局部变量有_明确赋值_的分析。
 
-```typescript
+```ts
 function mumble(check: boolean) {
     let x: number; // 类型不允许为undefined
     x; // 错误，x是undefined
@@ -232,7 +232,7 @@ TypeScript 2.0实现了标记（或区分）联合类型。具体而言，TS编�
 
 #### 示例
 
-```typescript
+```ts
 interface Square {
     kind: "square";
     size: number;
@@ -297,7 +297,7 @@ TypeScript 2.0引入了一个新原始类型`never`。`never`类型表示值的�
 
 一些返回`never`函数的示例：
 
-```typescript
+```ts
 // 函数返回never必须无法执行到终点
 function error(message: string): never {
     throw new Error(message);
@@ -317,7 +317,7 @@ function infiniteLoop(): never {
 
 一些函数返回`never`的使用示例：
 
-```typescript
+```ts
 // 推断返回类型是number
 function move1(direction: "up" | "down") {
     switch (direction) {
@@ -344,7 +344,7 @@ function check<T>(x: T | undefined) {
 
 因为`never`可以赋值给每一个类型，当需要回调函数返回一个更加具体的类型时，函数返回`never`类型可以用于检测返回类型是否正确：
 
-```typescript
+```ts
 function test(cb: () => string) {
     let s = cb();
     return s;
@@ -371,7 +371,7 @@ test(() => { throw new Error(); })
 
 #### 示例
 
-```typescript
+```ts
 interface Point {
     readonly x: number;
     readonly y: number;
@@ -386,7 +386,7 @@ p3.x = 5;  // 错误，p3.x是只读的
 p2.x = 5;  // 正确，但是因为别名使用，同时也改变了p3.x
 ```
 
-```typescript
+```ts
 class Foo {
     readonly a = 1;
     readonly b: string;
@@ -396,7 +396,7 @@ class Foo {
 }
 ```
 
-```typescript
+```ts
 let a: Array<number> = [0, 1, 2, 3, 4];
 let b: ReadonlyArray<number> = a;
 b[5] = 5;      // 错误，元素是只读的
@@ -411,7 +411,7 @@ a = b;         // 错误，缺少修改数组的方法
 
 函数中`this`的默认类型是`any`。从TypeScript 2.0开始，你可以提供一个明确的`this`参数。`this`参数是伪参数，它位于函数参数列表的第一位：
 
-```typescript
+```ts
 function f(this: void) {
     // 确保`this`在这个独立的函数中无法使用
 }
@@ -423,7 +423,7 @@ function f(this: void) {
 
 #### 示例
 
-```typescript
+```ts
 interface UIElement {
     addClickListener(onclick: (this: void, e: Event) => void): void;
 }
@@ -433,7 +433,7 @@ interface UIElement {
 
 现在如果你在调用代码中对`this`进行了类型注释：
 
-```typescript
+```ts
 class Handler {
     info: string;
     onClickBad(this: Handler, e: Event) {
@@ -457,7 +457,7 @@ TypeScript 2.0还增加了一个新的编译选项用来标记函数中所有没
 
 #### 示例
 
-```javascript
+```js
 {
     "compilerOptions": {
         "module": "commonjs",
@@ -503,7 +503,7 @@ TypeScript 2.0提供了一系列额外的模块解析属性告诉编译器去哪
 
 #### 示例
 
-```javascript
+```js
 {
   "compilerOptions": {
     "baseUrl": "./modules"
@@ -513,7 +513,7 @@ TypeScript 2.0提供了一系列额外的模块解析属性告诉编译器去哪
 
 现在导入`moduleA`将会在`./modules/moduleA`中查找。
 
-```typescript
+```ts
 import A from "moduleA";
 ```
 
@@ -527,7 +527,7 @@ TypeScript编译器支持`tsconfig`文件中使用`"paths"`属性映射的声明
 
 例如，导入`"jquery"`模块在运行时会被转换为`"node_modules/jquery/dist/jquery.slim.min.js"`。
 
-```javascript
+```js
 {
     "compilerOptions": {
         "baseUrl": "./node_modules",
@@ -564,7 +564,7 @@ TypeScript编译器支持`tsconfig`文件中使用`"paths"`属性映射的声明
 
 `"rootDir"`指定的一组根目录的内容将会在运行时合并。因此在我们的例子，`tsconfig.json`文件应该类似于：
 
-```javascript
+```js
 {
   "compilerOptions": {
     "rootDirs": [
@@ -589,13 +589,13 @@ tsc --traceResolution
 
 #### declarations.d.ts
 
-```typescript
+```ts
 declare module "hot-new-module";
 ```
 
 所有从快捷模块的导入都具有任意类型。
 
-```typescript
+```ts
 import x, {y} from "hot-new-module";
 x(y);
 ```
@@ -608,7 +608,7 @@ TypeScript 2.0支持使用通配符符号（`*`）定义一类模块名称。这
 
 #### 示例
 
-```typescript
+```ts
 declare module "*!text" {
     const content: string;
     export default content;
@@ -622,7 +622,7 @@ declare module "json!*" {
 
 现在你可以导入匹配`"*!text"`或`"json!*"`的东西了。
 
-```typescript
+```ts
 import fileContent from "./xyz.txt!text";
 import data from "json!http://example.com/data.json";
 console.log(data, fileContent);
@@ -632,13 +632,13 @@ console.log(data, fileContent);
 
 #### 示例
 
-```typescript
+```ts
 declare module "myLibrary/*";
 ```
 
 所有位于`myLibrary`目录之下的模块的导入都被编译器认为是`any`类型，因此这些模块的任何类型检查都会被关闭。
 
-```typescript
+```ts
 import { readFile } from "myLibrary/fileSystem/readFile`;
 
 readFile(); // readFile是'any'类型
@@ -652,14 +652,14 @@ readFile(); // readFile是'any'类型
 
 **math-lib.d.ts**
 
-```typescript
+```ts
 export const isPrime(x: number): boolean;
 export as namespace mathLib;
 ```
 
 然后，该库可作为模块导入使用：
 
-```typescript
+```ts
 import { isPrime } from "math-lib";
 isPrime(2);
 mathLib.isPrime(2); // 错误：无法在模块内部使用全局定义
@@ -667,7 +667,7 @@ mathLib.isPrime(2); // 错误：无法在模块内部使用全局定义
 
 它也可以被用来作为一个全局变量，只限于没有`import`和`export`脚本文件中。
 
-```typescript
+```ts
 mathLib.isPrime(2);
 ```
 
@@ -677,7 +677,7 @@ mathLib.isPrime(2);
 
 #### 示例
 
-```typescript
+```ts
 class Bar {
     a: number;
     b?: number;
@@ -699,7 +699,7 @@ class Bar {
 
 #### 示例
 
-```typescript
+```ts
 class Singleton {
     private static instance: Singleton;
 
@@ -723,7 +723,7 @@ let v = Singleton.getInstance();
 
 #### 示例
 
-```typescript
+```ts
 abstract class Base {
     abstract name: string;
     abstract get value();
@@ -741,7 +741,7 @@ class Derived extends Base {
 
 如果对象字面量中所有已知的属性是赋值给索引签名，那么现在对象字面量类型可以赋值给索引签名类型。这使得一个使用对象字面量初始化的变量作为参数传递给期望参数是map或dictionary的函数成为可能：
 
-```typescript
+```ts
 function httpService(path: string, headers: { [x: string]: string }) { }
 
 const headers = {
@@ -784,7 +784,7 @@ httpService("", headers);  // 现在可以，以前不可以。
 tsc --target es5 --lib es5,es2015.promise
 ```
 
-```javascript
+```js
 "compilerOptions": {
     "lib": ["es5", "es2015.promise"]
 }
@@ -796,7 +796,7 @@ TypeScript 2.0有两个新的编译参数来帮助你保持一个干净的代码
 
 #### 示例
 
-```typescript
+```ts
 import B, { readFile } from "./b";
 //     ^ 错误：`B`声明了，但是没有使用。
 readFile();
@@ -810,7 +810,7 @@ export function write(message: string, args: string[]) {
 
 使用以`_`开头命名的参数声明不会被未使用参数检查。例如：
 
-```typescript
+```ts
 function returnNull(_a) { // 正确
     return null;
 }
@@ -832,7 +832,7 @@ TypeScript 2.0之前，模块名称总是被认为是没有扩展名的。例如
 
 #### 示例
 
-```typescript
+```ts
 function foo(
   bar: Bar,
   baz: Baz, // 形参列表末尾添加逗号是没有问题的。
@@ -862,7 +862,7 @@ TypeScript 2.0放宽了这一约束，并允许可以不同代码块中出现重
 
 #### 示例
 
-```typescript
+```ts
 interface Error {
     stack?: string;
 }

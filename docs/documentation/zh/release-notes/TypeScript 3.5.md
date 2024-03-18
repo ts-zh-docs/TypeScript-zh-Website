@@ -26,7 +26,7 @@ TypeScript 3.5 通过缓存计算状态的信息（编译器设置、寻找文�
 
 TypeScript 3.5 添加了新的 `Omit` 辅助类型，这个类型用来创建从原始类型中移除了某些属性的新类型。
 
-```typescript
+```ts
 type Person = {
   name: string;
   age: number;
@@ -50,7 +50,7 @@ type QuantumPerson = {
 
 在 TypeScript 3.4 及之前的版本中，会出现确实不应该存在的多余属性却被允许存在的情况。 例如，TypeScript 3.4 在对象字面量上允许不正确的 `name` 属性，甚至它的类型在 `Point` 和 `Label` 之中都不匹配。
 
-```typescript
+```ts
 type Point = {
   x: number;
   y: number;
@@ -73,7 +73,7 @@ const thing: Point | Label = {
 
 注意，只要属性类型有效，仍允许部分重叠。
 
-```typescript
+```ts
 const pl: Point | Label = {
   x: 0,
   y: 0,
@@ -85,7 +85,7 @@ const pl: Point | Label = {
 
 在 TypeScript 3.5 中，使用新的 `--allowUmdGlobalAccess` 标志，你现在可以从任何位置引用全局的 UMD 申明——甚至模块。
 
-```typescript
+```ts
 export as namespace foo;
 ```
 
@@ -97,7 +97,7 @@ export as namespace foo;
 
 在 TypeScript 3.4 以及之前的版本中，下面的例子会无效：
 
-```typescript
+```ts
 type S = { done: boolean, value: number }
 type T =
   | { done: false, value: number }
@@ -115,7 +115,7 @@ target = source;
 
 如果这样做，一些糟糕的代码可能会像下面这样：
 
-```typescript
+```ts
 interface Foo {
   kind: "foo";
   value: string;
@@ -149,7 +149,7 @@ doSomething({
 
 在 TypeScript 3.4 中，我们改进了对返回函数的泛型函数的推断：
 
-```typescript
+```ts
 function compose<T, U, V>(f: (x: T) => U, g: (y: U) => V): (x: T) => V {
   return x => g(f(x))
 }
@@ -157,7 +157,7 @@ function compose<T, U, V>(f: (x: T) => U, g: (y: U) => V): (x: T) => V {
 
 将其他泛型函数作为参数，如下所示：
 
-```typescript
+```ts
 function arrayify<T>(x: T): T[] {
   return [x];
 }
@@ -174,7 +174,7 @@ TypeScript 3.4 的推断允许 `newFn` 是泛型的。它的新类型是 `<T>（
 
 TypeScript 3.5 在处理构造函数的时候推广了这种行为。
 
-```typescript
+```ts
 class Box<T> {
   kind: "box";
   value: T;
@@ -201,7 +201,7 @@ let a = f(1024); // 拥有类型 'Bag<Box<number>>'
 
 除了上面的组合模式之外，这种对泛型构造函数的新推断意味着在某些 UI 库（如 React ）中对类组件进行操作的函数可以更正确地对泛型类组件进行操作。
 
-```typescript
+```ts
 type ComponentClass<P> = new (props: P) => Component<P>;
 declare class Component<P> {
   props: P;

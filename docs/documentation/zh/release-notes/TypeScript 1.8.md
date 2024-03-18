@@ -11,7 +11,7 @@ oneline: TypeScript 1.8 Release Notes
 
 ### 例子
 
-```typescript
+```ts
 function assign<T extends U, U>(target: T, source: U): T {
     for (let id in source) {
         target[id] = source[id];
@@ -40,7 +40,7 @@ TypeScript 1.8 中引入了控制流分析来捕获开发者通常会遇到的�
 
 这里是一个简单的不可及错误的例子:
 
-```typescript
+```ts
 function f(x) {
     if (x) {
        return true;
@@ -55,7 +55,7 @@ function f(x) {
 
 这个特性能捕获的一个更常见的错误是在 `return` 语句后添加换行:
 
-```typescript
+```ts
 function f() {
     return            // 换行导致自动插入的分号
     {
@@ -72,7 +72,7 @@ function f() {
 
 #### 例子
 
-```typescript
+```ts
 loop: while (x > 0) {  // 错误: 未使用的标签.
     x++;
 }
@@ -84,7 +84,7 @@ JS 中没有返回值的代码分支会隐式地返回 `undefined`. 现在编译
 
 #### 例子
 
-```typescript
+```ts
 function f(x) { // 错误: 不是所有分支都返回了值.
     if (x) {
         return false;
@@ -100,7 +100,7 @@ TypeScript 现在可以在 switch 语句中出现贯穿的几个非空 case 时�
 
 #### 例子
 
-```typescript
+```ts
 switch (x % 2) {
     case 0: // 错误: switch 中出现了贯穿的 case.
         console.log("even");
@@ -113,7 +113,7 @@ switch (x % 2) {
 
 然而, 在下面的例子中, 由于贯穿的 case 是空的, 并不会报错:
 
-```typescript
+```ts
 switch (x % 3) {
     case 0:
     case 1:
@@ -130,7 +130,7 @@ switch (x % 3) {
 
 TypeScript 现在支持[函数组件](https://reactjs.org/docs/components-and-props.html#functional-and-class-components). 它是可以组合其他组件的轻量级组件.
 
-```typescript
+```ts
 // 使用参数解构和默认值轻松地定义 'props' 的类型
 const Greeter = ({name = 'world'}) => <div>Hello, {name}!</div>;
 
@@ -164,14 +164,14 @@ let example = <Greeter name='TypeScript 1.8' />;
 
 这里的 `map.ts` 可以声明它会在内部修改在 `observable.ts` 中声明的 `Observable` 类型, 添加 `map` 方法.
 
-```typescript
+```ts
 // observable.ts
 export class Observable<T> {
     // ...
 }
 ```
 
-```typescript
+```ts
 // map.ts
 import { Observable } from "./observable";
 
@@ -188,7 +188,7 @@ declare module "./observable" {
 Observable.prototype.map = /*...*/;
 ```
 
-```typescript
+```ts
 // consumer.ts
 import { Observable } from "./observable";
 import "./map";
@@ -201,7 +201,7 @@ o.map(x => x.toFixed());
 
 ### 例子
 
-```typescript
+```ts
 // 确保当前文件被当做一个模块.
 export {};
 
@@ -218,7 +218,7 @@ Array.prototype.mapToNumbers = function () { /* ... */ }
 
 接受一个特定字符串集合作为某个值的 API 并不少见. 举例来说, 考虑一个可以通过控制[动画的渐变](https://en.wikipedia.org/wiki/Inbetweening)让元素在屏幕中滑动的 UI 库:
 
-```typescript
+```ts
 declare class UIElement {
     animate(options: AnimationOptions): void;
 }
@@ -232,7 +232,7 @@ interface AnimationOptions {
 
 然而, 这容易产生错误 - 当用户错误不小心错误拼写了一个合法的值时, 并没有任何提示:
 
-```typescript
+```ts
 // 没有报错
 new UIElement().animate({ deltaX: 100, deltaY: 100, easing: "ease-inout" });
 ```
@@ -241,7 +241,7 @@ new UIElement().animate({ deltaX: 100, deltaY: 100, easing: "ease-inout" });
 
 用户现在可以确保类型系统会捕获这样的错误. 这里是我们使用了字符串字面量类型的新的 `AnimationOptions`:
 
-```typescript
+```ts
 interface AnimationOptions {
     deltaX: number;
     deltaY: number;
@@ -258,7 +258,7 @@ TypeScript 1.8 优化了源类型和目标类型都是联合或者交叉类型�
 
 ### 例子
 
-```typescript
+```ts
 type Maybe<T> = T | void;
 
 function isDefined<T>(x: Maybe<T>): x is T {
@@ -294,7 +294,7 @@ function test2(x: Maybe<number>) {
 
 ### 例子
 
-```typescript
+```ts
 // 文件 src/a.ts
 import * as B from "./lib/b";
 export function createA() {
@@ -302,7 +302,7 @@ export function createA() {
 }
 ```
 
-```typescript
+```ts
 // 文件 src/lib/b.ts
 export function createB() {
     return { };
@@ -311,7 +311,7 @@ export function createB() {
 
 结果为:
 
-```javascript
+```js
 define("lib/b", ["require", "exports"], function (require, exports) {
     "use strict";
     function createB() {
@@ -342,7 +342,7 @@ define("a", ["require", "exports", "lib/b"], function (require, exports, B) {
 
 ### 例子
 
-```typescript
+```ts
 let list = [];
 for (let i = 0; i < 5; i++) {
     list.push(() => i);
@@ -353,7 +353,7 @@ list.forEach(f => console.log(f()));
 
 被编译为:
 
-```javascript
+```js
 var list = [];
 var _loop_1 = function(i) {
     list.push(function () { return i; });
@@ -385,7 +385,7 @@ list.forEach(function (f) { return console.log(f()); });
 
 ### 例子
 
-```typescript
+```ts
 var a: MyObject[];
 for (var x in a) {   // x 的隐含类型为 string
     var obj = a[x];  // obj 的类型为 MyObject
@@ -410,7 +410,7 @@ for (var x in a) {   // x 的隐含类型为 string
 
 ### 例子
 
-```typescript
+```ts
 import {jsxFactory} from "jsxFactory";
 
 var div = <div>Hello JSX!</div>
@@ -424,7 +424,7 @@ tsc --jsx react --reactNamespace jsxFactory --m commonJS
 
 结果:
 
-```javascript
+```js
 "use strict";
 var jsxFactory_1 = require("jsxFactory");
 var div = jsxFactory_1.jsxFactory.createElement("div", null, "Hello JSX!");
@@ -438,7 +438,7 @@ TypeScript 1.8 为类和接口方法扩展了[用户定义的类型收窄函数]
 
 ### 例子
 
-```typescript
+```ts
 class FileSystemObject {
     isFile(): this is File { return this instanceof File; }
     isDirectory(): this is Directory { return this instanceof Directory;}
@@ -507,7 +507,7 @@ else if (fso.isNetworked()) {
 
 为配置添加文档是很棒的! `tsconfig.json` 现在支持单行和多行注释.
 
-```javascript
+```js
 {
     "compilerOptions": {
         "target": "ES2015", // 跑在 node v5 上, 呀!

@@ -9,7 +9,7 @@ oneline: TypeScript 2.5 Release Notes
 
 得益于[@tinganho](https://github.com/tinganho)所做的工作，TypeScript 2.5实现了一个新的ECMAScript特性，允许用户省略`catch`语句中的变量。 例如，当使用`JSON.parse`时，你可能需要将对应的函数调用放在`try` / `catch`中，但是最后可能并不会用到输入有误时会抛出的`SyntaxError`（语法错误）。
 
-```typescript
+```ts
 let input = "...";
 try {
     JSON.parse(input);
@@ -24,7 +24,7 @@ catch {
 
 TypeScript 2.5 引入了在[使用纯 JavaScript 的项目中断言表达式类型](https://github.com/Microsoft/TypeScript/issues/5158)的能力。对应的语法是`/** @type {...} */`标注注释后加上被圆括号括起来，类型需要被重新演算的表达式。举例:
 
-```typescript
+```ts
 var x = /** @type {SomeType} */ (AnyParenthesizedExpression);
 ```
 

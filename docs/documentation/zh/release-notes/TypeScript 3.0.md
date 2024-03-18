@@ -29,11 +29,11 @@ TypeScript 3.0 增加了支持以元组类型与函数参数列表进行交互�
 
 当剩余参数里有元组类型时，元组类型被扩展为离散参数序列。 例如，如下两个声明是等价的：
 
-```typescript
+```ts
 declare function foo(...args: [number, string, boolean]): void;
 ```
 
-```typescript
+```ts
 declare function foo(args_0: number, args_1: string, args_2: boolean): void;
 ```
 
@@ -43,7 +43,7 @@ declare function foo(args_0: number, args_1: string, args_2: boolean): void;
 
 因此，下面的调用都是等价的：
 
-```typescript
+```ts
 const args: [number, string, boolean] = [42, "hello", true];
 foo(42, "hello", true);
 foo(args[0], args[1], args[2]);
@@ -56,7 +56,7 @@ foo(...args);
 
 #### 例子
 
-```typescript
+```ts
 declare function bind<T, U extends any[], V>(f: (x: T, ...args: U) => V, x: T): (...args: U) => V;
 
 declare function f3(x: number, y: string, z: boolean): void;
@@ -81,7 +81,7 @@ f0();
 
 #### 例子
 
-```typescript
+```ts
 let t: [number, string?, boolean?];
 t = [42, "hello", true];
 t = [42, "hello"];
@@ -102,7 +102,7 @@ t = [42];
 
 #### 例子
 
-```typescript
+```ts
 function tuple<T extends any[]>(...args: T): T {
     return args;
 }
@@ -120,7 +120,7 @@ TypeScript 3.0引入了一个顶级的`unknown`类型。 对照于`any`，`unkno
 
 ### 例子
 
-```typescript
+```ts
 // In an intersection everything absorbs unknown
 
 type T00 = unknown & null;  // null
@@ -336,7 +336,7 @@ TypeScript增加了一个新的三斜线指令（`/// <reference lib="name" />`�
 
 在某个文件里使用 `/// <reference lib="es2017.string" />`等同于指定`--lib es2017.string`编译选项。
 
-```typescript
+```ts
 /// <reference lib="es2017.string" />
 
 "foo".padStart(4);

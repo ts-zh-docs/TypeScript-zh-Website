@@ -31,7 +31,7 @@ TypeScript 2.9增加了在索引类型和映射类型上支持用`number`和`sym
 
 ### 例子
 
-```typescript
+```ts
 const c = "c";
 const d = 10;
 const e = Symbol();
@@ -57,7 +57,7 @@ type K4 = Extract<keyof Foo, symbol>;  // typeof e
 
 现在通过在键值类型里包含`number`类型，`keyof`就能反映出数字索引签名的存在，因此像`Partial<T>`和`Readonly<T>`的映射类型能够正确地处理带数字索引签名的对象类型：
 
-```typescript
+```ts
 type Arrayish<T> = {
     length: number;
     [x: number]: T;
@@ -72,7 +72,7 @@ let x = map[123];  // Previously of type any (or an error with --noImplicitAny)
 
 此外，由于`keyof`支持用`number`和`symbol`命名的键值，现在可以对对象的数字字面量（如数字枚举类型）和唯一的symbol属性的访问进行抽象。
 
-```typescript
+```ts
 const enum Enum { A, B, C }
 
 const enumToStringMap = {
@@ -106,7 +106,7 @@ let x2 = getValue(symbolToNumberMap, sym3);  // Returns 3
 
 ### 例子
 
-```typescript
+```ts
 function useKey<T, K extends keyof T>(o: T, k: K) {
     var name: string = k;  // 错误：keyof T不能赋值给字符串
 }
@@ -116,7 +116,7 @@ function useKey<T, K extends keyof T>(o: T, k: K) {
 
 * 如果函数只能处理字符串命名属性的键，在声明里使用`Extract<keyof T, string>`：
 
-  ```typescript
+  ```ts
   function useKey<T, K extends Extract<keyof T, string>>(o: T, k: K) {
     var name: string = k;  // OK
   }
@@ -124,7 +124,7 @@ function useKey<T, K extends keyof T>(o: T, k: K) {
 
 * 如果函数能处理任何属性的键，那么可以在下游进行改动：
 
-  ```typescript
+  ```ts
   function useKey<T, K extends keyof T>(o: T, k: K) {
     var name: string | number | symbol = k;
   }
@@ -138,7 +138,7 @@ JSX元素现在允许传入类型参数到泛型组件里。
 
 ### 例子
 
-```typescript
+```ts
 class GenericComponent<P> extends React.Component<P> {
     internalProp: P;
 }
@@ -158,7 +158,7 @@ TypeScript 2.9允许传入泛型参数到标记模版字符串。
 
 ### 例子
 
-```typescript
+```ts
 declare function styledComponent<Props>(strs: TemplateStringsArray): Component<Props>;
 
 interface MyProps {
@@ -188,7 +188,7 @@ let a = tag<string | number> `${100} ${"hello"}`;
 
 在一个模块文件里，有一个`Pet`类的声明：
 
-```typescript
+```ts
 // module.d.ts
 
 export declare class Pet {
@@ -198,7 +198,7 @@ export declare class Pet {
 
 它可以被用在非模块文件`global-script.ts`：
 
-```typescript
+```ts
 // global-script.ts
 
 function adopt(p: import("./module").Pet) {
@@ -208,7 +208,7 @@ function adopt(p: import("./module").Pet) {
 
 它也可以被放在`.js`文件的JSDoc注释里，来引用模块里的类型：
 
-```javascript
+```js
 // a.js
 
 /**
@@ -225,7 +225,7 @@ function walk(p) {
 
 例如：
 
-```typescript
+```ts
 import { createHash } from "crypto";
 
 export const hash = createHash("sha256");
@@ -235,7 +235,7 @@ export const hash = createHash("sha256");
 
 TypeScript 2.9不会报错，生成文件如下：
 
-```typescript
+```ts
 export declare const hash: import("crypto").Hash;
 ```
 
@@ -249,7 +249,7 @@ TypeScript 2.9引入对`import.meta`的支持，它是当前[TC39建议](https:/
 
 假设`__dirname`永远存在于`import.meta`，那么可以通过重新开放`ImportMeta`接口来进行声明：
 
-```typescript
+```ts
 // node.d.ts
 interface ImportMeta {
     __dirname: string;
@@ -258,7 +258,7 @@ interface ImportMeta {
 
 用法如下：
 
-```typescript
+```ts
 import.meta.__dirname // Has type 'string'
 ```
 
@@ -270,7 +270,7 @@ import.meta.__dirname // Has type 'string'
 
 ### 例子
 
-```typescript
+```ts
 // settings.json
 
 {
@@ -280,7 +280,7 @@ import.meta.__dirname // Has type 'string'
 }
 ```
 
-```typescript
+```ts
 // a.ts
 
 import settings from "./settings.json";
@@ -289,7 +289,7 @@ settings.debug === true;  // OK
 settings.dry === 2;  // Error: Operator '===' cannot be applied boolean and number
 ```
 
-```typescript
+```ts
 // tsconfig.json
 
 {

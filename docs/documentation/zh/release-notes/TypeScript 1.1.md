@@ -13,7 +13,7 @@ oneline: TypeScript 1.1 Release Notes
 
 TypeScript现在只在使用`--declaration`标记时才严格强制模块里类型的可见性。这在Angular里很有用，例如：
 
-```typescript
+```ts
 module MyControllers {
   interface ZooScope extends ng.IScope {
     animals: Animal[];

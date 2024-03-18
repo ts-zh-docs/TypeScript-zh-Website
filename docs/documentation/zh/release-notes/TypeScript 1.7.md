@@ -13,7 +13,7 @@ TypeScript 目前在已经原生支持 ES6 generator 的引擎 \(比如 Node v4 
 
 在下面的例子中, 输入的内容将会延时 400 毫秒逐个打印:
 
-```typescript
+```ts
 "use strict";
 
 // printDelayed 返回值是一个 'Promise<void>'
@@ -44,7 +44,7 @@ TypeScript 1.7 将 `ES6` 添加到了 `--module` 选项支持的选项的列表,
 
 ### 例子
 
-```javascript
+```js
 {
     "compilerOptions": {
         "module": "amd",
@@ -57,7 +57,7 @@ TypeScript 1.7 将 `ES6` 添加到了 `--module` 选项支持的选项的列表,
 
 在方法中返回当前对象 \(也就是 `this`\) 是一种创建链式 API 的常见方式. 比如, 考虑下面的 `BasicCalculator` 模块:
 
-```typescript
+```ts
 export default class BasicCalculator {
     public constructor(protected value: number = 0) { }
 
@@ -89,7 +89,7 @@ export default class BasicCalculator {
 
 使用者可以这样表述 `2 * 5 + 1`:
 
-```typescript
+```ts
 import calc from "./BasicCalculator";
 
 let v = new calc(2)
@@ -100,7 +100,7 @@ let v = new calc(2)
 
 这使得这么一种优雅的编码方式成为可能; 然而, 对于想要去继承 `BasicCalculator` 的类来说有一个问题. 想象使用者可能需要编写一个 `ScientificCalculator`:
 
-```typescript
+```ts
 import BasicCalculator from "./BasicCalculator";
 
 export default class ScientificCalculator extends BasicCalculator {
@@ -124,7 +124,7 @@ export default class ScientificCalculator extends BasicCalculator {
 
 举例来说:
 
-```typescript
+```ts
 import calc from "./ScientificCalculator";
 
 let v = new calc(0.5)
@@ -138,7 +138,7 @@ let v = new calc(0.5)
 
 `this` 类型在描述一些使用了 mixin 风格继承的库 \(比如 Ember.js\) 的交叉类型:
 
-```typescript
+```ts
 interface MyType {
     extend<T>(other: T): this & T;
 }
@@ -150,7 +150,7 @@ TypeScript 1.7 支持将在 ES7/ES2016 中增加的[幂运算符](https://github
 
 ### 举例
 
-```typescript
+```ts
 var x = 2 ** 3;
 var y = 10;
 y **= 2;
@@ -159,7 +159,7 @@ var z =  -(4 ** 3);
 
 会生成下面的 JavaScript:
 
-```typescript
+```ts
 var x = Math.pow(2, 3);
 var y = 10;
 y = Math.pow(y, 2);
@@ -182,7 +182,7 @@ TypeScript 1.7 使对象和数组字面量解构初始值的检查更加直观�
 
 ### 举例
 
-```typescript
+```ts
 // f1 的类型为 (arg?: { x?: number, y?: number }) => void
 function f1({ x = 0, y = 0 } = {}) { }
 

@@ -13,7 +13,7 @@ _首先是一些 ES2016 的术语：_
 
 [ES2015引入了`Iterator`（迭代器）](http://www.ecma-international.org/ecma-262/6.0/#sec-iteration)，它表示提供了 next，return，以及 throw 三个方法的对象，具体满足以下接口：
 
-```typescript
+```ts
 interface Iterator<T> {
   next(value?: any): IteratorResult<T>;
   return?(value?: any): IteratorResult<T>;
@@ -29,7 +29,7 @@ interface Iterator<T> {
 
 [ES2015也引入了"生成器"](http://www.ecma-international.org/ecma-262/6.0/#sec-generatorfunction-objects)，生成器是可以通过`Iterator`接口和`yield`关键字被用来生成部分运算结果的函数。生成器也可以在内部通过`yield*`代理对与其他可迭代对象的调用。举例来说：
 
-```typescript
+```ts
 function* f() {
   yield 1;
   yield* [2, 3];
@@ -56,7 +56,7 @@ TypeScript 2.3 添加了对异步迭代器和生成器的支持，描述见当�
 
 异步迭代引入了`AsyncIterator`，它和`Iterator`相似。实际上的区别在于`AsyncIterator`的`next`、`return`和`throw`方法的返回的是迭代结果的`Promise`，而不是结果本身。这允许`AsyncIterator`在生成值之前的时间点就加入异步通知。`AsyncIterator`的接口如下：
 
-```typescript
+```ts
 interface AsyncIterator<T> {
   next(value?: any): Promise<IteratorResult<T>>;
   return?(value?: any): Promise<IteratorResult<T>>;
@@ -70,7 +70,7 @@ interface AsyncIterator<T> {
 
 [异步迭代提案](https://github.com/tc39/proposal-async-iteration)引入了“异步生成器”，也就是可以用来生成部分计算结果的异步函数。异步生成器也可以通过`yield*`代理对可迭代对象或异步可迭代对象的调用：
 
-```typescript
+```ts
 async function* g() {
   yield 1;
   await sleep(100);
@@ -88,7 +88,7 @@ async function* g() {
 
 最后，ES2015引入了`for..of`语句来迭代可迭代对象。相似的，异步迭代提案引入了`for..await..of`语句来迭代可异步迭代的对象。
 
-```typescript
+```ts
 async function f() {
   for await (const x of g()) {
      console.log(x);
@@ -112,7 +112,7 @@ TypeScript 2.3 增加了对声明泛型参数默认类型的支持。
 
 考虑一个会创建新的`HTMLElement`的函数，调用时不加参数会生成一个`Div`，你也可以选择性地传入子元素的列表。之前你必须这么去定义：
 
-```typescript
+```ts
 declare function create(): Container<HTMLDivElement, HTMLDivElement[]>;
 declare function create<T extends HTMLElement>(element: T): Container<T, T[]>;
 declare function create<T extends HTMLElement, U extends HTMLElement>(element: T, children: U[]): Container<T, U[]>;
@@ -120,7 +120,7 @@ declare function create<T extends HTMLElement, U extends HTMLElement>(element: T
 
 有了泛型参数默认类型，我们可以将定义化简为：
 
-```typescript
+```ts
 declare function create<T extends HTMLElement = HTMLDivElement, U = T[]>(element?: T, children?: U): Container<T, U>;
 ```
 

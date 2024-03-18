@@ -13,7 +13,7 @@ oneline: TypeScript 2.1 Release Notes
 
 #### 示例
 
-```typescript
+```ts
 interface Person {
     name: string;
     age: number;
@@ -29,7 +29,7 @@ type K3 = keyof { [x: string]: Person };  // string
 
 #### 示例
 
-```typescript
+```ts
 type P1 = Person["name"];  // string
 type P2 = Person["name" | "age"];  // string | number
 type P3 = string["charAt"];  // (pos: number) => string
@@ -39,7 +39,7 @@ type P5 = string[][0];  // string
 
 你可以将这种模式和类型系统的其它部分一起使用，以获取类型安全的查找。
 
-```typescript
+```ts
 function getProperty<T, K extends keyof T>(obj: T, key: K) {
     return obj[key];  // 推断类型是T[K]
 }
@@ -62,7 +62,7 @@ setProperty(x, "foo", "string"); // 错误！, 类型是number而非string
 
 一个常见的任务是使用现有类型并使其每个属性完全可选。假设我们有一个`Person`：
 
-```typescript
+```ts
 interface Person {
     name: string;
     age: number;
@@ -72,7 +72,7 @@ interface Person {
 
 `Person`的可选属性类型将是这样：
 
-```typescript
+```ts
 interface PartialPerson {
     name?: string;
     age?: number;
@@ -82,7 +82,7 @@ interface PartialPerson {
 
 使用映射类型，`PartialPerson`可以写成是`Person`类型的广义变换：
 
-```typescript
+```ts
 type Partial<T> = {
     [P in keyof T]?: T[P];
 };
@@ -94,7 +94,7 @@ type PartialPerson = Partial<Person>;
 
 除`Partial`外，映射类型可以表示许多有用的类型转换：
 
-```typescript
+```ts
 // 保持类型相同，但每个属性是只读的。
 type Readonly<T> = {
     readonly [P in keyof T]: T[P];
@@ -115,7 +115,7 @@ type Proxify<T> = {
 
 `Partial`和`Readonly`，如前所述，是非常有用的结构。你可以使用它们来描述像一些常见的JS程序：
 
-```typescript
+```ts
 function assign<T>(obj: T, props: Partial<T>): void;
 function freeze<T>(obj: T): Readonly<T>;
 ```
@@ -124,14 +124,14 @@ function freeze<T>(obj: T): Readonly<T>;
 
 我们还包括两个其他实用程序类型：`Record`和`Pick`。
 
-```typescript
+```ts
 // 从T中选取一组属性K
 declare function pick<T, K extends keyof T>(obj: T, ...keys: K[]): Pick<T, K>;
 
 const nameAndAgeOnly = pick(person, "name", "age");  // { name: string, age: number }
 ```
 
-```typescript
+```ts
 // 对于类型T的每个属性K，将其转换为U
 function mapObject<K extends string | number, T, U>(obj: Record<K, T>, f: (x: T) => U): Record<K, U>
 
@@ -145,19 +145,19 @@ TypeScript 2.1带来了[ESnext扩展运算符和rest运算符](https://github.co
 
 类似于数组扩展，展开对象可以方便得到浅拷贝：
 
-```typescript
+```ts
 let copy = { ...original };
 ```
 
 同样，您可以合并几个不同的对象。在以下示例中，合并将具有来自`foo`，`bar`和`baz`的属性。
 
-```typescript
+```ts
 let merged = { ...foo, ...bar, ...baz };
 ```
 
 还可以重写现有属性并添加新属性.：
 
-```typescript
+```ts
 let obj = { x: 1, y: "string" };
 var newObj = {...obj, z: 3, y: 4}; // { x: number, y: number, z: number }
 ```
@@ -166,7 +166,7 @@ var newObj = {...obj, z: 3, y: 4}; // { x: number, y: number, z: number }
 
 与对象扩展运算符相对的是对象rest运算符，因为它可以提取解构元素中剩余的元素：
 
-```typescript
+```ts
 let obj = { x: 1, y: 1, z: 1 };
 let { z, ...obj1 } = obj;
 obj1; // {x: number, y: number};
@@ -182,7 +182,7 @@ obj1; // {x: number, y: number};
 
 **tsconfig.json**
 
-```javascript
+```js
 {
     "compilerOptions": {
         "lib": ["dom", "es2015.promise", "es5"]
@@ -192,7 +192,7 @@ obj1; // {x: number, y: number};
 
 **dramaticWelcome.ts**
 
-```typescript
+```ts
 function delay(milliseconds: number) {
     return new Promise<void>(resolve => {
         setTimeout(resolve, milliseconds);
@@ -242,12 +242,12 @@ tsc --module commonjs --importHelpers a.ts
 
 因此下面的输入，生成的`.js`文件将包含`tslib`的导入和使用`__assign`辅助函数替代内联操作。
 
-```typescript
+```ts
 export const o = { a: 1, name: "o" };
 export const copy = { ...o };
 ```
 
-```javascript
+```js
 "use strict";
 var tslib_1 = require("tslib");
 exports.o = { a: 1, name: "o" };
@@ -264,7 +264,7 @@ TypeScript历来对于如何导入模块过于严格。这是为了避免输入�
 
 对于没有声明文件的模块的导入，在使用了`--noImplicitAny`编译参数后仍将被标记为错误。
 
-```typescript
+```ts
 // Succeeds if `node_modules/asdf/index.js` exists
 import { x } from "asdf";
 ```
@@ -283,7 +283,7 @@ TypeScript 2.1支持三个新的编译版本值`--target ES2016`,`--target ES201
 
 以前，如果TypeScript无法确定变量的类型，它将选择`any`类型。
 
-```typescript
+```ts
 let x;      // 隐式 'any'
 let y = []; // 隐式 'any[]'
 
@@ -296,7 +296,7 @@ let z: any; // 显式 'any'.
 
 #### 示例
 
-```typescript
+```ts
 let x;
 
 // 你仍然可以给'x'赋值任何你需要的任何值。
@@ -321,7 +321,7 @@ x.toLowerCase();
 
 没有类型注解并且初始值为`[]`的变量被认为是一个隐式的`any[]`变量。变量会根据下面这些操作`x.push(value)`、`x.unshift(value)`或`x[n] = value`向其中添加的元素来_不断改变_自身的类型。
 
-```typescript
+```ts
 function f1() {
     let x = [];
     x.push(5);
@@ -348,7 +348,7 @@ function f2() {
 
 #### 示例
 
-```typescript
+```ts
 function f3() {
     let x = [];  // 错误：当变量'x'类型无法确定时，它隐式具有'any[]'类型。
     x.push(5);
@@ -366,7 +366,7 @@ function f3() {
 
 #### 示例
 
-```typescript
+```ts
 const c1 = 1;  // Type 1
 const c2 = c1;  // Type 1
 const c3 = "abc";  // Type "abc"
@@ -384,7 +384,7 @@ let v5 = c5;  // Type number | string
 
 #### 示例
 
-```typescript
+```ts
 const c1 = "hello";  // Widening type "hello"
 let v1 = c1;  // Type string
 
@@ -398,7 +398,7 @@ let v2 = c2;  // Type "hello"
 
 #### 示例
 
-```typescript
+```ts
 class Base {
     x: number;
     constructor() {
@@ -419,7 +419,7 @@ class Derived extends Base {
 
 生成：
 
-```javascript
+```js
 var Derived = (function (_super) {
     __extends(Derived, _super);
     function Derived() {
@@ -450,7 +450,7 @@ TypeScript 2.1支持使用`extends`来继承配置，其中：
 
 `configs/base.json`:
 
-```javascript
+```js
 {
   "compilerOptions": {
     "allowJs": true,
@@ -462,7 +462,7 @@ TypeScript 2.1支持使用`extends`来继承配置，其中：
 
 `configs/tests.json`:
 
-```javascript
+```js
 {
   "compilerOptions": {
     "preserveConstEnums": true,
@@ -481,7 +481,7 @@ TypeScript 2.1支持使用`extends`来继承配置，其中：
 
 `tsconfig.json`:
 
-```javascript
+```js
 {
   "extends": "./configs/base",
   "files": [
@@ -493,7 +493,7 @@ TypeScript 2.1支持使用`extends`来继承配置，其中：
 
 `tsconfig.nostrictnull.json`:
 
-```javascript
+```js
 {
   "extends": "./tsconfig",
   "compilerOptions": {

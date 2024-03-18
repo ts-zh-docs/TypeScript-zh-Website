@@ -9,7 +9,7 @@ oneline: TypeScript 3.2 Release Notes
 
 TypeScript 3.2引入了一个新的`--strictBindCallApply`编译选项（是`--strict`选项家族之一）。在使用了此选项后，函数对象上的`bind`，`call`和`apply`方法将应用强类型并进行严格的类型检查。
 
-```typescript
+```ts
 function foo(a: number, b: string): string {
     return a + b;
 }
@@ -32,7 +32,7 @@ let d = foo.apply(undefined, [10, "hello"]);     // okay! returns a string
 
 TypeScript 3.2开始，对象字面量允许泛型展开表达式，它产生交叉类型，和`Object.assign`函数或JSX字面量类似。例如：
 
-```typescript
+```ts
 function taggedObject<T, U extends string>(obj: T, tag: U) {
     return { ...obj, tag };  // T & { tag: U }
 }
@@ -42,7 +42,7 @@ let x = taggedObject({ x: 10, y: 20 }, "point");  // { x: number, y: number } & 
 
 属性赋值和非泛型展开表达式会最大程度地合并到泛型展开表达式的一侧。例如：
 
-```typescript
+```ts
 function foo1<T>(t: T, obj1: { a: string }, obj2: { b: string }) {
     return { ...obj1, x: 1, ...t, ...obj2, y: 2 };  // { a: string, x: number } & T & { b: string, y: number }
 }
@@ -50,7 +50,7 @@ function foo1<T>(t: T, obj1: { a: string }, obj2: { b: string }) {
 
 非泛型展开表达式与之前的行为相同：函数调用签名和构造签名被移除，仅有非方法的属性被保留，针对同名属性则只有出现在最右侧的会被使用。它与交叉类型不同，交叉类型会连接调用签名和构造签名，保留所有的属性，合并同名属性的类型。因此，当展开使用泛型初始化的相同类型时可能会产生不同的结果：
 
-```typescript
+```ts
 function spread<T, U>(t: T, u: U) {
     return { ...t, ...u };  // T & U
 }
@@ -68,7 +68,7 @@ let b2 = s2.b;  // number & string
 
 TypeScript 3.2开始允许从泛型变量中解构剩余绑定。它是通过使用`lib.d.ts`里预定义的`Pick`和`Exclude`助手类型，并结合使用泛型类型和解构式里的其它绑定名实现的。
 
-```typescript
+```ts
 function excludeTag<T extends { tag: string }>(obj: T) {
     let { tag, ...rest } = obj;
     return rest;  // Pick<T, Exclude<keyof T, "tag">>
@@ -84,7 +84,7 @@ BigInt里ECMAScript的一项提案，它在理论上允许我们建模任意大�
 
 为支持BigInt，TypeScript引入了一个新的原始类型`bigint`（全小写）。 可以通过调用`BigInt()`函数或书写BigInt字面量（在整型数字字面量末尾添加`n`）来获取`bigint`。
 
-```typescript
+```ts
 let foo: bigint = BigInt(100); // the BigInt function
 let bar: bigint = 100n;        // a BigInt literal
 
@@ -105,7 +105,7 @@ fibonacci(10000n)
 
 尽管你可能会认为`number`和`bigint`能互换使用，但它们是不同的东西。
 
-```typescript
+```ts
 declare let foo: number;
 declare let bar: bigint;
 
@@ -115,7 +115,7 @@ bar = foo; // error: Type 'number' is not assignable to type 'bigint'.
 
 ECMAScript里规定，在算术运算符里混合使用`number`和`bigint`是一个错误。 应该显式地将值转换为`BigInt`。
 
-```typescript
+```ts
 console.log(3.141592 * 10000n);     // error
 console.log(3145 * 10n);            // error
 console.log(BigInt(3145) * 10n);    // okay!
@@ -123,7 +123,7 @@ console.log(BigInt(3145) * 10n);    // okay!
 
 还有一点要注意的是，对`bigint`使用`typeof`操作符返回一个新的字符串：`"bigint"`。 因此，TypeScript能够正确地使用`typeof`细化类型。
 
-```typescript
+```ts
 function whatKindOfNumberIsIt(x: number | bigint) {
     if (typeof x === "bigint") {
         console.log("'x' is a bigint!");
@@ -150,7 +150,7 @@ TypeScript 3.2放宽了作为判别式属性的限制，来让类型细化变得
 
 因此，TypeScript 3.2认为下例中的`error`属性可以做为判别式。这在之前是不可以的，因为`Error`并非是一个单体类型。 那么，`unwrap`函数体里的类型细化就可以正确地工作了。
 
-```typescript
+```ts
 type Result<T> =
     | { error: Error; data: null }
     | { error: null; data: T };
@@ -193,7 +193,7 @@ TypeScript 3.2现在可以从`node_modules`里解析`tsconfig.json`。如果`tsc
 
 在编写JavaScript文件时（使用`allowJs`），TypeScript能识别出使用`Object.defineProperty`声明。 也就是说会有更好的代码补全功能，和强类型检查，这需要在JavaScript文件里启用类型检查功能（打开`checkJs`选项或在文件顶端添加`// @ts-check`注释）。
 
-```javascript
+```js
 // @ts-check
 
 let obj = {};
