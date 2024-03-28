@@ -618,4 +618,3 @@ abstract class C {
     abstract prop: number;
 }
 ```
--->
