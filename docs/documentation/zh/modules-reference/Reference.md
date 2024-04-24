@@ -1,54 +1,54 @@
 ---
-title: Modules - Reference
+title: 模块——参考
 short: Reference
 layout: docs
 permalink: /zh/docs/handbook/modules/reference.html
-oneline: Module syntax and compiler options reference
+oneline: 模块语法和编译器选项参考
 translatable: true
 ---
 
-## Module syntax
+## 模块语法
 
-The TypeScript compiler recognizes standard [ECMAScript module syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) in TypeScript and JavaScript files and many forms of [CommonJS syntax](https://www.typescriptlang.org/docs/handbook/type-checking-javascript-files.html#commonjs-modules-are-supported) in JavaScript files.
+TypeScript 编译器支持 TypeScript 和 JavaScript 文件中的标准 [ECMAScript 模块语法](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)，以及 JavaScript 文件中的许多形式的 [CommonJS 语法](https://www.typescriptlang.org/docs/handbook/type-checking-javascript-files.html#commonjs-modules-are-supported)。
 
-There are also a few TypeScript-specific syntax extensions that can be used in TypeScript files and/or JSDoc comments.
+此外，还有一些 TypeScript 特定的语法扩展，可以在 TypeScript 文件和/或 JSDoc 注释中使用。
 
-### Importing and exporting TypeScript-specific declarations
+### 导入和导出 TypeScript 特定声明
 
-Type aliases, interfaces, enums, and namespaces can be exported from a module with an `export` modifier, like any standard JavaScript declaration:
+类型别名、接口、枚举和命名空间可以使用 `export` 修饰符从模块中导出，就像任何标准 JavaScript 声明一样：
 
 ```ts
-// Standard JavaScript syntax...
+// 标准 JavaScript 语法...
 export function f() {}
-// ...extended to type declarations
+// ...扩展至类型声明
 export type SomeType = /* ... */;
 export interface SomeInterface { /* ... */ }
 ```
 
-They can also be referenced in named exports, even alongside references to standard JavaScript declarations:
+它们也可以在命名导出中引用，甚至可以与标准 JavaScript 声明一起引用：
 
 ```ts
 export { f, SomeType, SomeInterface };
 ```
 
-Exported types (and other TypeScript-specific declarations) can be imported with standard ECMAScript imports:
+导出的类型（以及其他 TypeScript 特定声明）可以使用标准的 ECMAScript 导入语法导入：
 
 ```ts
 import { f, SomeType, SomeInterface } from "./module.js";
 ```
 
-When using namespace imports or exports, exported types are available on the namespace when referenced in a type position:
+当使用命名空间导入或导出时，如果在类型位置引用，导出的类型将在命名空间上可用：
 
 ```ts
 import * as mod from "./module.js";
 mod.f();
-mod.SomeType; // Property 'SomeType' does not exist on type 'typeof import("./module.js")'
-let x: mod.SomeType; // Ok
+mod.SomeType; // 类型 'typeof import("./module.js")' 上不存在属性 'SomeType'
+let x: mod.SomeType; // 正确
 ```
 
-### Type-only imports and exports
+### 仅限类型的导入和导出
 
-When emitting imports and exports to JavaScript, by default, TypeScript automatically elides (does not emit) imports that are only used in type positions and exports that only refer to types. Type-only imports and exports can be used to force this behavior and make the elision explicit. Import declarations written with `import type`, export declarations written with `export type { ... }`, and import or export specifiers prefixed with the `type` keyword are all guaranteed to be elided from the output JavaScript.
+在将导入和导出转换为 JavaScript 代码时，默认情况下，TypeScript 会自动省略（不生成）仅在类型位置使用的导入语句和仅涉及类型的导出语句。你可以使用仅限类型的导入和导出来强制这样做，并明确指出省略。使用 `import type` 编写的导入声明，使用 `export type { ... }` 编写的导出声明，以及带有 `type` 关键字前缀的导入或导出标识符都将在生成的 JavaScript 代码中被省略。
 
 ```ts
 // @Filename: main.ts
@@ -73,36 +73,36 @@ class C {
 }
 ```
 
-Even values can be imported with `import type`, but since they won’t exist in the output JavaScript, they can only be used in non-emitting positions:
+`import type` 其实也可以导入值，但由于它们在生成的 JavaScript 代码中不存在，因此只能在非生成位置使用：
 
 ```ts
 import type { f } from "./module.js";
-f(); // 'f' cannot be used as a value because it was imported using 'import type'
-let otherFunction: typeof f = () => {}; // Ok
+f(); // ‘f’不能作为值使用，因为它是使用‘import type’导入的
+let otherFunction: typeof f = () => {}; // 正确
 ```
 
-A type-only import declaration may not declare both a default import and named bindings, since it appears ambiguous whether `type` applies to the default import or to the entire import declaration. Instead, split the import declaration into two, or use `default` as a named binding:
+仅限类型的导入声明不能同时声明默认导入和命名绑定，因为不清楚 `type` 是应用于默认导入还是整个导入声明。可以将导入声明拆分为两个声明，或者将 `default` 用作命名绑定：
 
 ```ts
 import type fs, { BigIntOptions } from "fs";
 //          ^^^^^^^^^^^^^^^^^^^^^
-// Error: A type-only import can specify a default import or named bindings, but not both.
+// 错误：仅限类型的导入可以指定默认导入或命名绑定，但不能同时存在两者。
 
-import type { default as fs, BigIntOptions } from "fs"; // Ok
+import type { default as fs, BigIntOptions } from "fs"; // 正确
 ```
 
-### `import()` types
+### `import()` 类型
 
-TypeScript provides a type syntax similar to JavaScript’s dynamic `import` for referencing the type of a module without writing an import declaration:
+TypeScript 提供了一种类似于 JavaScript 动态 `import` 的类型语法，用于引用模块的类型而无需编写导入声明：
 
 ```ts
-// Access an exported type:
+// 获取导出的类型：
 type WriteFileOptions = import("fs").WriteFileOptions;
-// Access the type of an exported value:
+// 获取导出值的类型：
 type WriteFileFunction = typeof import("fs").writeFile;
 ```
 
-This is especially useful in JSDoc comments in JavaScript files, where it’s not possible to import types otherwise:
+这在 JavaScript 文件的 JSDoc 注释中特别有用，因为否则无法导入类型：
 
 ```ts
 /** @type {import("webpack").Configuration} */
@@ -111,9 +111,9 @@ module.exports = {
 }
 ```
 
-### `export =` and `import = require()`
+### `export =` 和 `import = require()`
 
-When emitting CommonJS modules, TypeScript files can use a direct analog of `module.exports = ...` and `const mod = require("...")` JavaScript syntax:
+在输出 CommonJS 模块时，TypeScript 文件可以使用与 JavaScript `module.exports = ...` 和 `const mod = require("...")` 直接对应的语法：
 
 ```ts
 // @Filename: main.ts
@@ -126,26 +126,26 @@ const fs = require("fs");
 module.exports = fs.readFileSync("...");
 ```
 
-This syntax was used over its JavaScript counterparts since variable declarations and property assignments could not refer to TypeScript types, whereas special TypeScript syntax could:
+相比 JavaScript，选择使用这种语法是因为变量声明和属性赋值不能引用 TypeScript 类型，而特定的 TypeScript 语法可以：
 
 ```ts
 // @Filename: a.ts
 interface Options { /* ... */ }
-module.exports = Options; // Error: 'Options' only refers to a type, but is being used as a value here.
-export = Options; // Ok
+module.exports = Options; // 错误：‘Options’只引用类型，但在此处被当作值使用。
+export = Options; // 正确
 
 // @Filename: b.ts
 const Options = require("./a");
-const options: Options = { /* ... */ }; // Error: 'Options' refers to a value, but is being used as a type here.
+const options: Options = { /* ... */ }; // 错误：‘Options’引用值，但在此处被当作类型使用。
 
 // @Filename: c.ts
 import Options = require("./a");
-const options: Options = { /* ... */ }; // Ok
+const options: Options = { /* ... */ }; // 正确
 ```
 
-### Ambient modules
+### 环境模块
 
-TypeScript supports a syntax in script (non-module) files for declaring a module that exists in the runtime but has no corresponding file. These _ambient modules_ usually represent runtime-provided modules, like `"fs"` or `"path"` in Node.js:
+TypeScript 支持在脚本文件（非模块文件）中声明在运行时存在但没有对应文件的模块。这些*环境模块（ambient module）*通常表示运行时提供的模块，比如 Node.js 中的 `"fs"` 或 `"path"`：
 
 ```ts
 declare module "path" {
@@ -155,21 +155,21 @@ declare module "path" {
 }
 ```
 
-Once an ambient module is loaded into a TypeScript program, TypeScript will recognize imports of the declared module in other files:
+一旦环境模块被加载到 TypeScript 程序中，TypeScript 将会识别其他文件中对声明模块的导入：
 
 ```ts
-// 👇 Ensure the ambient module is loaded -
-//    may be unnecessary if path.d.ts is included
-//    by the project tsconfig.json somehow.
+// 👇 确保环境模块已加载——
+//    如果 path.d.ts 通过项目的 tsconfig.json
+//    在某种方式下被包含，则可能不需要此语句。
 /// <reference path="path.d.ts" />
 
 import { normalize, join } from "path";
 ```
 
-Ambient module declarations are easy to confuse with [module augmentations](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation) since they use identical syntax. This module declaration syntax becomes a module augmentation when the file is a module, meaning it has a top-level `import` or `export` statement (or is affected by [`--moduleDetection force` or `auto`](https://www.typescriptlang.org/tsconfig#moduleDetection)):
+环境模块声明很容易与[模块扩展](/zh/docs/handbook/declaration-merging.html#module-augmentation)混淆，因为它们使用相同的语法。如果文件是一个模块，换言之它具有顶级的 `import` 或 `export` 语句（或受到 [`--moduleDetection force` 或 `auto`](/zh/tsconfig#moduleDetection) 的影响），这个模块声明语法将变成模块扩展：
 
 ```ts
-// Not an ambient module declaration anymore!
+// 不再是环境模块声明！
 export {};
 declare module "path" {
   export function normalize(p: string): string;
@@ -178,17 +178,17 @@ declare module "path" {
 }
 ```
 
-Ambient modules may use imports inside the module declaration body to refer to other modules without turning the containing file into a module (which would make the ambient module declaration a module augmentation):
+环境模块可以在模块声明体内使用导入语句来引用其他模块，而不会将包含该导入语句的文件转换为模块（这将使环境模块声明成为模块扩展）：
 
 ```ts
 declare module "m" {
-  // Moving this outside "m" would totally change the meaning of the file!
+  // 将其移到“m”外部会完全改变文件的含义！
   import { SomeType } from "other";
   export function f(): SomeType;
 }
 ```
 
-A _pattern_ ambient module contains a single `*` wildcard character in its name, matching zero or more characters in import paths. This can be useful for declaring modules provided by custom loaders:
+*模式（pattern）*环境模块的名称中包含一个 `*` 通配符，用于匹配导入路径中的零个或多个字符。我们可以借此声明由自定义加载器提供的模块：
 
 ```ts
 declare module "*.html" {
@@ -197,38 +197,38 @@ declare module "*.html" {
 }
 ```
 
-## The `module` compiler option
+## `module` 编译选项
 
-This section discusses the details of each `module` compiler option value. See the [_Module output format_](/docs/handbook/modules/theory.html#the-module-output-format) theory section for more background on what the option is and how it fits into the overall compilation process. In brief, the `module` compiler option was historically only used to control the output module format of emitted JavaScript files. The more recent `node16` and `nodenext` values, however, describe a wide range of characteristics of Node.js’s module system, including what module formats are supported, how the module format of each file is determined, and how different module formats interoperate.
+本节将讨论每个 `module` 编译选项值的详细信息。有关该选项是什么以及它如何适用于整个编译过程的更多背景，请参阅[*模块输出格式*](/docs/handbook/modules/theory.html#模块输出格式)理论部分。简而言之，`module` 编译选项在历史上仅用于控制所输出的 JavaScript 文件的输出模块格式。然而，较新的 `node16` 和 `nodenext` 值描述了 Node.js 模块系统的各种特性，包括支持哪些模块格式、如何确定每个文件的模块格式以及不同模块格式之间的互操作性。
 
-### `node16`, `nodenext`
+### `node16`，`nodenext`
 
-Node.js supports both CommonJS and ECMAScript modules, with specific rules for which format each file can be and how the two formats are allowed to interoperate. `node16` and `nodenext` describe the full range of behavior for Node.js’s dual-format module system, and **emit files in either CommonJS or ESM format**. This is different from every other `module` option, which are runtime-agnostic and force all output files into a single format, leaving it to the user to ensure the output is valid for their runtime.
+Node.js 同时支持 CommonJS 和 ECMAScript 模块，对于每个文件可以使用特定规则确定使用哪种格式，并允许两种格式进行互操作。`node16` 和 `nodenext` 描述了 Node.js 双格式模块系统的全部行为范围，并且**以 CommonJS 或 ESM 格式输出文件**。这与其他 `module` 选项不同，其他选项与运行时无关，并会将强制输出为单一格式，用户需要确保输出可在运行时正常运行。
 
-> A common misconception is that `node16` and `nodenext` only emit ES modules. In reality, `node16` and `nodenext` describe versions of Node.js that _support_ ES modules, not just projects that _use_ ES modules. Both ESM and CommonJS emit are supported, based on the [detected module format](#module-format-detection) of each file. Because `node16` and `nodenext` are the only `module` options that reflect the complexities of Node.js’s dual module system, they are the **only correct `module` options** for all apps and libraries that are intended to run in Node.js v12 or later, whether they use ES modules or not.
+> 一个常见的误解是 `node16` 和 `nodenext` 仅输出 ES 模块。实际上，`node16` 和 `nodenext` 描述的是*支持* ES 模块的 Node.js 版本，而不仅仅是*使用* ES 模块的项目。根据每个文件[检测到的模块格式](#模块格式检测)，同时支持输出 ESM 和 CommonJS。由于 `node16` 和 `nodenext` 是唯一反映 Node.js 双模块系统复杂性的 `module` 选项，它们是所有旨在在 Node.js v12 或更高版本中运行的应用程序和库的**唯一正确的 `module` 选项**，无论它们是否使用 ES 模块。
 
-`node16` and `nodenext` are currently identical, with the exception that they [imply different `target` option values](#implied-and-enforced-options). If Node.js makes significant changes to its module system in the future, `node16` will be frozen while `nodenext` will be updated to reflect the new behavior.
+`node16` 和 `nodenext` 目前作用一样，唯一的区别在于它们[暗示不同的 `target` 选项值](#implied-and-enforced-options)。如果 Node.js 将来对其模块系统进行重大更改，`node16` 将被冻结，而 `nodenext` 将被更新以反映新的行为。
 
-#### Module format detection
+#### 模块格式检测
 
-- `.mts`/`.mjs`/`.d.mts` files are always ES modules.
-- `.cts`/`.cjs`/`.d.cts` files are always CommonJS modules.
-- `.ts`/`.tsx`/`.js`/`.jsx`/`.d.ts` files are ES modules if the nearest ancestor package.json file contains `"type": "module"`, otherwise CommonJS modules.
+- `.mts`/`.mjs`/`.d.mts` 文件始终是 ES 模块。
+- `.cts`/`.cjs`/`.d.cts` 文件始终是 CommonJS 模块。
+- 如果文件夹层级最接近的 package.json 文件中包含 `"type": "module"`，那么 `.ts`/`.tsx`/`.js`/`.jsx`/`.d.ts` 文件将根据此确定为 ES 模块，否则为 CommonJS 模块。
 
-The detected module format of input `.ts`/`.tsx`/`.mts`/`.cts` files determines the module format of the emitted JavaScript files. So, for example, a project consisting entirely of `.ts` files will emit all CommonJS modules by default under `--module nodenext`, and can be made to emit all ES modules by adding `"type": "module"` to the project package.json.
+输入的 `.ts`/`.tsx`/`.mts`/`.cts` 文件的检测到的模块格式决定了生成的 JavaScript 文件的模块格式。例如，一个完全由 `.ts` 文件组成的项目默认情况下会在 `--module nodenext` 下全部生成 CommonJS 模块，通过在项目的 package.json 中添加 `"type": "module"` 可以使其全部生成 ES 模块。
 
-#### Interoperability rules
+#### 互操作规则
 
-- **When an ES module references a CommonJS module:**
-  - The `module.exports` of the CommonJS module is available as a default import to the ES module.
-  - Properties (other than `default`) of the CommonJS module’s `module.exports` may or may not be available as named imports to the ES module. Node.js attempts to make them available via [static analysis](https://github.com/nodejs/cjs-module-lexer). TypeScript cannot know from a declaration file whether that static analysis will succeed, and optimistically assumes it will. This limits TypeScript’s ability to catch named imports that may crash at runtime. See [#54018](https://github.com/nodejs/cjs-module-lexer) for more details.
-- **When a CommonJS module references an ES module:**
-  - `require` cannot reference an ES module. For TypeScript, this includes `import` statements in files that are [detected](#module-format-detection) to be CommonJS modules, since those `import` statements will be transformed to `require` calls in the emitted JavaScript.
-  - A dynamic `import()` call may be used to import an ES module. It returns a Promise of the module’s Module Namespace Object (what you’d get from `import * as ns from "./module.js"` from another ES module).
+- **ES 模块引用 CommonJS 模块：**
+  - CommonJS 模块的 `module.exports` 可以作为 ES 模块的默认导入使用。
+  - CommonJS 模块的 `module.exports` 的属性（除了 `default`）可能可用作 ES 模块的命名导入，也可能不可用。Node.js 通过[静态分析](https://github.com/nodejs/cjs-module-lexer)来尽可能使其可用。TypeScript 无法根据声明文件确定静态分析的结果，因此乐观地假设它可以成功。这限制了 TypeScript 捕获可能在运行时崩溃的命名导入的能力。详细信息请参见 [#54018](https://github.com/nodejs/cjs-module-lexer)。
+- **CommonJS 模块引用 ES 模块：**
+  - `require` 不能引用 ES 模块。对于 TypeScript，这包括在被[检测](#模块格式检测)为 CommonJS 模块的文件中的 `import` 语句，因为这些 `import` 语句将在生成的 JavaScript 中转换为 `require` 调用。
+  - 可以使用动态的 `import()` 调用来导入 ES 模块。它返回模块的模块命名空间对象的 Promise（从另一个 ES 模块中的 `import * as ns from "./module.js"` 中获得的对象）。
 
-#### Emit
+#### 生成
 
-The emit format of each file is determined by the [detected module format](#module-format-detection) of each file. ESM emit is similar to [`--module esnext`](#es2015-es2020-es2022-esnext), but has a special transformation for `import x = require("...")`, which is not allowed in `--module esnext`:
+每个文件的生成格式取决于每个文件的[检测到的模块格式](#模块格式检测)。ESM 生成类似于 [`--module esnext`](#es2015-es2020-es2022-esnext)，但对 `import x = require("...")` 进行了特殊的转换，而在 `--module esnext` 中是不允许的：
 
 ```ts
 import x = require("mod");
@@ -240,11 +240,11 @@ const __require = _createRequire(import.meta.url);
 const x = __require("mod");
 ```
 
-CommonJS emit is similar to [`--module commonjs`](#commonjs), but dynamic `import()` calls are not transformed. Emit here is shown with `esModuleInterop` enabled:
+CommonJS 的输出与 [`--module commonjs`](#commonjs) 类似，但不会转换动态的 `import()` 调用。这里的输出是启用 `esModuleInterop` 的。
 
 ```ts
-import fs from "fs"; // transformed
-const dynamic = import("mod"); // not transformed
+import fs from "fs"; // 被转换
+const dynamic = import("mod"); // 未转换
 ```
 
 ```js
@@ -253,38 +253,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs_1 = __importDefault(require("fs")); // transformed
-const dynamic = import("mod"); // not transformed
+const fs_1 = __importDefault(require("fs")); // 被转换
+const dynamic = import("mod"); // 未转换
 ```
 
-#### Implied and enforced options
+#### 隐含和强制选项
 
-- `--module nodenext` or `node16` implies and enforces the `moduleResolution` with the same name.
-- `--module nodenext` implies `--target esnext`.
-- `--module node16` implies `--target es2022`.
-- `--module nodenext` or `node16` implies `--esModuleInterop`.
+- `--module nodenext` 或 `node16` 隐含并强制使用同名的 `moduleResolution`。
+- `--module nodenext` 隐含使用 `--target esnext`。
+- `--module node16` 隐含使用 `--target es2022`。
+- `--module nodenext` 或 `node16` 隐含使用 `--esModuleInterop`。
 
-#### Summary
+#### 总结
 
-- `node16` and `nodenext` are the only correct `module` options for all apps and libraries that are intended to run in Node.js v12 or later, whether they use ES modules or not.
-- `node16` and `nodenext` emit files in either CommonJS or ESM format, based on the [detected module format](#module-format-detection) of each file.
-- Node.js’s interoperability rules between ESM and CJS are reflected in type checking.
-- ESM emit transforms `import x = require("...")` to a `require` call constructed from a `createRequire` import.
-- CommonJS emit leaves dynamic `import()` calls untransformed, so CommonJS modules can asynchronously import ES modules.
+- 对于所有打算在 Node.js v12 或更高版本中运行的应用程序和库，无论它们是否使用 ES 模块，`node16` 和 `nodenext` 是唯一正确的 `module` 选项。
+- `node16` 和 `nodenext` 根据每个文件的[检测到的模块格式](#模块格式检测)生成 CommonJS 或 ESM 格式的文件。
+- Node.js 在 ESM 和 CJS 之间的互操作规则反映在类型检查中。
+- ESM 生成将 `import x = require("...")` 转换为使用 `createRequire` 导入构造的 `require` 调用。
+- CommonJS 生成不对动态的 `import()` 调用进行转换，因此 CommonJS 模块可以异步导入 ES 模块。
 
 ### `es2015`, `es2020`, `es2022`, `esnext`
 
-#### Summary
+#### 总结
 
-- Use `esnext` with `--moduleResolution bundler` for bundlers, Bun, and tsx.
-- Do not use for Node.js. Use `node16` or `nodenext` with `"type": "module"` in package.json to emit ES modules for Node.js.
-- `import mod = require("mod")` is not allowed in non-declaration files.
-- `es2020` adds support for `import.meta` properties.
-- `es2022` adds support for top-level `await`.
-- `esnext` is a moving target that may include support for Stage 3 proposals to ECMAScript modules.
-- Emitted files are ES modules, but dependencies may be any format.
+- 对于打包工具、Bun 和 tsx，请使用 `--moduleResolution bundler` 和 `esnext`。
+- 不适用于 Node.js。在 package.json 中使用 `"type": "module"` 并配合 `node16` 或 `nodenext` 选项以生成适用于 Node.js 的 ES 模块。
+- 非声明文件中不允许使用 `import mod = require("mod")`。
+- `es2020` 添加了对 `import.meta` 属性的支持。
+- `es2022` 添加了对顶层 `await` 的支持。
+- `esnext` 是一个不断发展的目标，可能包括对 ECMAScript 模块的 Stage 3 提案的支持。
+- 生成的文件是 ES 模块，但依赖项可以是任何格式。
 
-#### Examples
+#### 示例
 
 ```ts
 import x, { y, z } from "mod";
@@ -308,16 +308,16 @@ export default "default export";
 
 ### `commonjs`
 
-#### Summary
+#### 总结
 
-- You probably shouldn’t use this. Use `node16` or `nodenext` to emit CommonJS modules for Node.js.
-- Emitted files are CommonJS modules, but dependencies may be any format.
-- Dynamic `import()` is transformed to a Promise of a `require()` call.
-- `esModuleInterop` affects the output code for default and namespace imports.
+- 你可能不应该使用这个选项。请使用 `node16` 或 `nodenext` 以生成适用于 Node.js 的 CommonJS 模块。
+- 生成的文件是 CommonJS 模块，但依赖项可以是任何格式。
+- 动态的 `import()` 会转换为 `require()` 调用的 Promise。
+- `esModuleInterop` 会影响默认导入和命名空间导入的输出代码。
 
-#### Examples
+#### 示例
 
-> Output is shown with `esModuleInterop: false`.
+> 输出代码是在 `esModuleInterop: false` 的情况下显示的。
 
 ```ts
 import x, { y, z } from "mod";
@@ -365,11 +365,11 @@ module.exports = {
 
 ### `system`
 
-#### Summary
+#### 概述
 
-- Designed for use with the [SystemJS module loader](https://github.com/systemjs/systemjs).
+- 专为与 [SystemJS 模块加载器](https://github.com/systemjs/systemjs)配合使用而设计。
 
-#### Examples
+#### 示例
 
 ```ts
 import x, { y, z } from "mod";
@@ -405,14 +405,14 @@ System.register(["mod"], function (exports_1, context_1) {
 
 ### `amd`
 
-#### Summary
+#### 概述
 
-- Designed for AMD loaders like RequireJS.
-- You probably shouldn’t use this. Use a bundler instead.
-- Emitted files are AMD modules, but dependencies may be any format.
-- Supports `outFile`.
+- 专为像 RequireJS 这样的 AMD 加载器设计。
+- 你大概不应该使用它，而应该使用打包工具。
+- 生成的文件是 AMD 模块，但依赖可以是任意格式。
+- 支持 `outFile` 选项。
 
-#### Examples
+#### 示例
 
 ```ts
 import x, { y, z } from "mod";
@@ -439,14 +439,14 @@ define(["require", "exports", "mod", "mod"], function (require, exports, mod_1, 
 
 ### `umd`
 
-#### Summary
+#### 概述
 
-- Designed for AMD or CommonJS loaders.
-- Does not expose a global variable like most other UMD wrappers.
-- You probably shouldn’t use this. Use a bundler instead.
-- Emitted files are UMD modules, but dependencies may be any format.
+- 专为 AMD 或 CommonJS 加载器设计。
+- 不像大多数其他 UMD 包装器一样暴露全局变量。
+- 你大概不应该使用它，而应该使用打包工具。
+- 生成的文件是 UMD 模块，但依赖可以是任意格式。
 
-#### Examples
+#### 示例
 
 ```ts
 import x, { y, z } from "mod";
@@ -482,49 +482,49 @@ export default "default export";
 });
 ```
 
-## The `moduleResolution` compiler option
+## `moduleResolution` 编译选项
 
-This section describes module resolution features and processes shared by multiple `moduleResolution` modes, then specifies the details of each mode. See the [_Module resolution_](/docs/handbook/modules/theory.html#module-resolution) theory section for more background on what the option is and how it fits into the overall compilation process. In brief, `moduleResolution` controls how TypeScript resolves _module specifiers_ (string literals in `import`/`export`/`require` statements) to files on disk, and should be set to match the module resolver used by the target runtime or bundler.
+本节描述了多个 `moduleResolution` 模式共享的模块解析功能和过程，然后详细说明了每个模式的细节。有关该选项是什么以及它如何适应整体编译过程的更多背景信息，请参阅[*模块解析*](/zh/docs/handbook/modules/theory.html#模块解析)理论部分。简而言之，`moduleResolution` 控制 TypeScript 如何将*模块标识符*（`import`/`export`/`require` 语句中的字符串字面量）解析为磁盘上的文件，并且其应该根据目标运行时或打包工具使用的模块解析器进行设置。
 
-### Common features and processes
+### 共同的特性和过程
 
-#### File extension substitution
+#### 文件扩展名替换
 
-TypeScript always wants to resolve internally to a file that can provide type information, while ensuring that the runtime or bundler can use the same path to resolve to a file that provides a JavaScript implementation. For any module specifier that would, according to the `moduleResolution` algorithm specified, trigger a lookup of a JavaScript file in the runtime or bundler, TypeScript will first try to find a TypeScript implementation file or type declaration file with the same name and analagous file extension.
+TypeScript 总是希望首先解析为可以提供类型信息的文件，同时确保运行时或打包工具可以使用相同的路径解析为提供 JavaScript 实现的文件。对于（根据指定的 `moduleResolution` 算法）任何会触发运行时或打包工具对 JavaScript 文件的查找行为的模块标识符，TypeScript 首先尝试查找具有相同名称和类似文件扩展名的 TypeScript 实现文件或类型声明文件。
 
-| Runtime lookup | TypeScript lookup #1 | TypeScript lookup #2 | TypeScript lookup #3 | TypeScript lookup #4 | TypeScript lookup #5 |
+| 运行时查找 | TypeScript 查找 #1 | TypeScript 查找 #2 | TypeScript 查找 #3 | TypeScript 查找 #4 | TypeScript 查找 #5 |
 | -------------- | -------------------- | -------------------- | -------------------- | -------------------- | -------------------- |
 | `/mod.js`      | `/mod.ts`            | `/mod.tsx`           | `/mod.d.ts`          | `/mod.js`            | `./mod.jsx`          |
 | `/mod.mjs`     | `/mod.mts`           | `/mod.d.mts`         | `/mod.mjs`           |                      |                      |
 | `/mod.cjs`     | `/mod.cts`           | `/mod.d.cts`         | `/mod.cjs`           |                      |                      |
 
-Note that this behavior is independent of the actual module specifier written in the import. This means that TypeScript can resolve to a `.ts` or `.d.ts` file even if the module specifier explicitly uses a `.js` file extension:
+请注意，此行为独立于导入中实际写入的实际模块标识符。这意味着，即使模块规范器明确使用 `.js` 文件扩展名，TypeScript 仍然可以解析为 `.ts` 或 `.d.ts` 文件：
 
 ```ts
 import x from "./mod.js";
-// Runtime lookup: "./mod.js"
-// TypeScript lookup #1: "./mod.ts"
-// TypeScript lookup #2: "./mod.d.ts"
-// TypeScript lookup #3: "./mod.js"
+// 运行时查找: "./mod.js"
+// TypeScript 查找 #1: "./mod.ts"
+// TypeScript 查找 #2: "./mod.d.ts"
+// TypeScript 查找 #3: "./mod.js"
 ```
 
-See [_TypeScript imitates the host’s module resolution, but with types_](/docs/handbook/modules/theory.html#typescript-imitates-the-hosts-module-resolution-but-with-types) for an explanation of why TypeScript’s module resolution works this way.
+有关 TypeScript 模块解析方式的解释，请参阅[*TypeScript 模仿主机的模块解析，但带有类型*](/docs/handbook/modules/theory.html#typescript-模拟-host-的模块解析，但包含类型信息)。
 
-#### Relative file path resolution
+#### 相对文件路径解析
 
-All of TypeScript’s `moduleResolution` algorithms support referencing a module by a relative path that includes a file extension (which will be substituted according to the [rules above](#file-extension-substitution)):
+TypeScript 的 `moduleResolution` 算法都支持使用包含文件扩展名的相对路径引用模块（根据[上述规则](#文件扩展名替换)进行替换）：
 
 ```ts
 // @Filename: a.ts
 export {};
 
 // @Filename: b.ts
-import {} from "./a.js"; // ✅ Works in every `moduleResolution`
+import {} from "./a.js"; // ✅ 在每种 `moduleResolution` 中都有效
 ```
 
-#### Extensionless relative paths
+#### 无扩展名的相对路径
 
-In some cases, the runtime or bundler allows omitting a `.js` file extension from a relative path. TypeScript supports this behavior where the `moduleResolution` setting and the context indicate that the runtime or bundler supports it:
+在某些情况下，运行时或捆绑器允许省略相对路径中的 `.js` 文件扩展名。TypeScript 在 `moduleResolution` 设置和上下文对运行时或捆绑器的指示支持此行为的情况下，也支持此行为：
 
 ```ts
 // @Filename: a.ts
@@ -534,13 +534,13 @@ export {};
 import {} from "./a";
 ```
 
-If TypeScript determines that the runtime will perform a lookup for `./a.js` given the module specifier `"./a"`, then `./a.js` will undergo [extension substitution](#file-extension-substitution), and resolve to the file `a.ts` in this example.
+如果 TypeScript 确定运行时将根据模块说明符 `"./a"` 查找 `./a.js`，则 `./a.js` 将经过[扩展名替换](#文件扩展名替换)，在此示例中解析为文件 `a.ts`。
 
-Extensionless relative paths are not supported in `import` paths in Node.js, and are not always supported in file paths specified in package.json files. TypeScript currently never supports omitting a `.mjs`/`.mts` or `.cjs`/`.cts` file extension, even though some runtimes and bundlers do.
+Node.js 的 `import` 路径不支持无扩展名的相对路径，而且在 package.json 文件中指定的文件路径中也不总是支持。尽管某些运行时和捆绑器支持此功能，但 TypeScript 目前不支持省略 `.mjs`/`.mts` 或 `.cjs`/`.cts` 文件扩展名。
 
-#### Directory modules (index file resolution)
+#### 目录模块（索引文件解析）
 
-In some cases, a directory, rather than a file, can be referenced as a module. In the simplest and most common case, this involves the runtime or bundler looking for an `index.js` file in a directory. TypeScript supports this behavior where the `moduleResolution` setting and the context indicate that the runtime or bundler supports it:
+在某些情况下，可以将目录（而不是文件）作为模块的引用。在最简单和最常见的情况下，运行时或捆绑器会在目录中查找名为 `index.js` 的文件。TypeScript 支持此行为，前提是 `moduleResolution` 设置和上下文对运行时或捆绑器的指示支持它：
 
 ```ts
 // @Filename: dir/index.ts
@@ -550,17 +550,17 @@ export {};
 import {} from "./dir";
 ```
 
-If TypeScript determines that the runtime will perform a lookup for `./dir/index.js` given the module specifier `"./dir"`, then `./dir/index.js` will undergo [extension substitution](#file-extension-substitution), and resolve to the file `dir/index.ts` in this example.
+如果 TypeScript 确定运行时将根据模块规范符号 `"./dir"` 查找 `./dir/index.js`，则在本示例中，`./dir/index.js` 将进行[扩展替换](#文件拓展名替换)，并解析为文件 `dir/index.ts`。
 
-Directory modules may also contain a package.json file, where resolution of the [`"main"` and `"types"`](#packagejson-main-and-types) fields are supported, and take precedence over `index.js` lookups. The [`"typesVersions"`](#packagejson-typesversions) field is also supported in directory modules.
+目录模块还可以包含 package.json 文件，其中支持解析 [`"main"`和`"types"`](#package.json-的-main-和-types) 字段，并优先于 `index.js` 查找。目录模块还支持 [`"typesVersions"`](#packagejson-的-typesVersions) 字段。
 
-Note that directory modules are not the same as [`node_modules` packages](#node_modules-package-lookups) and only support a subset of the features available to packages, and are not supported at all in some contexts.  Node.js considers them a [legacy feature](https://nodejs.org/dist/latest-v20.x/docs/api/modules.html#folders-as-modules).
+请注意，目录模块与 [`node_modules` 包](#node_modules-包查找) 不同，它们仅支持一部分包的功能，并且在某些情况下根本不受支持。Node.js 将其视为[遗留功能](https://nodejs.org/dist/latest-v20.x/docs/api/modules.html#folders-as-modules)。
 
 #### `paths`
 
-##### Overview
+##### 概述
 
-TypeScript offers a way to override the compiler’s module resolution for bare specifiers with the `paths` compiler option. While the feature was originally designed to be used with the AMD module loader (a means of running modules in the browser before ESM existed or bundlers were widely used), it still has uses today when a runtime or bundler supports module resolution features that TypeScript does not model. For example, when running Node.js with `--experimental-network-imports`, you can manually specify a local type definition file for a specific `https://` import:
+TypeScript 提供了一种使用 `paths` 编译选项覆盖编译器对裸规范符号的模块解析的方式。虽然该功能最初设计用于与 AMD 模块加载器一起使用（一种在 ESM 存在或广泛使用打包程序之前在浏览器中运行模块的方法），但在今天仍然有用（当运行时或打包器支持 TypeScript 未建模的模块解析特性时）。例如，当使用 `--experimental-network-imports` 运行 Node.js 时，可以手动指定特定 `https://` 导入的本地类型定义文件：
 
 ```json
 {
@@ -574,11 +574,11 @@ TypeScript offers a way to override the compiler’s module resolution for bare 
 ```
 
 ```ts
-// Typed by ./node_modules/@types/lodash/index.d.ts due to `paths` entry
+// 由于 `paths` 条目，此模块的类型被 `./node_modules/@types/lodash/index.d.ts` 定义
 import { add } from "https://esm.sh/lodash@4.17.21";
 ```
 
-It’s also common for apps built with bundlers to define convenience path aliases in their bundler configuration, and then inform TypeScript of those aliases with `paths`:
+对于使用打包器构建的应用程序，常见做法是在打包器配置中定义便捷路径别名，然后使用 `paths` 通知 TypeScript 这些别名：
 
 ```json
 {
@@ -592,16 +592,16 @@ It’s also common for apps built with bundlers to define convenience path alias
 }
 ```
 
-##### `paths` does not affect emit
+##### `paths` 对生成不起作用
 
-The `paths` option does _not_ change the import path in the code emitted by TypeScript. Consequently, it’s very easy to create path aliases that appear to work in TypeScript but will crash at runtime:
+`paths` 选项*不会*改变 TypeScript 生成的代码中的导入路径。因此，虽然我们可以在 TypeScript 中创建看似有效的路径别名，但在运行时会导致崩溃：
 
 ```json
 {
   "compilerOptions": {
     "module": "nodenext",
     "paths": {
-      "node-has-no-idea-what-this-is": ["./oops.ts"]
+      "node-不知道这是什么": ["./oops.ts"]
     }
   }
 }
@@ -610,14 +610,14 @@ The `paths` option does _not_ change the import path in the code emitted by Type
 ```ts
 // TypeScript: ✅
 // Node.js: 💥
-import {} from "node-has-no-idea-what-this-is";
+import {} from "node-不知道这是什么";
 ```
 
-While it’s ok for bundled apps to set up `paths`, it’s very important that published libraries do _not_, since the emitted JavaScript will not work for consumers of the library without those users setting up the same aliases for both TypeScript and their bundler. Both libraries and apps can consider [package.json `"imports"`](#packagejson-imports-and-self-name-imports) as a standard replacement for convenience `paths` aliases.
+尽管为打包的应用程序设置 `paths` 是可行的，但是发布的库千万*不要*这样做，因为生成的 JavaScript 在没有为 TypeScript 和打包器设置相同别名的情况下无法正常工作。对于库和应用程序，可以考虑使用 [package.json 的 `"imports"`](#packagejson-imports-and-self-name-imports) 作为方便的 `paths` 别名的标准替代方案。
 
-##### `paths` should not point to monorepo packages or node_modules packages
+##### `paths` 不应指向 monorepo 包或 node_modules 包
 
-While module specifiers that match `paths` aliases are bare specifiers, once the alias is resolved, module resolution proceeds on the resolved path as a relative path. Consequently, resolution features that happen for [`node_modules` package lookups](#node_modules-package-lookups), including package.json `"exports"` field support, do not take effect when a `paths` alias is matched. This can lead to surprising behavior if `paths` is used to point to a `node_modules` package:
+虽然与 `paths` 别名匹配的模块标识符是裸标识符，但一旦解析了别名，模块解析将继续把解析后的路径作为相对路径进行。因此，在 `paths` 别名匹配时不会发生 [`node_modules` 包查找](#node_modules-包查找)中发生的解析特性，包括 package.json 的 `"exports"` 字段支持。如果使用 `paths` 指向 `node_modules` 包，可能会导致意外的行为：
 
 ```ts
 {
@@ -630,17 +630,17 @@ While module specifiers that match `paths` aliases are bare specifiers, once the
 }
 ```
 
-While this configuration may simulate some of the behavior of package resolution, it overrides any `main`, `types`, `exports`, and `typesVersions` the package’s `package.json` file defines, and imports from the package may fail at runtime.
+尽管此配置可能模拟某些包解析行为，但它会覆盖包的 `package.json` 文件定义的任何 `main`、`types`、`exports` 和 `typesVersions`，并且从该包中导入的内容可能在运行时失败。
 
-The same caveat applies to packages referencing each other in a monorepo. Instead of using `paths` to make TypeScript artificially resolve `"@my-scope/lib"` to a sibling package, it’s best to use workspaces via [npm](https://docs.npmjs.com/cli/v7/using-npm/workspaces), [yarn](https://classic.yarnpkg.com/en/docs/workspaces/), or [pnpm](https://pnpm.io/workspaces) to symlink your packages into `node_modules`, so both TypeScript and the runtime or bundler perform real `node_modules` package lookups. This is especially important if the monorepo packages will be published to npm—the packages will reference each other via `node_modules` package lookups once installed by users, and using workspaces allows you to test that behavior during local development.
+相同的注意事项也适用于在 monorepo 中相互引用的包。不要使用 `paths` 来使 TypeScript 人为地解析 `"@my-scope/lib"` 为一个同级包，而是最好使用通过 [npm](https://docs.npmjs.com/cli/v7/using-npm/workspaces)、[yarn](https://classic.yarnpkg.com/en/docs/workspaces/) 或 [pnpm](https://pnpm.io/workspaces) 将你的包符号链接到 `node_modules`，这样 TypeScript 和运行时或打包器将执行真正的 `node_modules` 包查找。如果 monorepo 包将被发布到 npm，则尤其重要——一旦用户安装了这些包，它们将通过 `node_modules` 包查找相互引用，并且使用工作区从而你借此可以在本地开发期间测试该行为。
 
-##### Relationship to `baseUrl`
+##### 与 `baseUrl` 的关系
 
-When [`baseUrl`](#baseurl) is provided, the values in each `paths` array are resolved relative to the `baseUrl`. Otherwise, they are resolved relative to the `tsconfig.json` file that defines them.
+如果提供了 [`baseUrl`](#baseurl)，则每个 `paths` 数组中的值将相对于 `baseUrl` 进行解析。否则，它们将相对于定义它们的 `tsconfig.json` 文件进行解析。
 
-##### Wildcard substitutions
+##### 通配符替换
 
-`paths` patterns can contain a single `*` wildcard, which matches any string. The `*` token can then be used in the file path values to substitute the matched string:
+`paths` 模式可以包含单个 `*` 通配符，用于匹配任意字符串。然后，可以在文件路径值中使用 `*` 标记来替换匹配的字符串：
 
 ```json
 {
@@ -652,9 +652,9 @@ When [`baseUrl`](#baseurl) is provided, the values in each `paths` array are res
 }
 ```
 
-When resolving an import of `"@app/components/Button"`, TypeScript will match on `@app/*`, binding `*` to `components/Button`, and then attempt to resolve the path `./src/components/Button` relative to the `tsconfig.json` path. The remainder of this lookup will follow the same rules as any other [relative path lookup](#relative-file-path-resolution) according to the `moduleResolution` setting.
+当解析 `"@app/components/Button"` 的导入时，TypeScript 将匹配 `@app/*`，将 `*` 绑定到 `components/Button`，然后尝试相对于 `tsconfig.json` 路径解析路径 `./src/components/Button`。此查找的其余部分将根据 `moduleResolution` 设置遵循与任何其他[相对路径查找](#相对文件路径解析)相同的规则。
 
-When multiple patterns match a module specifier, the pattern with the longest matching prefix before any `*` token is used:
+当多个模式匹配同一个模块标识符时，将使用具有最长匹配前缀（在任何 `*` 标记之前）的模式：
 
 ```json
 {
@@ -668,11 +668,11 @@ When multiple patterns match a module specifier, the pattern with the longest ma
 }
 ```
 
-When resolving an import of `"foo/bar"`, all three `paths` patterns match, but the last is used because `"foo/bar"` is longer than `"foo/"` and `""`.
+当解析 `"foo/bar"` 的导入时，所有三个 `paths` 模式都匹配，但是最后一个被使用，因为 `"foo/bar"` 比 `"foo/"` 和 `""` 长。
 
-##### Fallbacks
+##### 回退
 
-Multiple file paths can be provided for a path mapping. If resolution fails for one path, the next one in the array will be attempted until resolution succeeds or the end of the array is reached.
+对于每个路径映射，你可以提供多个文件路径。如果一个路径解析失败，则会尝试数组中的下一个路径，直到解析成功或达到数组的末尾。
 
 ```json
 {
@@ -686,42 +686,42 @@ Multiple file paths can be provided for a path mapping. If resolution fails for 
 
 #### `baseUrl`
 
-> `baseUrl` was designed for use with AMD module loaders. If you aren’t using an AMD module loader, you probably shouldn’t use `baseUrl`. Since TypeScript 4.1, `baseUrl` is no longer required to use [`paths`](#paths) and should not be used just to set the directory `paths` values are resolved from.
+> `baseUrl` 是为 AMD 模块加载器设计的。如果你不使用 AMD 模块加载器，可能也不需要使用 `baseUrl`。自 TypeScript 4.1 起，[`paths`](#paths) 不再需要 `baseUrl`，并且不应仅用于设置 `paths` 值解析的目录。
 
-The `baseUrl` compiler option can be combined with any `moduleResolution` mode and specifies a directory that bare specifiers (module specifiers that don’t begin with `./`, `../`, or `/`) are resolved from. `baseUrl` has a higher precedence than [`node_modules` package lookups](#node_modules-package-lookups) in `moduleResolution` modes that support them.
+`baseUrl` 编译选项可以与任何 `moduleResolution` 模式结合使用，并且可以指定裸模块标识符（bare specifier）（不以 `./`、`../` 或 `/` 开头的模块标识符）的解析目录。在支持它们的 `moduleResolution` 模式中，`baseUrl` 优先级高于 [`node_modules`软件包查找](#node_modules-包查找)。
 
-When performing a `baseUrl` lookup, resolution proceeds with the same rules as other relative path resolutions. For example, in a `moduleResolution` mode that supports [extensionless relative paths](#extensionless-relative-paths) a module specifier `"some-file"` may resolve to `/src/some-file.ts` if `baseUrl` is set to `/src`.
+在执行 `baseUrl` 查找时，解析会遵循与其他相对路径解析相同的规则。例如，在支持[无扩展名的相对路径](#无扩展名的相对路径)的 `moduleResolution` 模式中，模块标识符 `"some-file"` 可能解析为 `/src/some-file.ts`（如果 `baseUrl` 设置为 `/src`）。
 
-Resolution of relative module specifiers are never affected by the `baseUrl` option.
+相对模块标识符的解析不会受 `baseUrl` 选项的影响。
 
-#### `node_modules` package lookups
+#### `node_modules` 包查找
 
-Node.js treats module specifiers that aren’t relative paths, absolute paths, or URLs as references to packages that it looks up in `node_modules` subdirectories. Bundlers conveniently adopted this behavior to allow their users to use the same dependency management system, and often even the same dependencies, as they would in Node.js. All of TypeScript’s `moduleResolution` options except `classic` support `node_modules` lookups. (`classic` supports lookups in `node_modules/@types` when other means of resolution fail, but never looks for packages in `node_modules` directly.) Every `node_modules` package lookup has the following structure (beginning after higher precedence bare specifier rules, like `paths`, `baseUrl`, self-name imports, and package.json `"imports"` lookups have been exhausted):
+Node.js 将不是相对路径、绝对路径或 URL 的模块标识符视为对 `node_modules` 子目录中的包的引用。打包工具采用了这种行为，允许用户使用与 Node.js 中相同的依赖管理系统，甚至使用相同的依赖项（这是一种常见的作法），非常的方便。除了 `classic` 之外，TypeScript 的所有 `moduleResolution` 选项都支持 `node_modules` 的查找。（`classic` 仅在其他解析方法都失败时才支持在 `node_modules/@types` 中查找，但从不直接在 `node_modules` 文件夹中查找包。）每个 `node_modules` 包查找都具有以下流程（在高优先级的裸模块标识符规则（例如 `paths`、`baseUrl`、自身名称导入和 package.json 中的 `"imports"` 查找）用尽后开始）：
 
-1. For each ancestor directory of the importing file, if a `node_modules` directory exists within it:
-   1. If a directory with the same name as the package exists within `node_modules`:
-      1. Attempt to resolve types from the package directory.
-      2. If a result is found, return it and stop the search.
-   2. If a directory with the same name as the package exists within `node_modules/@types`:
-      1. Attempt to resolve types from the `@types` package directory.
-      2. If a result is found, return it and stop the search.
-2. Repeat the previous search through all `node_modules` directories, but this time, allow JavaScript files as a result, and do not search in `@types` directories.
+1. 对于导入文件的每个祖先目录，如果其中存在 `node_modules` 目录：
+   1. 如果 `node_modules` 中存在与包同名的目录：
+      1. 尝试从包目录中解析类型。
+      2. 如果找到结果，则返回并停止搜索。
+   2. 如果 `node_modules/@types` 中存在与包同名的目录：
+      1. 尝试从 `@types` 包目录中解析类型。
+      2. 如果找到结果，则返回并停止搜索。
+2. 对所有的 `node_modules` 文件夹重复上述搜索，但这次允许结果是 JavaScript 文件，并且不在 `@types` 目录中搜索。
 
-All `moduleResolution` modes (except `classic`) follow this pattern, while the details of how they resolve from a package directory, once located, differ, and are explained in the following sections.
+所有的 `moduleResolution` 模式（除了 `classic`）都是这样，但它们在定位到包目录后的解析细节有所不同，下面的小节中会进行解释。
 
-#### package.json `"exports"`
+#### package.json 的 `"exports"`
 
-When `moduleResolution` is set to `node16`, `nodenext`, or `bundler`, and `resolvePackageJsonExports` is not disabled, TypeScript follows Node.js’s [package.json `"exports"` spec](https://nodejs.org/api/packages.html#packages_package_entry_points) when resolving from a package directory triggered by a [bare specifier `node_modules` package lookup](#node_modules-package-lookups).
+如果 `moduleResolution` 设置为 `node16`、`nodenext` 或 `bundler`，且未禁用 `resolvePackageJsonExports`，TypeScript 在通过[裸模块 `node_modules` 包查找](#node_modules-包查找)触发的包目录解析时，遵循 Node.js [package.json 的 `"exports"` 规范](https://nodejs.org/api/packages.html#packages_package_entry_points)。
 
-TypeScript’s implementation for resolving a module specifier through `"exports"` to a file path follows Node.js exactly. Once a file path is resolved, however, TypeScript will still [try multiple file extensions](#file-extension-substitution) in order to prioritize finding types.
+TypeScript 在将模块标识符通过 `"exports"` 解析为文件路径时完全按照 Node.js 的实现。但是，一旦解析出文件路径，TypeScript 仍然会[尝试多个文件扩展名](#文件拓展名替换)，以便优先找到类型。
 
-When resolving through [conditional `"exports"`](https://nodejs.org/api/packages.html#conditional-exports), TypeScript always matches the `"types"` and `"default"` conditions if present. Additionally, TypeScript will match a versioned types condition in the form `"types@{selector}"` (where `{selector}` is a `"typesVersions"`-compatible version selector) according to the same version-matching rules implemented in [`"typesVersions"`](#packagejson-typesversions). Other non-configurable conditions are dependent on the `moduleResolution` mode and specified in the following sections. Additional conditions can be configured to match with the `customConditions` compiler option.
+在通过[有条件的 `"exports"`](https://nodejs.org/api/packages.html#conditional-exports) 进行解析时，TypeScript 总是匹配 `"types"` 和 `"default"` 条件（如果存在）。此外，TypeScript 还将匹配形如 `"types@{selector}"` 的带有版本的类型条件（其中 `{selector}` 是符合 `"typesVersions"` 版本选择器的字符串），遵循与 [`"typesVersions"`](#packagejson-typesversions) 实现的相同版本匹配规则。其他不可配置的条件取决于 `moduleResolution` 模式，并在以下章节中指定。可以使用 `customConditions` 编译器选项配置其他条件进行匹配。
 
-Note that the presence of `"exports"` prevents any subpaths not explicitly listed or matched by a pattern in `"exports"` from being resolved.
+请注意，`"exports"` 的存在会阻止未在 `"exports"` 中明确列出或与模式匹配的子路径被解析。
 
-##### Example: subpaths, conditions, and extension substitution
+##### 示例：子路径、条件和扩展名替换
 
-Scenario: `"pkg/subpath"` is requested with conditions `["types", "node", "require"]` (determined by `moduleResolution` setting and the context that triggered the module resolution request) in a package directory with the following package.json:
+场景：在具有以下 package.json 的包目录中，使用条件 `["types", "node", "require"]`（由 `moduleResolution` 的设置和触发模块解析请求的上下文确定）请求了 `"pkg/subpath"`：
 
 ```json
 {
@@ -739,24 +739,24 @@ Scenario: `"pkg/subpath"` is requested with conditions `["types", "node", "requi
 }
 ```
 
-Resolution process within the package directory:
+包目录内的解析过程：
 
-1. Does `"exports"` exist? **Yes.**
-2. Does `"exports"` have a `"./subpath"` entry? **Yes.**
-3. The value at `exports["./subpath"]` is an object—it must be specifying conditions.
-4. Does the first condition `"import"` match this request? **No.**
-5. Does the second condition `"require"` match this request? **Yes.**
-6. Does the path `"./subpath/index.cjs"` have a recognized TypeScript file extension? **No, so use extension substitution.**
-7. Via [extension substitution](#file-extension-substitution), try the following paths, returning the first one that exists, or `undefined` otherwise:
+1. 是否存在 `"exports"`？**是**。
+2. `"exports"` 是否有 `"./subpath"` 条目？**是**。
+3. `exports["./subpath"]` 的值是一个对象，它必须指定条件。
+4. 第一个条件 `"import"` 是否与此请求匹配？**否**。
+5. 第二个条件 `"require"` 是否与此请求匹配？**是**。
+6. 路径 `"./subpath/index.cjs"` 是否具有 TypeScript 文件扩展名？**否**，因此使用扩展名替换。
+7. 通过[扩展名替换](#文件拓展名替换) ，尝试以下路径，返回第一个存在的路径，否则返回 `undefined`：
    1. `./subpath/index.cts`
    2. `./subpath/index.d.cts`
    3. `./subpath/index.cjs`
 
-If `./subpath/index.cts` or `./subpath.d.cts` exists, resolution is complete. Otherwise, resolution searches `node_modules/@types/pkg` and other `node_modules` directories in an attempt to resolve types, according to the [`node_modules` package lookups](#node_modules-package-lookups) rules. If no types are found, a second pass through all `node_modules` resolves to `./subpath/index.cjs` (assuming it exists), which counts as a successful resolution, but one that does not provide types, leading to `any`-typed imports and a `noImplicitAny` error if enabled.
+如果 `./subpath/index.cts` 或 `./subpath.d.cts` 存在，则解析完成。否则，解析将按照 [`node_modules` 包查找](#node_modules-包查找)规则搜索 `node_modules/@types/pkg` 和其他 `node_modules` 目录，以尝试解析类型。如果找不到类型，则在所有 `node_modules` 中进行第二次解析，查找路径为 `./subpath/index.cjs` 的模块（如果存在），尽管这会被视为成功的解析，但因其不提供类型，导致导入的类型为 `any`，如果启用了 `noImplicitAny`，则会出现错误。
 
-##### Example: explicit `"types"` condition
+##### 示例：显式的 `"types"` 条件
 
-Scenario: `"pkg/subpath"` is requested with conditions `["types", "node", "import"]` (determined by `moduleResolution` setting and the context that triggered the module resolution request) in a package directory with the following package.json:
+场景：在具有以下 package.json 的包目录中，使用条件 `["types", "node", "import"]`（由 `moduleResolution` 的设置和触发模块解析请求的上下文确定）请求了 `"pkg/subpath"`：
 
 ```json
 {
@@ -776,20 +776,20 @@ Scenario: `"pkg/subpath"` is requested with conditions `["types", "node", "impor
 }
 ```
 
-Resolution process within the package directory:
+包目录内的解析过程：
 
-1. Does `"exports"` exist? **Yes.**
-2. Does `"exports"` have a `"./subpath"` entry? **Yes.**
-3. The value at `exports["./subpath"]` is an object—it must be specifying conditions.
-4. Does the first condition `"import"` match this request? **Yes.**
-5. The value at `exports["./subpath"].import` is an object—it must be specifying conditions.
-6. Does the first condition `"types"` match this request? **Yes.**
-7. Does the path `"./types/subpath/index.d.mts"` have a recognized TypeScript file extension? **Yes, so don’t use extension substitution.**
-8. Return the path `"./types/subpath/index.d.mts"` if the file exists, `undefined` otherwise.
+1. 是否存在 `"exports"`？**是**。
+2. `"exports"` 是否有 `"./subpath"` 条目？**是**。
+3. `exports["./subpath"]` 的值是一个对象，它必须指定条件。
+4. 第一个条件 `"import"` 是否与此请求匹配？**是**。
+5. `exports["./subpath"].import` 的值是一个对象，它必须指定条件。
+6. 第一个条件 `"types"` 是否与此请求匹配？**是**。
+7. 路径 `"./types/subpath/index.d.mts"` 是否具有 TypeScript 文件扩展名？**是，因此不使用扩展名替换**。
+8. 如果文件存在，则返回路径 `"./types/subpath/index.d.mts"`，否则返回 `undefined`。
 
-##### Example: versioned `"types"` condition
+##### 示例：带版本的 `"types"` 条件
 
-Scenario: using TypeScript 4.7.5, `"pkg/subpath"` is requested with conditions `["types", "node", "import"]` (determined by `moduleResolution` setting and the context that triggered the module resolution request) in a package directory with the following package.json:
+场景：使用 TypeScript 4.7.5，在具有以下 package.json 的包目录中，使用条件 `["types", "node", "import"]`（由 `moduleResolution` 的设置和触发模块解析请求的上下文确定）请求了 `"pkg/subpath"`：
 
 ```json
 {
@@ -805,19 +805,19 @@ Scenario: using TypeScript 4.7.5, `"pkg/subpath"` is requested with conditions `
 }
 ```
 
-Resolution process within the package directory:
+包目录内的解析过程：
 
-1. Does `"exports"` exist? **Yes.**
-2. Does `"exports"` have a `"./subpath"` entry? **Yes.**
-3. The value at `exports["./subpath"]` is an object—it must be specifying conditions.
-4. Does the first condition `"types@>=5.2"` match this request? **No, 4.7.5 is not greater than or equal to 5.2.**
-5. Does the second condition `"types@>=4.6"` match this request? **Yes, 4.7.5 is greater than or equal to 4.6.**
-6. Does the path `"./ts4.6/subpath/index.d.ts"` have a recognized TypeScript file extension? **Yes, so don’t use extension substitution.**
-7. Return the path `"./ts4.6/subpath/index.d.ts"` if the file exists, `undefined` otherwise.
+1. 是否存在 `"exports"`？**是**。
+2. `"exports"` 是否有 `"./subpath"` 条目？**是**。
+3. `exports["./subpath"]` 的值是一个对象，它必须指定条件。
+4. 第一个条件 `"types@>=5.2"` 是否与此请求匹配？**否，4.7.5 不大于或等于 5.2**。
+5. 第二个条件 `"types@>=4.6"` 是否与此请求匹配？**是，4.7.5 大于或等于 4.6**。
+6. 路径 `"./ts4.6/subpath/index.d.ts"` 是否具有 TypeScript 文件扩展名？**是**，因此不使用扩展名替换。
+7. 如果文件存在，则返回路径 `"./ts4.6/subpath/index.d.ts"`，否则返回 `undefined`。
 
-##### Example: subpath patterns
+##### 示例：子路径模式
 
-Scenario: `"pkg/wildcard.js"` is requested with conditions `["types", "node", "import"]` (determined by `moduleResolution` setting and the context that triggered the module resolution request) in a package directory with the following package.json:
+场景：在具有以下 package.json 的包目录中，使用条件 `["types", "node", "import"]`（由 `moduleResolution` 的设置和触发模块解析请求的上下文确定）请求了 `"pkg/wildcard.js"`：
 
 ```json
 {
@@ -832,20 +832,20 @@ Scenario: `"pkg/wildcard.js"` is requested with conditions `["types", "node", "i
 }
 ```
 
-Resolution process within the package directory:
+包目录内的解析过程：
 
-1. Does `"exports"` exist? **Yes.**
-2. Does `"exports"` have a `"./wildcard.js"` entry? **No.**
-3. Does any key with a `*` in it match `"./wildcard.js"`? **Yes, `"./*.js"` matches and sets `wildcard` to be the substitution.**
-4. The value at `exports["./*.js"]` is an object—it must be specifying conditions.
-5. Does the first condition `"types"` match this request? **Yes.**
-6. In `./types/*.d.ts`, replace `*` with the substitution `wildcard`. **`./types/wildcard.d.ts`**
-7. Does the path `"./types/wildcard.d.ts"` have a recognized TypeScript file extension? **Yes, so don’t use extension substitution.**
-8. Return the path `"./types/wildcard.d.ts"` if the file exists, `undefined` otherwise.
+1. 是否存在 `"exports"`？**是**。
+2. `"exports"` 是否有 `"./wildcard.js"` 条目？**否**。
+3. 是否有任何带有 `*` 的键与 `"./wildcard.js"` 匹配？**是，`"./*.js"` 匹配并将 `wildcard` 设置为替换值**。
+4. `exports["./*.js"]` 的值是一个对象，它必须指定条件。
+5. 第一个条件 `"types"` 是否与此请求匹配？**是**。
+6. 在 `./types/*.d.ts` 中，将 `*` 替换为替换值 `wildcard`。**`./types/wildcard.d.ts`**
+7. 路径 `"./types/wildcard.d.ts"` 是否具有 TypeScript 文件扩展名？**是，因此不使用扩展名替换。**
+8. 如果文件存在，则返回路径 `"./types/wildcard.d.ts"`，否则返回 `undefined`。
 
-##### Example: `"exports"` block other subpaths
+##### 示例: `"exports"` 阻止其他子路径
 
-Scenario: `"pkg/dist/index.js"` is requested in a package directory with the following package.json:
+场景：在包目录中请求 `"pkg/dist/index.js"`，该目录下的 package.json 如下所示：
 
 ```json
 {
@@ -855,22 +855,22 @@ Scenario: `"pkg/dist/index.js"` is requested in a package directory with the fol
 }
 ```
 
-Resolution process within the package directory:
+包目录内的解析过程：
 
-1. Does `"exports"` exist? **Yes.**
-2. The value at `exports` is a string—it must be a file path for the package root (`"."`).
-3. Is the request `"pkg/dist/index.js"` for the package root? **No, it has a subpath `dist/index.js`.**
-4. Resolution fails; return `undefined`.
+1. 是否存在 `"exports"`? **是。**
+2. `exports` 的值是一个字符串，它必须是相对于包根目录 (`"."`) 的文件路径。
+3. 请求的路径 `"pkg/dist/index.js"` 是否是包根目录? **不是，它包含子路径 `dist/index.js`。**
+4. 解析失败；返回 `undefined`。
 
-Without `"exports"`, the request could have succeeded, but the presence of `"exports"` prevents resolving any subpaths that cannot be matched through `"exports"`.
+如果没有 `"exports"`，该请求可能会成功，但是 `"exports"` 的存在会阻止解析无法通过 `"exports"` 匹配的子路径。
 
-#### package.json `"typesVersions"`
+#### package.json 的 `"typesVersions"`
 
-A [`node_modules` package](#node_modules-package-lookups) or [directory module](#directory-modules-index-file-resolution) may specify a `"typesVersions"` field in its package.json to redirect TypeScript’s resolution process according to the TypeScript compiler version, and for `node_modules` packages, according to the subpath being resolved. This allows package authors to include new TypeScript syntax in one set of type definitions while providing another set for backward compatibility with older TypeScript versions (through a tool like [downlevel-dts](https://github.com/sandersn/downlevel-dts)). `"typesVersions"` is supported in all `moduleResolution` modes; however, the field is not read in situations when [package.json `"exports"`](#packagejson-exports) are read.
+[`node_modules` 包](#node_modules-包查找)或[目录模块](#目录模块-索引文件解析)可以在其 package.json 中指定 `"typesVersions"` 字段，来根据 TypeScript 编译器版本和正在解析的子路径，重定向 TypeScript 的解析过程。包作者借此可以在一组类型定义中包含新的 TypeScript 语法，同时为了与旧的 TypeScript 版本向后兼容提供另一组类型定义（通过类似 [downlevel-dts](https://github.com/sandersn/downlevel-dts) 的工具）。`"typesVersions"` 在所有的 `moduleResolution` 模式下都受支持；但是，在读取 [package.json 的 `"exports"`](#packagejson-的-exports) 时不会读取该字段。
 
-##### Example: redirect all requests to a subdirectory
+##### 示例：重定向所有请求到子目录
 
-Scenario: a module imports `"pkg"` using TypeScript 5.2, where `node_modules/pkg/package.json` is:
+场景：某模块使用 TypeScript 5.2 导入 `"pkg"`，其中 `node_modules/pkg/package.json` 文件内容如下：
 
 ```json
 {
@@ -885,21 +885,21 @@ Scenario: a module imports `"pkg"` using TypeScript 5.2, where `node_modules/pkg
 }
 ```
 
-Resolution process:
+解析过程：
 
-1. (Depending on compiler options) Does `"exports"` exist? **No.**
-2. Does `"typesVersions"` exist? **Yes.**
-3. Is the TypeScript version `>=3.1`? **Yes. Remember the mapping `"*": ["ts3.1/*"]`.**
-4. Are we resolving a subpath after the package name? **No, just the root `"pkg"`.**
-5. Does `"types"` exist? **Yes.**
-6. Does any key in `"typesVersions"` match `./index.d.ts`? **Yes, `"*"` matches and sets `index.d.ts` to be the substitution.**
-7. In `ts3.1/*`, replace `*` with the substitution `./index.d.ts`: **`ts3.1/index.d.ts`**.
-8. Does the path `./ts3.1/index.d.ts` have a recognized TypeScript file extension? **Yes, so don’t use extension substitution.**
-9. Return the path `./ts3.1/index.d.ts` if the file exists, `undefined` otherwise.
+1.（根据编译器选项）存在 `"exports"` 吗？**否。**
+2. 存在 `"typesVersions"` 吗？**是。**
+3. TypeScript 版本是否 `>=3.1`？**是。记住映射关系 `"*": ["ts3.1/*"]`。**
+4. 我们是否在解析包名后的子路径？**不是，只是根路径下的 `"pkg"`。**
+5. 存在 `"types"` 吗？**是的。**
+6. `"typesVersions"` 中是否有任何键与 `./index.d.ts` 匹配？**是，`"*"` 匹配并将 `index.d.ts` 设置为替换值。**
+7. 在 `ts3.1/*` 中，将 `*` 替换为替换值 `./index.d.ts`：**`ts3.1/index.d.ts`**。
+8. 路径 `./ts3.1/index.d.ts` 是否具有 TypeScript 文件扩展名？**是，因此不使用扩展名替换。**
+9. 如果文件存在，则返回路径 `./ts3.1/index.d.ts`，否则返回 `undefined`。
 
-##### Example: redirect requests for a specific file
+##### 示例：重定向对特定文件的请求
 
-Scenario: a module imports `"pkg"` using TypeScript 3.9, where `node_modules/pkg/package.json` is:
+场景：一个模块使用 TypeScript 3.9 导入 `"pkg"`，其中 `node_modules/pkg/package.json` 文件内容如下：
 
 ```json
 {
@@ -912,56 +912,56 @@ Scenario: a module imports `"pkg"` using TypeScript 3.9, where `node_modules/pkg
 }
 ```
 
-Resolution process:
+解析过程：
 
-1. (Depending on compiler options) Does `"exports"` exist? **No.**
-2. Does `"typesVersions"` exist? **Yes.**
-3. Is the TypeScript version `<4.0`? **Yes. Remember the mapping `"index.d.ts": ["index.v3.d.ts"]`.**
-4. Are we resolving a subpath after the package name? **No, just the root `"pkg"`.**
-5. Does `"types"` exist? **Yes.**
-6. Does any key in `"typesVersions"` match `./index.d.ts`? **Yes, `"index.d.ts"` matches.**
-7. Does the path `./index.v3.d.ts` have a recognized TypeScript file extension? **Yes, so don’t use extension substitution.**
-8. Return the path `./index.v3.d.ts` if the file exists, `undefined` otherwise.
+1.（根据编译器选项）存在 `"exports"` 吗？**否。**
+2. 存在 `"typesVersions"` 吗？**是。**
+3. TypeScript 版本是否 `<4.0`？**是。记住映射关系 `"index.d.ts": ["index.v3.d.ts"]`。**
+4. 我们是否在解析包名后的子路径？**不是，只是根路径下的 `"pkg"`。**
+5. 存在 `"types"` 吗？**是的。**
+6. `"typesVersions"` 中是否有任何键与 `./index.d.ts` 匹配？**是，`"index.d.ts"` 匹配。**
+7. 路径 `./index.v3.d.ts` 是否具有 TypeScript 文件扩展名？**是的，因此不使用扩展名替换。**
+8. 如果文件存在，则返回路径 `./index.v3.d.ts`，否则返回 `undefined`。
 
-#### package.json `"main"` and `"types"`
+#### package.json 的 `"main"` 和 `"types"`
 
-If a directory’s [package.json `"exports"`](#packagejson-exports) field is not read (either due to compiler options, or because it is not present, or because the directory is being resolved as a [directory module](#directory-modules-index-file-resolution) instead of a [`node_modules` package](#node_modules-package-lookups)) and the module specifier does not have a subpath after the package name or package.json-containing directory, TypeScript will attempt to resolve from these package.json fields, in order, in an attempt to find the main module for the package or directory:
+如果一个目录的 [package.json `"exports"`](#packagejson-exports) 字段没有被读取（要么是由于编译器选项，要么是因为该字段不存在，要么是因为该目录被解析为[目录模块](#目录模块-索引文件解析)，而不是[`node_modules` 包](#node_modules-包查找)），并且模块标识符在包名或包含 package.json 的目录后没有子路径时，TypeScript 将按照以下顺序尝试从这些 package.json 字段中解析，以查找包或目录的主模块：
 
 - `"types"`
-- `"typings"` (legacy)
+- `"typings"`（已弃用）
 - `"main"`
 
-The declaration file found at `"types"` is assumed to be an accurate representation of the implementation file found at `"main"`. If `"types"` and `"typings"` are not present or cannot be resolved, TypeScript will read the `"main"` field and perform [extension substitution](#file-extension-substitution) to find a declaration file.
+在 `"types"` 字段找到的声明文件被假定为与在 `"main"` 中找到的实现文件相对应。如果找不到或无法解析 `"types"` 和 `"typings"`，TypeScript 将读取 `"main"` 字段并执行[扩展名替换](#文件拓展名替换)以找到声明文件。
 
-When publishing a typed package to npm, it’s recommended to include a `"types"` field even if [extension substitution](#file-extension-substitution) or [package.json `"exports"`](#packagejson-exports) make it unnecessary, because npm shows a TS icon on the package registry listing only if the package.json contains a `"types"` field.
+当将一个带有类型的包发布到 npm 上时，建议即使[扩展名替换](#文件拓展名替换)或 [package.json `"exports"`](#packagejson-exports) 使其变得不必要，也要包含一个 `"types"` 字段，因为 npm 仅在 package.json 中包含 `"types"` 字段时才会在包注册表列表上显示 TS 图标。
 
-#### Package-relative file paths
+#### 相对于包的文件路径
 
-If neither [package.json `"exports"`](#packagejson-exports) nor [package.json `"typesVersions"`](#packagejson-typesversions) apply, subpaths of a bare package specifier resolve relative to the package directory, according to applicable [relative path](#relative-file-path-resolution) resolution rules. In modes that respect [package.json `"exports"`], this behavior is blocked by the mere presence of the `"exports"` field in the package’s package.json, even if the import fails to resolve through `"exports"`, as demonstrated in [an example above](#example-exports-block-other-subpaths). On the other hand, if the import fails to resolve through `"typesVersions"`, a package-relative file path resolution is attempted as a fallback.
+如果既不满足 [package.json `"exports"`](#packagejson-exports) 也不满足 [package.json `"typesVersions"`](#packagejson-typesversions)，则裸包路径的子路径将相对于包的目录进行解析，遵循适用的[相对路径](#相对文件路径解析)解析规则。在遵循 [package.json `"exports"`] 的模式中，即使导入无法通过 `"exports"` 解析，只要包的 package.json 中存在 `"exports"` 字段，此行为就会被阻止，如[上面的示例](#示例-exports-阻止其他子路径)所示。另一方面，如果导入无法通过 `"typesVersions"` 解析，将尝试以相对包的文件路径解析作为后备。
 
-When package-relative paths are supported, they resolve under the same rules as any other relative path considering the `moduleResolution` mode and context. For example, in [`--moduleResolution nodenext`](#node16-nodenext-1), [directory modules](#directory-modules-index-file-resolution) and [extensionless paths](#extensionless-relative-paths) are only supported in `require` calls, not in `import`s:
+当支持包相对路径时，它们将根据 `moduleResolution` 模式和上下文遵循与任何其他相对路径相同的解析规则。例如，在 [`--moduleResolution nodenext`](#node16-nodenext-1) 中，[目录模块](#目录模块-索引文件解析)和[无扩展名路径](#无拓展名相对路径)仅在 `require` 调用中受支持，而不在 `import` 中：
 
 ```ts
 // @Filename: module.mts
-import "pkg/dist/foo";                // ❌ import, needs `.js` extension
+import "pkg/dist/foo";                // ❌ import，需要 `.js` 扩展名
 import "pkg/dist/foo.js";             // ✅
-import foo = require("pkg/dist/foo"); // ✅ require, no extension needed
+import foo = require("pkg/dist/foo"); // ✅ require，无需扩展名
 ```
 
-#### package.json `"imports"` and self-name imports
+#### package.json `"imports"` 和自身名称导入
 
-When `moduleResolution` is set to `node16`, `nodenext`, or `bundler`, and `resolvePackageJsonImports` is not disabled, TypeScript will attempt to resolve import paths beginning with `#` through the the `"imports"` field of the nearest ancestor package.json of the importing file. Similarly, when [package.json `"exports"` lookups](#packagejson-exports) are enabled, TypeScript will attempt to resolve import paths beginning with the current package name—that is, the value in the `"name"` field of the nearest ancestor package.json of the importing file—through the `"exports"` field of that package.json. Both of these features allow files in a package to import other files in the same package, replacing a relative import path.
+如果 `moduleResolution` 设置为 `node16`、`nodenext` 或 `bundler`，且未禁用 `resolvePackageJsonImports`，TypeScript 将尝试通过导入文件的最近祖先 package.json 的 `"imports"` 字段解析以 `#` 开头的导入路径。类似地，当启用 [package.json `"exports"` 查找](#packagejson-exports)时，TypeScript 将尝试通过当前包名称开始的导入路径（即导入文件最近祖先 package.json 中的 `"name"` 字段的值）通过该 package.json 的 `"exports"` 字段进行解析。这两个特性允许一个包中的文件导入同一包中的其他文件，替换相对导入路径。
 
-TypeScript follows Node.js’s resolution algorithm for [`"imports"`](https://nodejs.org/api/packages.html#subpath-imports) and [self references](https://nodejs.org/api/packages.html#self-referencing-a-package-using-its-name) exactly up until a file path is resolved. At that point, TypeScript’s resolution algorithm forks based on whether the package.json containing the `"imports"` or `"exports"` being resolved belongs to a `node_modules` dependency or the local project being compiled (i.e., its directory contains the tsconfig.json file for the project that contains the importing file):
+TypeScript 在解析 [`"imports"`](https://nodejs.org/api/packages.html#subpath-imports) 和[自引用](https://nodejs.org/api/packages.html#self-referencing-a-package-using-its-name)时，完全遵循 Node.js 的解析算法，直到解析出文件路径为止。在那一点上，TypeScript 的解析算法会根据正在解析的包含 `"imports"` 或 `"exports"` 的 package.json 属于 `node_modules` 依赖项还是本地项目被编译（即其目录包含包含导入文件的 tsconfig.json 文件的项目）进行分叉处理：
 
-- If the package.json is in `node_modules`, TypeScript will apply [extension substitution](#file-extension-substitution) to the file path if it doesn’t already have a recognized TypeScript file extension, and check for the existence of the resulting file paths.
-- If the package.json is part of the local project, an additional remapping step is performed in order to find the _input_ TypeScript implementation file that will eventually produce the output JavaScript or declaration file path that was resolved from `"imports"`. Without this step, any compilation that resolves an `"imports"` path would be referencing output files from the _previous compilation_ instead of other input files that are intended to be included in the current compilation. This remapping uses the `outDir`/`declarationDir` and `rootDir` from the tsconfig.json, so using `"imports"` usually requires an explicit `rootDir` to be set.
+- 如果 package.json 在 `node_modules` 中，TypeScript 将对文件路径应用[扩展名替换](#文件拓展名替换)，如果文件路径尚未具有 TypeScript 文件扩展名，则检查生成的文件路径是否存在。
+- 如果 package.json 是本地项目的一部分，则会执行额外的重映射步骤，以查找将从 `"imports"` 解析的输出 JavaScript 或声明文件路径最终生成的*输入* TypeScript 实现文件。如果没有这个步骤，解析 `"imports"` 路径的任何编译将引用*上一次编译*的输出文件，而不是当前编译中打算包含的其他输入文件。此重映射使用 tsconfig.json 的 `outDir`/`declarationDir` 和 `rootDir`，因此使用 `"imports"` 通常需要设置显式的 `rootDir`。
 
-This variation allows package authors to write `"imports"` and `"exports"` fields that reference only the compilation outputs that will be published to npm, while still allowing local development to use the original TypeScript source files.
+这个变化使得包作者能够编写 `"imports"` 和 `"exports"` 字段，只引用将要发布到 npm 的编译输出，同时仍然允许本地开发使用原始的 TypeScript 源文件。
 
-##### Example: local project with conditions
+##### 示例：具有条件的本地项目
 
-Scenario: `"/src/main.mts"` imports `"#utils"` with conditions `["types", "node", "import"]` (determined by `moduleResolution` setting and the context that triggered the module resolution request) in a project directory with a tsconfig.json and package.json:
+场景：在一个带有 tsconfig.json 和 package.json 的项目目录中，`"/src/main.mts"` 在条件 `["types", "node", "import"]`（由 `moduleResolution` 的设置和触发模块解析请求的上下文决定）下引入了 `"#utils"`。
 
 ```json5
 // tsconfig.json
@@ -988,24 +988,24 @@ Scenario: `"/src/main.mts"` imports `"#utils"` with conditions `["types", "node"
 }
 ```
 
-Resolution process:
+解析过程：
 
-1. Import path starts with `#`, try to resolve through `"imports"`.
-2. Does `"imports"` exist in the nearest ancestor package.json? **Yes.**
-3. Does `"#utils"` exist in the `"imports"` object? **Yes.**
-4. The value at `imports["#utils"]` is an object—it must be specifying conditions.
-5. Does the first condition `"import"` match this request? **Yes.**
-6. Should we attempt to map the output path to an input path? **Yes, because:**
-   - Is the package.json in `node_modules`? **No, it’s in the local project.**
-   - Is the tsconfig.json within the package.json directory? **Yes.**
-7. In `./dist/utils.d.mts`, replace the `outDir` prefix with `rootDir`. **`./src/utils.d.mts`**
-8. Replace the output extension `.d.mts` with the corresponding input extension `.mts`. **`./src/utils.mts`**
-9. Return the path `"./src/utils.mts"` if the file exists.
-10. Otherwise, return the path `"./dist/utils.d.mts"` if the file exists.
+1. 导入路径以 `#` 开头，尝试通过 `"imports"` 进行解析。
+2. 最近的上层 `package.json` 中存在 `"imports"` 吗？**是。**
+3. `"imports"` 对象中是否存在 `"#utils"`？**是。**
+4. `imports["#utils"]` 的值是一个对象，它必须指定条件。
+5. 第一个条件 `"import"` 是否与此请求匹配？**是。**
+6. 我们是否应该尝试将输出路径映射到输入路径？**是，因为：**
+   - `package.json` 是否在 `node_modules` 中？**不是，它在本地项目中。**
+   - `tsconfig.json` 是否在 `package.json` 目录中？**是的。**
+7. 在 `./dist/utils.d.mts` 中，用 `rootDir` 替换 `outDir` 前缀。**`./src/utils.d.mts`**
+8. 将输出扩展名 `.d.mts` 替换为相应的输入扩展名 `.mts`。**`./src/utils.mts`**
+9. 如果文件存在，则返回路径 `"./src/utils.mts"`。
+10. 否则，如果文件存在，则返回路径 `"./dist/utils.d.mts"`。
 
-##### Example: `node_modules` dependency with subpath pattern
+##### 示例：具有子路径模式的 `node_modules` 依赖项
 
-Scenario: `"/node_modules/pkg/main.mts"` imports `"#internal/utils"` with conditions `["types", "node", "import"]` (determined by `moduleResolution` setting and the context that triggered the module resolution request) with the package.json:
+场景：`"/node_modules/pkg/main.mts"` 使用条件 `["types", "node", "import"]`（由 `moduleResolution` 的设置和触发模块解析请求的上下文决定）导入了 `"#internal/utils"`，具有以下 `package.json`：
 
 ```json5
 // /node_modules/pkg/package.json
@@ -1020,128 +1020,128 @@ Scenario: `"/node_modules/pkg/main.mts"` imports `"#internal/utils"` with condit
 }
 ```
 
-Resolution process:
+解析过程：
 
-1.  Import path starts with `#`, try to resolve through `"imports"`.
-2.  Does `"imports"` exist in the nearest ancestor package.json? **Yes.**
-3.  Does `"#internal/utils"` exist in the `"imports"` object? **No, check for pattern matches.**
-4.  Does any key with a `*` match `"#internal/utils"`? **Yes, `"#internal/*"` matches and sets `utils` to be the substitution.**
-5.  The value at `imports["#internal/*"]` is an object—it must be specifying conditions.
-6.  Does the first condition `"import"` match this request? **Yes.**
-7.  Should we attempt to map the output path to an input path? **No, because the package.json is in `node_modules`.**
-8.  In `./dist/internal/*.mjs`, replace `*` with the substitution `utils`. **`./dist/internal/utils.mjs`**
-9.  Does the path `./dist/internal/utils.mjs` have a recognized TypeScript file extension? **No, try extension substitution.**
-10. Via [extension substitution](#file-extension-substitution), try the following paths, returning the first one that exists, or `undefined` otherwise:
+1. 导入路径以 `#` 开头，尝试通过 `"imports"` 进行解析。
+2. 最近的上层 `package.json` 中存在 `"imports"` 吗？**是。**
+3. `"imports"` 对象中是否存在 `"#internal/utils"`？**否，检查模式匹配。**
+4. 是否有任何带有 `*` 的键匹配 `"#internal/utils"`？**是，`"#internal/*"` 匹配并将 `utils` 设置为替换值。**
+5. `imports["#internal/*"]` 的值是一个对象，它必须指定条件。
+6. 第一个条件 `"import"` 是否与此请求匹配？**是。**
+7. 我们是否应该尝试将输出路径映射到输入路径？**否，因为 `package.json` 在 `node_modules` 中。**
+8. 在 `./dist/internal/*.mjs` 中，用替换值 `utils` 替换 `*`。**`./dist/internal/utils.mjs`**
+9. 路径 `./dist/internal/utils.mjs` 是否具有 TypeScript 文件扩展名？**否，尝试扩展名替换。**
+10. 通过[扩展名替换](#文件拓展名替换)，尝试以下路径，返回第一个存在的路径，如果不存在则返回 `undefined`：
     1. `./dist/internal/utils.mts`
     2. `./dist/internal/utils.d.mts`
     3. `./dist/internal/utils.mjs`
 
-### `node16`, `nodenext`
+### `node16`、`nodenext`
 
-These modes reflect the module resolution behavior of Node.js v12 and later. (`node16` and `nodenext` are currently identical, but if Node.js makes significant changes to its module system in the future, `node16` will be frozen while `nodenext` will be updated to reflect the new behavior.) In Node.js, the resolution algorithm for ECMAScript imports is significantly different from the algorithm for CommonJS `require` calls. For each module specifier being resolved, the syntax and the [module format of the importing file](#module-format-detection) are first used to determine whether the module specifier will be in an `import` or `require` in the emitted JavaScript. That information is then passed into the module resolver to determine which resolution algorithm to use (and whether to use the `"import"` or `"require"` condition for package.json [`"exports"`](#packagejson-exports) or [`"imports"`](#packagejson-imports-and-self-name-imports)).
+这些模式反映了 Node.js v12 及更高版本的模块解析行为。（`node16` 和 `nodenext` 目前是相同的，但如果 Node.js 在未来对其模块系统进行重大更改，`node16` 将被冻结，而 `nodenext` 将更新以反映新的行为。）在 Node.js 中，用于 ECMAScript 导入的解析算法与用于 CommonJS 的 `require` 调用的算法有显著的区别。对于正在解析的每个模块标识符，首先使用语法和导入文件的[模块格式](#模块格式检测)来确定模块标识符在生成的 JavaScript 中是 `import` 还是 `require`。然后将该信息传递给模块解析器，以确定使用哪个解析算法（以及是否对 package.json 的 `"exports"`（#packagejson-exports）或 `"imports"`（#package.json-imports-和自身名称导入）使用 `"import"` 或 `"require"` 条件）。
 
-> TypeScript files that are [determined to be in CommonJS format](#module-format-detection) may still use `import` and `export` syntax by default, but the emitted JavaScript will use `require` and `module.exports` instead. This means that it’s common to see `import` statements that are resolved using the `require` algorithm. If this causes confusion, the `verbatimModuleSyntax` compiler option can be enabled, which prohibits the use of `import` statements that would be emitted as `require` calls.
+> [被确定为 CommonJS 格式](模块格式检测)的 TypeScript 文件在默认情况下仍然可以使用 `import` 和 `export` 语法，但生成的 JavaScript 代码将使用 `require` 和 `module.exports`。这意味着经常会看到使用 `require` 算法解析的 `import` 语句。如果这造成了困惑，可以启用 `verbatimModuleSyntax` 编译选项，该选项禁止使用会被生成为 `require` 调用的 `import` 语句。
 
-Note that dynamic `import()` calls are always resolved using the `import` algorithm, according to Node.js’s behavior. However, `import()` types are resolved according to the format of the importing file (for backward compatibility with existing CommonJS-format type declarations):
+需要注意的是，动态的 `import()` 调用始终使用 `import` 算法进行解析，符合 Node.js 的行为。然而，`import()` 类型的解析是根据导入文件（译注：不是被导入，例如如果 A 导入 B，则这里说的是 A）的格式进行的（为了与现有的 CommonJS 格式的类型声明向后兼容）：
 
 ```ts
 // @Filename: module.mts
-import x from "./mod.js";             // `import` algorithm due to file format (emitted as-written)
-import("./mod.js");                   // `import` algorithm due to syntax (emitted as-written)
-type Mod = typeof import("./mod.js"); // `import` algorithm due to file format
-import mod = require("./mod");        // `require` algorithm due to syntax (emitted as `require`)
+import x from "./mod.js";             // 由于文件格式，使用 `import` 算法（按原样输出）
+import("./mod.js");                   // 由于语法，使用 `import` 算法（按原样输出）
+type Mod = typeof import("./mod.js"); // 由于文件格式，使用 `import` 算法
+import mod = require("./mod");        // 由于语法，使用 `require` 算法（输出为 `require`）
 
 // @Filename: commonjs.cts
-import x from "./mod";                // `require` algorithm due to file format (emitted as `require`)
-import("./mod.js");                   // `import` algorithm due to syntax (emitted as-written)
-type Mod = typeof import("./mod");    // `require` algorithm due to file format
-import mod = require("./mod");        // `require` algorithm due to syntax (emitted as `require`)
+import x from "./mod";                // 由于文件格式，使用 `require` 算法（输出为 `require`）
+import("./mod.js");                   // 由于语法，使用 `import` 算法（按原样输出）
+type Mod = typeof import("./mod");    // 由于文件格式，使用 `require` 算法
+import mod = require("./mod");        // 由于语法，使用 `require` 算法（输出为 `require`）
 ```
 
-#### Implied and enforced options
+#### 隐含和强制选项
 
-- `--moduleResolution node16` and `nodenext` must be paired with their [corresponding `module` value](#node16-nodenext). 
+- `--moduleResolution node16` 和 `nodenext` 必须与它们[对应的 `module` 值](#node16-nodenext)配对使用。
 
-#### Supported features
+#### 支持的特性
 
-Features are listed in order of precedence.
+特性按优先顺序列出。
 
 | | `import` | `require` |
 |-| -------- | --------- |
 | [`paths`](#paths) | ✅ | ✅ |
 | [`baseUrl`](#baseurl) | ✅ | ✅ |
-| [`node_modules` package lookups](#node_modules-package-lookups) | ✅ | ✅ |
-| [package.json `"exports"`](#packagejson-exports) | ✅ matches `types`, `node`, `import` | ✅ matches `types`, `node`, `require` |
-| [package.json `"imports"` and self-name imports](#packagejson-imports-and-self-name-imports) | ✅ matches `types`, `node`, `import` | ✅ matches `types`, `node`, `require` |
-| [package.json `"typesVersions"`](#packagejson-typesversions) | ✅ | ✅ |
-| [Package-relative paths](#package-relative-file-paths) | ✅ when `exports` not present | ✅ when `exports` not present |
-| [Full relative paths](#relative-file-path-resolution) | ✅ | ✅ |
-| [Extensionless relative paths](#extensionless-relative-paths) | ❌ | ✅ |
-| [Directory modules](#directory-modules-index-file-resolution) | ❌ | ✅ |
+| [node_modules 包查找](#node_modules-包查找) | ✅ | ✅ |
+| [package.json 中的 `"exports"`](#packagejson-exports) | ✅ 匹配 `types`、`node`、`import` | ✅ 匹配 `types`、`node`、`require` |
+| [package.json 中的 `"imports"` 和自命名导入](#packagejson-imports-和自身名称导入) | ✅ 匹配 `types`、`node`、`import` | ✅ 匹配 `types`、`node`、`require` |
+| [package.json 中的 `"typesVersions"`](#packagejson-typesversions) | ✅ | ✅ |
+| [相对于包的路径](#相对于包的文件路径) | ✅ 当不存在 `exports` 时 | ✅ 当不存在 `exports` 时 |
+| [完整的相对路径](#相对文件路径解析) | ✅ | ✅ |
+| [无扩展名的相对路径](#无拓展名的相对路径) | ❌ | ✅ |
+| [目录模块](#目录模块-索引文件解析) | ❌ | ✅ |
 
 ### `bundler`
 
-`--moduleResolution bundler` attempts to model the module resolution behavior common to most JavaScript bundlers. In short, this means supporting all the behaviors traditionally associated with Node.js’s CommonJS `require` resolution algorithm like [`node_modules` lookups](#node_modules-package-lookups), [directory modules](#directory-modules-index-file-resolution), and [extensionless paths](#extensionless-relative-paths), while also supporting newer Node.js resolution features like [package.json `"exports"`](#packagejson-exports) and [package.json `"imports"`](#packagejson-imports-and-self-name-imports).
+`--moduleResolution bundler` 旨在模拟大多数 JavaScript 打包工具的模块解析行为。简而言之，这意味着支持与 Node.js 的 CommonJS `require` 解析算法相关的所有行为，例如 [`node_modules`查找](#node_modules-包查找)、[目录模块](#目录模块-索引文件解析)和[无扩展名路径](#无拓展名的相对路径)，同时也支持较新的 Node.js 解析功能，如 [package.json 中的 `"exports"`](#packagejson-exports) 和 [package.json 中的 `"imports"`](#packagejson-imports-自身名称导入)。
 
-This is very similar to the behavior of [`node16` and `nodenext`](#node16-nodenext-1) resolving in CommonJS mode, but in `bundler`, the conditions used to resolve package.json `"exports"` and `"imports"` are always `"types"` and `"import"`. To understand why, let’s compare against what happens to an import in a `.ts` file in `nodenext`:
+这与在 CommonJS 模式下 [`node16` 和 `nodenext`](node16-nodenext-1) 解析的行为非常相似，但在 `bundler` 中，用于解析 package.json 中 `"exports"` 和 `"imports"` 的条件始终是 `"types"` 和 `"import"`。为了理解其中的原因，让我们来看一下在 `nodenext` 中一个 `.ts` 文件中的导入会发生什么：
 
 ```ts
 // index.ts
 import { foo } from "pkg";
 ```
 
-In `--module nodenext --moduleResolution nodenext`, the `--module` setting first [determines](#module-format-detection) whether the import will be emitted to the `.js` file as an `import` or `require` call and passes that information to TypeScript’s module resolver, which decides whether to match `"import"` or `"require"` conditions accordingly. This ensures TypeScript’s module resolution process, although working from input `.ts` files, reflects what will happen in Node.js’s module resolution process when it runs the output `.js` files.
+在 `--module nodenext --moduleResolution nodenext` 中，`--module` 设置首先[确定](#模块格式检测)导入将作为 `import` 还是 `require` 调用写入 `.js` 文件，并将该信息传递给 TypeScript 的模块解析器，该解析器根据需要匹配 `"import"` 或 `"require"` 条件。这确保了 TypeScript 的模块解析过程，尽管是从输入的 `.ts` 文件开始，但能够反映在运行输出的 `.js` 文件时 Node.js 的模块解析过程将会发生什么。
 
-When using a bundler, on the other hand, the bundler typically processes the raw `.ts` files directly and runs its module resolution process on the untransformed `import` statement. In this scenario, it doesn’t make a lot of sense to think about how TypeScript will emit the `import`, because TypeScript isn’t being used to emit anything at all. As far as the bundler is concerned, `import`s are `import`s and `require`s are `require`s, so the conditions used to resolve package.json `"exports"` and `"imports"` are determined by the syntax seen in the input `.ts` file. Likewise, the conditions TypeScript’s module resolution process uses in `--moduleResolution bundler` are _also_ determined by the input syntax in input TypeScript files—it’s just that `require` calls are not currently resolved at all:
+另一方面，在使用打包工具时，通常打包工具直接处理原始的 `.ts` 文件，并基于未经转换的 `import` 语句运行其模块解析过程。在这种情况下，考虑 TypeScript 如何生成 `import` 并没有太多意义，因为 TypeScript 根本不用于生成任何内容。对于打包工具来说，`import` 就是 `import`，`require` 就是 `require`，因此用于解析 `package.json` 中的 `"exports"` 和 `"imports"` 的条件由输入的 `.ts` 文件中的语法决定。同样，TypeScript 在 `--moduleResolution bundler` 中使用的模块解析过程中的条件*也*由输入 TypeScript 文件中的语法决定，只是 `require` 调用目前根本不会被解析：
 
 ```ts
-// Some library file:
+// 某个库文件：
 declare function require(module: string): any;
 
 // index.ts
-import { foo } from "pkg";    // Resolved with "import" condition
-import pkg2 = require("pkg"); // Not allowed
-const pkg = require("pkg");   // Not an error, but not resolved to anything
+import { foo } from "pkg";    // 使用“import”条件解析
+import pkg2 = require("pkg"); // 不允许
+const pkg = require("pkg");   // 不会出错，但没有解析到任何内容
    // ^? any
 ```
 
-Since TypeScript doesn’t currently support resolving `require` calls in `--moduleResolution bundler`, everything it _does_ resolve uses the `"import"` condition.
+由于 TypeScript 当前不支持在 `--moduleResolution bundler` 中解析 `require` 调用，因此它解析的所有内容*都*使用 `"import"` 条件。
 
-#### Implied and enforced options
+#### 隐含和强制选项
 
-- `--moduleResolution bundler` must be paired with the `--module esnext` option.
-- `--moduleResolution bundler` implies `--allowSyntheticDefaultImports`.
+- `--moduleResolution bundler` 必须与 `--module esnext` 选项配对使用。
+- `--moduleResolution bundler` 隐含了 `--allowSyntheticDefaultImports` 选项。
 
-#### Supported features
-
-- [`paths`](#paths) ✅
-- [`baseUrl`](#baseurl) ✅
-- [`node_modules` package lookups](#node_modules-package-lookups) ✅
-- [package.json `"exports"`](#packagejson-exports) ✅ matches `types`, `import`
-- [package.json `"imports"` and self-name imports](#packagejson-imports-and-self-name-imports) ✅ matches `types`, `import`
-- [package.json `"typesVersions"`](#packagejson-typesversions) ✅
-- [Package-relative paths](#package-relative-file-paths) ✅ when `exports` not present
-- [Full relative paths](#relative-file-path-resolution) ✅
-- [Extensionless relative paths](#extensionless-relative-paths) ✅
-- [Directory modules](#directory-modules-index-file-resolution) ✅
-
-### `node10` (formerly known as `node`)
-
-`--moduleResolution node` was renamed to `node10` (keeping `node` as an alias for backward compatibility) in TypeScript 5.0. It reflects the CommonJS module resolution algorithm as it existed in Node.js versions earlier than v12. It should no longer be used.
-
-#### Supported features
+#### 支持的特性
 
 - [`paths`](#paths) ✅
 - [`baseUrl`](#baseurl) ✅
-- [`node_modules` package lookups](#node_modules-package-lookups) ✅
-- [package.json `"exports"`](#packagejson-exports) ❌
-- [package.json `"imports"` and self-name imports](#packagejson-imports-and-self-name-imports) ❌
-- [package.json `"typesVersions"`](#packagejson-typesversions) ✅
-- [Package-relative paths](#package-relative-file-paths) ✅
-- [Full relative paths](#relative-file-path-resolution) ✅
-- [Extensionless relative paths](#extensionless-relative-paths) ✅
-- [Directory modules](#directory-modules-index-file-resolution) ✅
+- [`node_modules` 包查找](#node_modules-包查找) ✅
+- [package.json 中的 `"exports"`](#packagejson-exports) ✅ 匹配 `types`，`import`
+- [package.json 中的 `"imports"` 和自身命名导入](#package.json-imports-和自身名称导入) ✅ 匹配 `types`，`import`
+- [package.json 中的 `"typesVersions"`](#packagejson-typesversions) ✅
+- [相对于包的路径](#相对于包的文件路径) ✅（当不存在 `exports` 时）
+- [完整的相对路径](#相对文件路径解析) ✅
+- [无扩展名的相对路径](#无拓展名的相对路径) ✅
+- [目录模块](#目录模块-索引文件解析) ✅
+
+### `node10`（之前称为 `node`）
+
+`--moduleResolution node` 在 TypeScript 5.0 中更名为 `node10`（为了向后兼容性保留 `node` 作为别名）。它反映了在 Node.js v12 之前的版本中存在的 CommonJS 模块解析算法。不应再使用该选项。
+
+#### 支持的特性
+
+- [`paths`](#paths) ✅
+- [`baseUrl`](#baseurl) ✅
+- [`node_modules` 包查找](#node_modules-包查找) ✅
+- [package.json 中的 `"exports"`](#packagejson-exports) ❌
+- [package.json 中的 `"imports"` 和自身命名导入](#packagejson-imports-和自身命名导入) ❌
+- [package.json 中的 `"typesVersions"`](#packagejson-typesversions) ✅
+- [相对于包的路径](#相对于包的文件路径) ✅
+- [完整的相对路径](#相对文件路径解析) ✅
+- [无扩展名的相对路径](#无拓展名的相对路径) ✅
+- [目录模块](#目录模块-索引文件解析) ✅
 
 ### `classic`
 
-Do not use `classic`.
+不要使用 `classic` 选项。
