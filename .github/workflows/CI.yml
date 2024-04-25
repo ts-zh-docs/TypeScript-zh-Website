@@ -2,59 +2,84 @@ name: CI
 on: pull_request
 
 jobs:
-  local-validate:
+  tests:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      # Check out, and set up the node/ruby infra
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
-          node-version: "13.x"
+          node-version: "18.x"
 
-      - run: yarn
-      - run: yarn docs-sync validate-against-en
-
-  site-builds:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/setup-node@v1
-        with:
-          node-version: "13.x"
-
-      # Clone this PR, and setup the deps
-      - uses: actions/checkout@v1
-      - run: yarn
-
-      # Clone the TS website, basically:
-      # git clone https://github.com/microsoft/TypeScript-Website website
-      - name: Checkout tools repo
-        uses: actions/checkout@v2
-        with:
-          repository: microsoft/TypeScript-Website
-          path: website
-
-      # Both the microsoft/TypeScript-Website & 1 - don't really need to be there, but 
-      # this migrates the translated docs into the website
-      - run: yarn docs-sync pull microsoft/TypeScript-Website 1 --from-cwd . --to-cwd website
-
-      # Get dependencies for building the ebooks
-      - run: sudo apt-get update
-      - run: sudo apt install calibre
-
+      # Install, should be basically instant if cached
       - run: yarn install
         env:
           YARN_CHECKSUM_BEHAVIOR: ignore
-        working-directory: ./website
 
+      # Verify dependencies are hooked up right
+      - run: node test/verifyPackageVersions.js
 
-      # Verify the website build
+      # Grab localizations
+      - run: yarn docs-sync pull microsoft/TypeScript-Website-localizations#main 1
+
+      # Build the packages
       - run: yarn bootstrap
-        working-directory: ./website
+      - run: yarn build
 
-      - run: yarn workspace typescriptlang-org build
-        working-directory: ./website
+      # Verify it compiles
+      - run: yarn build-site
+      
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'pull_request'
+        with:
+          name: site
+          path: packages/typescriptlang-org/public
 
-      # # Verify the website build
-      # - run: yarn test
-      #   working-directory: ./website
+      # Run all the package's tests
+      - run: yarn test
+        env:
+          CI: true
+
+      # danger for PR builds
+      - if: github.event_name == 'pull_request' && github.event.pull_request.base.repo.id == github.event.pull_request.head.repo.id
+        run: "yarn danger ci"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: |
+          git add .
+          if ! git diff --staged --exit-code --quiet; then
+            echo "This PR is missing some generated changes. Please update locally or merge the patch artifact."
+            echo ""
+            git diff --staged
+            git diff --staged > missing.patch
+            exit 1
+          fi
+        name: Check for uncommitted changes
+        id: check-diff
+        if: github.event_name == 'pull_request'
+
+      - name: Upload diff artifact
+        if: ${{ failure() && steps.check-diff.conclusion == 'failure' }}
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+        with:
+          name: missing.patch
+          path: missing.patch
+
+  windows:
+    runs-on: windows-latest
+
+    steps:
+      # Check out, and set up the node infra
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "18.x"
+
+      # Get local dependencies
+      - run: yarn install
+        env:
+          YARN_CHECKSUM_BEHAVIOR: ignore
+
+      - run: yarn bootstrap
+      - run: yarn build
