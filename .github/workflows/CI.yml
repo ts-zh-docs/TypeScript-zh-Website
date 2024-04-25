@@ -6,10 +6,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
-          node-version: "13.x"
+          node-version: "18.x"
 
       - run: yarn
       - run: yarn docs-sync validate-against-en
@@ -18,12 +18,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
-          node-version: "13.x"
+          node-version: "18.x"
 
       # Clone this PR, and setup the deps
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - run: yarn
 
       # Clone the TS website, basically:
