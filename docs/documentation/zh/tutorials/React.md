@@ -1,27 +1,27 @@
 ---
 title: React
 layout: docs
-permalink: /zh/docs/handbook/react.html
-oneline: Links to learn about TypeScript and React
+permalink: /zh-CN/docs/handbook/react.html
+oneline: 学习 TypeScript 和 React 的资源链接
 translatable: true
 experimental: false
 ---
 
-TypeScript supports [JSX](/zh/docs/handbook/jsx.html) and can correctly model the patterns used in React codebases like `useState`.
+TypeScript 支持 [JSX](/zh-CN/docs/handbook/jsx.html) 并且可以正确地建模 React 代码库中使用的模式，比如 `useState`。
 
-### Getting Set Up With a React Project
+### 设置 React 项目
 
-Today there are many frameworks which support TypeScript out of the box:
+如今有很多框架可以开箱即用地支持 TypeScript：
 
-- [Create React App](https://create-react-app.dev) - [TS docs](https://create-react-app.dev/docs/adding-typescript/)
-- [Next.js](https://nextjs.org) - [TS docs](https://nextjs.org/learn/excel/typescript)
-- [Gatsby](https://www.gatsbyjs.org) - [TS Docs](https://www.gatsbyjs.org/docs/typescript/)
+- [Create React App](https://create-react-app.dev)——[TS 文档](https://create-react-app.dev/docs/adding-typescript/)
+- [Next.js](https://nextjs.org)——[TS 文档](https://nextjs.org/learn/excel/typescript)
+- [Gatsby](https://www.gatsbyjs.org)——[TS 文档](https://www.gatsbyjs.org/docs/typescript/)
 
-All of these are great starting points. We [use Gatsby](https://www.gatsbyjs.org/blog/2020-01-23-why-typescript-chose-gatsby/#reach-skip-nav) with TypeScript for [this website](https://github.com/microsoft/TypeScript-Website/), so that can also be a useful reference implementation.
+这些都是很好的起点。我们在[本网站](https://github.com/microsoft/TypeScript-Website/)上[使用 Gatsby](https://www.gatsbyjs.org/blog/2020-01-23-why-typescript-chose-gatsby/#reach-skip-nav) 和 TypeScript，所以它也可以作为一个有用的参考实现。
 
-### Documentation
+### 文档
 
-Here are some of the best places to find up-to-date information on React and TypeScript:
+以下是一些 React 和 TypeScript 的优秀资源，可以查找最新的信息：
 
-- [React TypeScript Cheatsheets](https://react-typescript-cheatsheet.netlify.app)
-- [React & Redux in TypeScript](https://github.com/piotrwitek/react-redux-typescript-guide#react--redux-in-typescript---complete-guide)
+- [React TypeScript 速查表](https://react-typescript-cheatsheet.netlify.app)
+- [React 和 Redux 搭配使用 TypeScript](https://github.com/piotrwitek/react-redux-typescript-guide#react--redux-in-typescript---complete-guide)
