@@ -1,7 +1,7 @@
 ---
 title: React
 layout: docs
-permalink: /zh-CN/docs/handbook/react.html
+permalink: /zh/docs/handbook/react.html
 oneline: 学习 TypeScript 和 React 的资源链接
 translatable: true
 experimental: false
