@@ -7,7 +7,7 @@ translatable: true
 experimental: false
 ---
 
-TypeScript 支持 [JSX](/zh-CN/docs/handbook/jsx.html) 并且可以正确地建模 React 代码库中使用的模式，比如 `useState`。
+TypeScript 支持 [JSX](/zh/docs/handbook/jsx.html) 并且可以正确地建模 React 代码库中使用的模式，比如 `useState`。
 
 ### 设置 React 项目
 
