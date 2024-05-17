@@ -369,7 +369,7 @@ Point.prototype.distanceFromOrigin = function () {
 };
 ```
 
-这个例子中存在与前面提到的问题相同的问题——我们很容易拼写错误 `getDistance` 而没有得到错误提示。为此，TypeScript 提供了 [`noImplicitThis`](/zh/tsconfig#noImplicitThis) 选项。当设置了该选项时，TypeScript 在 `this` 使用时没有明确的（或推断的）类型时会抛出错误。修复方法是在接口或函数本身中使用 `this` 参数来给出明确的类型：
+这个例子中存在与前面提到的问题相同的问题——我们很容易拼写错误 `getDistance` 而没有得到错误提示。为此，TypeScript 提供了 [`noImplicitThis`](/zh/tsconfig#noImplicitThis) 选项。当设置了该选项时，TypeScript 在 `this` 使用时没有明确的（或推断的）类型时会抛出错误。修复方法是在接口或函数本身中使用 `this` 参数并给出明确的类型：
 
 ```ts
 Point.prototype.distanceFromOrigin = function (this: Point) {
