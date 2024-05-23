@@ -4,7 +4,7 @@ TypeScript 中文文档源码仓库。
 
 ### 环境配置
 
-请先配置好 [TypeScript-Website](https://github.com/ts-zh-docs/TypeScript-Website)。对于本仓库你应该使用 Node 16.x 完成以下操作：
+请先配置好 [TypeScript-Website](https://github.com/ts-zh-docs/TypeScript-Website)。对于本仓库你应该使用 Node 18.x 完成以下操作：
 
 ```sh
 yarn
