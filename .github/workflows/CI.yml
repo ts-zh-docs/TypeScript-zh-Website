@@ -53,7 +53,7 @@ jobs:
       - run: pnpm bootstrap
         working-directory: ./website
 
-      - run: pnpm workspace typescriptlang-org build
+      - run: pnpm --filter typescriptlang-org build
         working-directory: ./website
 
       # # Verify the website build
