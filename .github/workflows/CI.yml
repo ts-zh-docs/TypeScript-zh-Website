@@ -10,51 +10,52 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "18.x"
-
-      - run: yarn
-      - run: yarn docs-sync validate-against-en
+      - uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2
+    
+      - run: pnpm install
+      - run: pnpm docs-sync validate-against-en
 
   site-builds:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: "18.x"
-
+      - uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2
       # Clone this PR, and setup the deps
-      - uses: actions/checkout@v2
-      - run: yarn
+      - run: pnpm install
 
       # Clone the TS website, basically:
-      # git clone https://github.com/ts-zh-docs/TypeScript-Website website
+      # git clone https://github.com/microsoft/TypeScript-Website website
       - name: Checkout tools repo
         uses: actions/checkout@v2
         with:
-          repository: ts-zh-docs/TypeScript-Website
+          repository: microsoft/TypeScript-Website
           path: website
 
-      # Both the ts-zh-docs/TypeScript-Website & 1 - don't really need to be there, but 
+      # Both the microsoft/TypeScript-Website & 1 - don't really need to be there, but 
       # this migrates the translated docs into the website
-      - run: yarn docs-sync pull ts-zh-docs/TypeScript-Website 1 --from-cwd . --to-cwd website
+      - run: pnpm docs-sync pull microsoft/TypeScript-Website 1 --from-cwd . --to-cwd website
 
       # Get dependencies for building the ebooks
       - run: sudo apt-get update
       - run: sudo apt install calibre
 
-      - run: yarn install
+      - run: pnpm install
         env:
-          YARN_CHECKSUM_BEHAVIOR: ignore
+          pnpm_CHECKSUM_BEHAVIOR: ignore
         working-directory: ./website
 
 
       # Verify the website build
-      - run: yarn bootstrap
+      - run: pnpm bootstrap
         working-directory: ./website
 
-      - run: yarn workspace typescriptlang-org build
+      - run: pnpm --filter typescriptlang-org build
         working-directory: ./website
 
       # # Verify the website build
-      # - run: yarn test
+      # - run: pnpm test
       #   working-directory: ./website
