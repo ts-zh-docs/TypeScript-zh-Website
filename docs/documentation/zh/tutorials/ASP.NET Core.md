@@ -7,7 +7,7 @@ oneline: 在 ASP.NET Core 中使用 TypeScript
 
 ## 安装 ASP.NET Core 和 TypeScript
 
-首先，如果你需要的话，安装 [ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet)。本快速入门指南需要 Visual Studio 2015 或 2017。
+首先，如果需要，请先安装 [ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet)。本快速入门指南需要 Visual Studio 2015 或 2017。
 
 接下来，如果你的 Visual Studio 版本尚未包含最新的 TypeScript，你可以[安装它](https://www.typescriptlang.org/index.html#download-links)。
 
@@ -30,7 +30,7 @@ oneline: 在 ASP.NET Core 中使用 TypeScript
 
 运行应用程序，确保它能正常工作。
 
-![Edge 浏览器显示“Hello World”的成功截图](/images/tutorials/aspnet/workingsite.png)
+![在 Edge 浏览器成功显示“Hello World”的截图](/images/tutorials/aspnet/workingsite.png)
 
 ### 设置服务器
 
@@ -106,8 +106,8 @@ _配置 TypeScript 编译器_
 }
 ```
 
-- [`noEmitOnError`](/zh/tsconfig#noEmitOnError)：如果报告任何错误，则不要发出输出。
-- [`noImplicitAny`](/zh/tsconfig#noImplicitAny)：在表达式和声明中隐式 `any` 类型会引发错误。
+- [`noEmitOnError`](/zh/tsconfig#noEmitOnError)：如果报告任何错误，则不触发输出。
+- [`noImplicitAny`](/zh/tsconfig#noImplicitAny)：在具有隐式 any 类型的表达式和声明中会引发错误。
 - [`sourceMap`](/zh/tsconfig#sourceMap)：生成相应的 `.map` 文件。
 - [`target`](/zh/tsconfig#target)：指定 ECMAScript 目标版本。
 
@@ -212,4 +212,4 @@ gulp.task("default", function (done) {
 
 ![显示你刚刚编写的代码的调试器正在运行的图像](/images/tutorials/aspnet/debugger.png)
 
-恭喜你已经构建了自己的 .NET Core 项目，并拥有一个 TypeScript 前端。
+恭喜你成功使用 TypeScript 前端构建了自己的 .NET Core 项目。
