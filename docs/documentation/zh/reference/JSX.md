@@ -2,7 +2,7 @@
 title: JSX
 layout: docs
 permalink: /zh/docs/handbook/jsx.html
-oneline: 在 TypeScript 中使用 JSX
+oneline: 将 JSX 与 TypeScript 结合使用
 translatable: true
 ---
 
