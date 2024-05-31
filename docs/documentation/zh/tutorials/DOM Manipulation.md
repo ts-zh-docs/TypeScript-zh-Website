@@ -10,7 +10,7 @@ translatable: true
 
 ### _探索 `HTMLElement` 类型_
 
-自从 JavaScript 标准化 20 多年来，它已经走过了很长的路。虽然在 2020 年，JavaScript 可以用于服务器、数据科学，甚至物联网设备，但不要忘记它最常见的用例：web 浏览器。
+自从标准化以来的 20 多年里，JavaScript 已经取得了长足的进步。尽管在 2020 年，JavaScript 可以在服务器、数据科学甚至物联网设备上使用，但重要的是要记住它最广泛的应用场景：web 浏览器。
 
 网站由 HTML 和/或 XML 文档组成。这些文档是静态的，不会改变。*文档对象模型（DOM）*是浏览器实现的一个编程接口，用于使静态网站变得可操作。DOM API 可用于更改文档结构、样式和内容。该 API 十分强大，强大到无数前端框架（jQuery、React 以及 Angular 等）都是围绕它开发的，其使得动态网站的开发变得更加容易。
 
@@ -40,13 +40,13 @@ TypeScript 是 JavaScript 的一个有类型的超集，它提供了 DOM API 的
 // 1. 使用 id 属性选择 div 元素
 const app = document.getElementById("app");
 
-// 2. 程序化地创建一个新的 <p></p> 元素
+// 2.以编程方式创建一个新的 <p></p> 元素
 const p = document.createElement("p");
 
 // 3. 添加文本内容
 p.textContent = "Hello, World!";
 
-// 4. 将 p 元素附加到 div 元素
+// 4. 将 p 元素附加到 div 元素中
 app?.appendChild(p);
 ```
 
@@ -70,7 +70,7 @@ TypeScript 代码的第一行使用了全局变量 `document`。检查这个变�
 getElementById(elementId: string): HTMLElement | null;
 ```
 
-向它传递一个元素 id 字符串，它将返回 `HTMLElement` 或 `null`。这个方法引入了最重要的类型之一：`HTMLElement`。它是每个其他元素接口的基础接口。例如，代码示例中的 `p` 变量的类型为 `HTMLParagraphElement`。另外，请注意这个方法可能返回 `null`。这是因为该方法在运行时前无法确定是否能找到指定的元素。在代码片段的最后一行，我们使用了新的*可选链接（optional chaining）*运算符来调用 `appendChild`。
+向它传递一个元素 id 字符串，它将返回 `HTMLElement` 或 `null`。这个方法引入了最重要的类型之一：`HTMLElement`。它是每个其他元素接口的基础接口。例如，代码示例中的 `p` 变量的类型为 `HTMLParagraphElement`。另外，请注意这个方法可能返回 `null`。这是因为该方法在运行时无法确定是否能找到指定的元素。在代码片段的最后一行，我们使用了新的*可选链接（optional chaining）*运算符来调用 `appendChild`。
 
 ### `Document.createElement`
 
@@ -87,7 +87,7 @@ createElement(tagName: string, options?: ElementCreationOptions): HTMLElement;
 
 > 对于感兴趣的人来说，你可以使用 `document.getElementsByTagName` 与自定义标签元素进行交互。
 
-对于 `createElement` 的第一个定义，它使用了一些高级的泛型模式。将其拆分成块来理解会更容易，从泛型表达式开始: `<K extends keyof HTMLElementTagNameMap>`。这个表达式定义了一个泛型参数 `K`，它被*限制*为符合 `HTMLElementTagNameMap` 接口的键。这个映射接口包含了每个指定的 HTML 标签名及其对应的类型接口。例如，这里是前 5 个映射值：
+对于 `createElement` 的第一个定义，它使用了一些高级的泛型模式。将其拆解成几小部分来分析会更容易理解，从泛型表达式开始: `<K extends keyof HTMLElementTagNameMap>`。这个表达式定义了一个泛型参数 `K`，它被*限制*为符合 `HTMLElementTagNameMap` 接口的键。这个映射接口包含了每个指定的 HTML 标签名及其对应的类型接口。例如，这里是前 5 个映射值：
 
 ```ts
 interface HTMLElementTagNameMap {
@@ -102,7 +102,7 @@ interface HTMLElementTagNameMap {
 
 一些元素并没有独特的属性，因此它们只返回 `HTMLElement`，但其他类型确实有独特的属性和方法，所以它们返回特定的接口（这些接口将继承或实现 `HTMLElement`）。
 
-现在，我们探索一下 `createElement` 定义的其余部分：`(tagName: K， options?: ElementCreationOptions): HTMLElementTagNameMap[K]`。第一个参数 `tagName` 被定义为泛型参数 `K`。TypeScript 编译器足够智能，能够从这个参数*推断*出泛型参数。这意味着开发者在使用这个方法时不必指定泛型参数；传递给 `tagName` 参数的任何值都将被推断为 `K`，因此可以在定义的其余部分中使用。这正是发生的情况；返回值 `HTMLElementTagNameMap[K]` 获取 `tagName` 参数，并使用它返回相应的类型。这个定义就是代码片段中 `p` 变量获得 `HTMLParagraphElement` 类型的方式。如果代码是 `document.createElement('a')`，那么它将是 `HTMLAnchorElement` 类型的元素。
+现在，我们探索一下 `createElement` 定义的其余部分：`(tagName: K， options?: ElementCreationOptions): HTMLElementTagNameMap[K]`。第一个参数 `tagName` 被定义为泛型参数 `K`。TypeScript 解释器足够智能，能够从这个参数*推断*出泛型参数。这意味着开发者在使用这个方法时不必指定泛型参数；传递给 `tagName` 参数的任何值都将被推断为 `K`，因此可以在定义的其余部分中使用。实际情况也正是如此；返回值 `HTMLElementTagNameMap[K]` 获取 `tagName` 参数，并使用它返回相应的类型。这个定义就是代码片段中 `p` 变量获得 `HTMLParagraphElement` 类型的方式。如果代码是 `document.createElement('a')`，那么它将是 `HTMLAnchorElement` 类型的元素。
 
 ## `Node` 接口
 
