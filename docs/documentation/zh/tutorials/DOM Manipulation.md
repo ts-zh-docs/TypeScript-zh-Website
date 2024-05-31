@@ -14,7 +14,7 @@ translatable: true
 
 网站由 HTML 和/或 XML 文档组成。这些文档是静态的，不会改变。*文档对象模型（DOM）*是浏览器实现的一个编程接口，用于使静态网站变得可操作。DOM API 可用于更改文档结构、样式和内容。该 API 十分强大，强大到无数前端框架（jQuery、React 以及 Angular 等）都是围绕它开发的，其使得动态网站的开发变得更加容易。
 
-TypeScript 是 JavaScript 的一个有类型的超集，它提供了 DOM API 的类型定义。这些定义在任何默认的 TypeScript 项目中都可以使用。在 _lib.dom.d.ts_ 的 两万多行定义中，有一个脱颖而出：`HTMLElement`。这个类型是使用 TypeScript 操作 DOM 的关键。
+TypeScript 是 JavaScript 的一个类型超集，并且它提供了 DOM API 的类型定义。这些定义在任何默认的 TypeScript 项目中都可以使用。在 _lib.dom.d.ts_ 文件的两万多行定义中，有一个脱颖而出：`HTMLElement`。这个类型是使用 TypeScript 进行 DOM 操作的关键。
 
 > 你可以探索 [DOM 类型定义](https://github.com/microsoft/TypeScript/blob/main/src/lib/dom.generated.d.ts)的源代码
 
@@ -34,7 +34,7 @@ TypeScript 是 JavaScript 的一个有类型的超集，它提供了 DOM API 的
 </html>
 ```
 
-让我们探讨一个 TypeScript 脚本，该脚本将 `<p>Hello, World!</p>` 元素添加到 `#app` 元素中。
+让我们探讨一个使用 TypeScript 编写的脚本，该脚本将 `<p>Hello, World!</p>` 元素添加到了 `#app` 元素中。
 
 ```ts
 // 1. 使用 id 属性选择 div 元素
