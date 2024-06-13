@@ -2,26 +2,24 @@
 title: Gulp
 layout: docs
 permalink: /zh/docs/handbook/gulp.html
-oneline: Using TypeScript with Gulp
+oneline: 使用 Gulp 和 TypeScript
 deprecated: true
 ---
 
-This quick start guide will teach you how to build TypeScript with [gulp](https://gulpjs.com) and then add [Browserify](https://browserify.org), [terser](https://terser.org), or [Watchify](https://github.com/substack/watchify) to the gulp pipeline.
-This guide also shows how to add [Babel](https://babeljs.io/) functionality using [Babelify](https://github.com/babel/babelify).
+这个快速入门指南将教你如何使用 [gulp](https://gulpjs.com) 构建 TypeScript 项目，并将 [Browserify](https://browserify.org)、[terser](https://terser.org) 或 [Watchify](https://github.com/substack/watchify) 添加到 gulp 流程中。本指南还展示了如何使用 [Babelify](https://github.com/babel/babelify) 添加 [Babel](https://babeljs.io/) 功能。
 
-We assume that you're already using [Node.js](https://nodejs.org/) with [npm](https://www.npmjs.com/).
+我们假设你使用的是 [Node.js](https://nodejs.org/) 和 [npm](https://www.npmjs.com/)。
 
-## Minimal project
+## 最小项目
 
-Let's start out with a new directory.
-We'll name it `proj` for now, but you can change it to whatever you want.
+让我们从建立新目录开始。我们暂且将其命名为 `proj`，但你可以根据需要进行修改。
 
 ```shell
 mkdir proj
 cd proj
 ```
 
-To start, we're going to structure our project in the following way:
+首先，我们将按照以下方式组织我们的项目：
 
 ```
 proj/
@@ -29,48 +27,42 @@ proj/
    └─ dist/
 ```
 
-TypeScript files will start out in your `src` folder, run through the TypeScript compiler and end up in `dist`.
+TypeScript 文件将始于你的 `src` 文件夹，经过 TypeScript 编译器处理后最终将位于 `dist` 文件夹。
 
-Let's scaffold this out:
+让我们创建这些文件夹：
 
 ```shell
 mkdir src
 mkdir dist
 ```
 
-### Initialize the project
+### 初始化项目
 
-Now we'll turn this folder into an npm package.
+接下来，我们将把这个文件夹转换为 npm 包。
 
 ```shell
 npm init
 ```
 
-You'll be given a series of prompts.
-You can use the defaults except for your entry point.
-For your entry point, use `./dist/main.js`.
-You can always go back and change these in the `package.json` file that's been generated for you.
+你将会得到一系列提示。你可以使用默认值，只需修改入口点。对于入口点，请使用 `./dist/main.js`。你随后可以随时返回并在生成的 `package.json` 文件中进行修改。
 
-### Install our dependencies
+### 安装依赖项
 
-Now we can use `npm install` to install packages.
-First install `gulp-cli` globally (if you use a Unix system, you may need to prefix the `npm install` commands in this guide with `sudo`).
+现在我们可以使用 `npm install` 来安装包。首先全局安装 `gulp-cli`（如果你使用的是 Unix 系统，可能需要在本指南中的 `npm install` 命令前加上 `sudo`）。
 
 ```shell
 npm install -g gulp-cli
 ```
 
-Then install `typescript`, `gulp` and `gulp-typescript` in your project's dev dependencies.
-[Gulp-typescript](https://www.npmjs.com/package/gulp-typescript) is a gulp plugin for TypeScript.
+然后在你的项目的开发依赖中安装 `typescript`、`gulp` 和 `gulp-typescript`。[Gulp-typescript](https://www.npmjs.com/package/gulp-typescript) 是一个用于 TypeScript 的 gulp 插件。
 
 ```shell
 npm install --save-dev typescript gulp@4.0.0 gulp-typescript
 ```
 
-### Write a simple example
+### 编写一个简单的示例
 
-Let's write a Hello World program.
-In `src`, create the file `main.ts`:
+让我们编写 Hello World 程序。在 `src` 目录下创建文件 `main.ts`：
 
 ```ts
 function hello(compiler: string) {
@@ -79,7 +71,7 @@ function hello(compiler: string) {
 hello("TypeScript");
 ```
 
-In the project root, `proj`, create the file `tsconfig.json`:
+在项目根目录（`proj`）下，创建文件 `tsconfig.json`：
 
 ```json tsconfig
 {
@@ -91,9 +83,9 @@ In the project root, `proj`, create the file `tsconfig.json`:
 }
 ```
 
-### Create a `gulpfile.js`
+### 创建 `gulpfile.js`
 
-In the project root, create the file `gulpfile.js`:
+在项目根目录下，创建文件 `gulpfile.js`：
 
 ```js
 var gulp = require("gulp");
@@ -105,21 +97,20 @@ gulp.task("default", function () {
 });
 ```
 
-### Test the resulting app
+### 测试生成的应用程序
 
 ```shell
 gulp
 node dist/main.js
 ```
 
-The program should print "Hello from TypeScript!".
+该程序应该会输出“Hello from TypeScript!”。
 
-## Add modules to the code
+## 向代码添加模块
 
-Before we get to Browserify, let's build our code out and add modules to the mix.
-This is the structure you're more likely to use for a real app.
+在我们开始使用 Browserify 之前，让我们扩展我们的代码并添加模块。这是你在实际应用程序中更有可能使用的结构。
 
-Create a file called `src/greet.ts`:
+创建一个名为 `src/greet.ts` 的文件：
 
 ```ts
 export function sayHello(name: string) {
@@ -127,7 +118,7 @@ export function sayHello(name: string) {
 }
 ```
 
-Now change the code in `src/main.ts` to import `sayHello` from `greet.ts`:
+现在将 `src/main.ts` 中的代码更改为从 `greet.ts` 导入 `sayHello`：
 
 ```ts
 import { sayHello } from "./greet";
@@ -135,7 +126,7 @@ import { sayHello } from "./greet";
 console.log(sayHello("TypeScript"));
 ```
 
-Finally, add `src/greet.ts` to `tsconfig.json`:
+最后，将 `src/greet.ts` 添加到 `tsconfig.json`：
 
 ```json tsconfig
 {
@@ -147,35 +138,28 @@ Finally, add `src/greet.ts` to `tsconfig.json`:
 }
 ```
 
-Make sure that the modules work by running `gulp` and then testing in Node:
+通过运行 `gulp` 并在 Node 中进行测试，确保模块能够正常工作：
 
 ```shell
 gulp
 node dist/main.js
 ```
 
-Notice that even though we used ES2015 module syntax, TypeScript emitted CommonJS modules that Node uses.
-We'll stick with CommonJS for this tutorial, but you could set `module` in the options object to change this.
+请注意，即使我们使用了 ES2015 的模块语法，TypeScript 也会生成 Node 使用的 CommonJS 模块。在本教程中，我们将继续使用 CommonJS，但你可以通过在选项对象中设置 `module` 来进行更改。
 
 ## Browserify
 
-Now let's move this project from Node to the browser.
-To do this, we'd like to bundle all our modules into one JavaScript file.
-Fortunately, that's exactly what Browserify does.
-Even better, it lets us use the CommonJS module system used by Node, which is the default TypeScript emit.
-That means our TypeScript and Node setup will transfer to the browser basically unchanged.
+现在让我们将这个项目从 Node 移植到浏览器中。为了做到这一点，我们希望将所有的模块捆绑到单个 JavaScript 文件中。幸运的是，这正是 Browserify 所做的。更好的是，它允许我们使用 Node 所使用的 CommonJS 模块系统，这也是 TypeScript 的默认输出。这意味着我们的 TypeScript 和 Node 设置基本上可以无缝迁移到浏览器中。
 
-First, install browserify, [tsify](https://www.npmjs.com/package/tsify), and vinyl-source-stream.
-tsify is a Browserify plugin that, like gulp-typescript, gives access to the TypeScript compiler.
-vinyl-source-stream lets us adapt the file output of Browserify back into a format that gulp understands called [vinyl](https://github.com/gulpjs/vinyl).
+首先，安装 browserify、[tsify](https://www.npmjs.com/package/tsify) 和 vinyl-source-stream。tsify 是 Browserify 的一个插件，与 gulp-typescript 类似，可以访问 TypeScript 编译器。vinyl-source-stream 让我们能够将 Browserify 的文件输出适配回 gulp 可以理解的一种格式，这种格式名为 [vinyl](https://github.com/gulpjs/vinyl)。
 
 ```shell
 npm install --save-dev browserify tsify vinyl-source-stream
 ```
 
-### Create a page
+### 创建一个页面
 
-Create a file in `src` named `index.html`:
+在 `src` 目录下创建一个名为 `index.html` 的文件：
 
 ```html
 <!DOCTYPE html>
@@ -191,7 +175,7 @@ Create a file in `src` named `index.html`:
 </html>
 ```
 
-Now change `main.ts` to update the page:
+现在修改 `main.ts` 来更新页面内容：
 
 ```ts
 import { sayHello } from "./greet";
@@ -204,8 +188,7 @@ function showHello(divName: string, name: string) {
 showHello("greeting", "TypeScript");
 ```
 
-Calling `showHello` calls `sayHello` to change the paragraph's text.
-Now change your gulpfile to the following:
+调用 `showHello` 函数会调用 `sayHello` 函数来改变段落的文本内容。现在修改你的 gulpfile 如下所示：
 
 ```js
 var gulp = require("gulp");
@@ -238,43 +221,39 @@ gulp.task(
 );
 ```
 
-This adds the `copy-html` task and adds it as a dependency of `default`.
-That means any time `default` is run, `copy-html` has to run first.
-We've also changed `default` to call Browserify with the tsify plugin instead of gulp-typescript.
-Conveniently, they both allow us to pass the same options object to the TypeScript compiler.
+这里添加了 `copy-html` 任务，并将其作为 `default` 的依赖项。这意味着每次运行 `default` 任务时，必须首先运行 `copy-html` 任务。我们还将 `default` 修改为使用带有 tsify 插件的 Browserify 调用，而不是使用 gulp-typescript。方便的是，它们都允许我们将相同的选项对象传递给 TypeScript 编译器。
 
-After calling `bundle` we use `source` (our alias for vinyl-source-stream) to name our output bundle `bundle.js`.
+在调用 `bundle` 后，我们使用 `source`（我们为 vinyl-source-stream 设置的别名）将输出包命名为 `bundle.js`。
 
-Test the page by running gulp and then opening `dist/index.html` in a browser.
-You should see "Hello from TypeScript" on the page.
+通过运行 gulp 并在浏览器中打开 `dist/index.html` 来测试页面。你应该在页面上看到“Hello from TypeScript”。
 
-Notice that we specified `debug: true` to Browserify.
-This causes tsify to emit source maps inside the bundled JavaScript file.
-Source maps let you debug your original TypeScript code in the browser instead of the bundled JavaScript.
-You can test that source maps are working by opening the debugger for your browser and putting a breakpoint inside `main.ts`.
-When you refresh the page the breakpoint should pause the page and let you debug `greet.ts`.
+注意我们在 Browserify 中指定了 `debug: true`。这会导致 tsify 在打包的 JavaScript 文件中生成源映射。源映射允许你在浏览器中调试原始的 TypeScript 代码，而不是打包后的 JavaScript 代码。你可以通过打开浏览器的调试器，并在 `main.ts` 中设置断点来测试源映射是否正常工作。当你刷新页面时，断点应该会暂停页面，并让你调试 `greet.ts` 文件。
 
-## Watchify, Babel, and Terser
+## Watchify、Babel 以及 Terser
 
-Now that we are bundling our code with Browserify and tsify, we can add various features to our build with browserify plugins.
+现在我们正在使用 Browserify 和 tsify 来打包代码，我们可以通过 browserify 插件添加各种特性到我们的构建过程中。
 
-- Watchify starts gulp and keeps it running, incrementally compiling whenever you save a file.
-  This lets you keep an edit-save-refresh cycle going in the browser.
+- Watchify 启动 gulp 并保持其运行，每当你保存文件时，它会进行增量编译。这使得你可以在浏览器中保持编辑-保存-刷新的循环进行。
 
-- Babel is a hugely flexible compiler that converts ES2015 and beyond into ES5 and ES3.
-  This lets you add extensive and customized transformations that TypeScript doesn't support.
+- Babel 是一个非常灵活的编译器，可以将 ES2015 及更高版本转换为 ES5 和 ES3。这使你可以添加广泛且定制化的转换，而 TypeScript 不支持这些转换。
 
-- Terser compacts your code so that it takes less time to download.
+- Terser 可以压缩你的代码，以减少下载时间。
 
 ### Watchify
 
-We'll start with Watchify to provide background compilation:
+我们将从 Watchify 开始，以提供后台编译功能：
 
 ```shell
 npm install --save-dev watchify fancy-log
 ```
 
-Now change your gulpfile to the following:
+现在将你的 gulpfile 修改为以下内容：
+
+```shell
+npm install --save-dev watchify fancy-log
+```
+
+现在将你的 gulpfile 改为以下内容：
 
 ```js
 var gulp = require("gulp");
@@ -314,19 +293,15 @@ watchedBrowserify.on("update", bundle);
 watchedBrowserify.on("log", fancy_log);
 ```
 
-There are basically three changes here, but they require you to refactor your code a bit.
+这里基本上有三个变化，但它们需要你对代码进行一些重构。
 
-1. We wrapped our `browserify` instance in a call to `watchify`, and then held on to the result.
-2. We called `watchedBrowserify.on('update', bundle);` so that Browserify will run the `bundle` function every time one of your TypeScript files changes.
-3. We called `watchedBrowserify.on('log', fancy_log);` to log to the console.
+1. 我们将 `browserify` 实例包装在 `watchify` 的调用中，并将结果保存下来。
+2. 我们调用 `watchedBrowserify.on('update', bundle);`，这样当你的任何一个 TypeScript 文件发生更改时，Browserify 将运行 `bundle` 函数。
+3. 我们调用 `watchedBrowserify.on('log', fancy_log);` 将日志记录到控制台中。
 
-Together (1) and (2) mean that we have to move our call to `browserify` out of the `default` task.
-And we have to give the function for `default` a name since both Watchify and Gulp need to call it.
-Adding logging with (3) is optional but very useful for debugging your setup.
+通过 (1) 和 (2)，我们需要将对 `browserify` 的调用移出 `default` 任务。并且我们需要给 `default` 函数一个名称，因为 Watchify 和 Gulp 都需要调用它。添加 (3) 的日志记录是可选的，但对于调试你的设置非常有用。
 
-Now when you run Gulp, it should start and stay running.
-Try changing the code for `showHello` in `main.ts` and saving it.
-You should see output that looks like this:
+现在当你运行 Gulp 时，它应该开始运行并保持运行状态。尝试更改 `main.ts` 中的 `showHello` 函数的代码并保存它。你应该会看到类似以下的输出：
 
 ```shell
 proj$ gulp
@@ -342,14 +317,13 @@ proj$ gulp
 
 ### Terser
 
-First install Terser.
-Since the point of Terser is to mangle your code, we also need to install vinyl-buffer and gulp-sourcemaps to keep sourcemaps working.
+首先安装 Terser。由于 Terser 的用途是混淆你的代码，我们还需要安装 vinyl-buffer 和 gulp-sourcemaps 来保持源映射的工作。
 
 ```shell
 npm install --save-dev gulp-terser vinyl-buffer gulp-sourcemaps
 ```
 
-Now change your gulpfile to the following:
+现在将你的 gulpfile 修改为以下内容：
 
 ```js
 var gulp = require("gulp");
@@ -389,9 +363,7 @@ gulp.task(
 );
 ```
 
-Notice that `terser` itself has just one call &mdash; the calls to `buffer` and `sourcemaps` exist to make sure sourcemaps keep working.
-These calls give us a separate sourcemap file instead of using inline sourcemaps like before.
-Now you can run Gulp and check that `bundle.js` does get minified into an unreadable mess:
+请注意，`terser` 本身只有一个调用，`buffer` 和 `sourcemaps` 的调用是为了确保源映射继续工作。这些调用使我们获得了一个单独的源映射文件，而不是像之前那样使用内联源映射。现在可以运行 Gulp，并检查 `bundle.js` 是否被压缩成一个难以阅读的混乱代码：
 
 ```shell
 gulp
@@ -400,15 +372,13 @@ cat dist/bundle.js
 
 ### Babel
 
-First install Babelify and the Babel preset for ES2015.
-Like Terser, Babelify mangles code, so we'll need vinyl-buffer and gulp-sourcemaps.
-By default Babelify will only process files with extensions of `.js`, `.es`, `.es6` and `.jsx` so we need to add the `.ts` extension as an option to Babelify.
+首先安装 Babelify 和 ES2015 的 Babel preset。与 Terser 类似，Babelify 会混淆代码，因此我们需要 vinyl-buffer 和 gulp-sourcemaps。默认情况下，Babelify 只会处理带有 `.js`、`.es`、`.es6` 和 `.jsx` 扩展名的文件，所以我们需要将 `.ts` 扩展名添加为 Babelify 的选项。
 
 ```shell
 npm install --save-dev babelify@8 babel-core babel-preset-es2015 vinyl-buffer gulp-sourcemaps
 ```
 
-Now change your gulpfile to the following:
+现在将你的 gulpfile 修改为以下内容：
 
 ```js
 var gulp = require("gulp");
@@ -450,9 +420,7 @@ gulp.task(
 );
 ```
 
-We also need to have TypeScript target ES2015.
-Babel will then produce ES5 from the ES2015 code that TypeScript emits.
-Let's modify `tsconfig.json`:
+我们还需要将 TypeScript 的目标设置为 ES2015。然后，Babel 将根据 TypeScript 生成的 ES2015 代码生成 ES5 代码。让我们修改 `tsconfig.json` 文件：
 
 ```json tsconfig
 {
@@ -464,4 +432,4 @@ Let's modify `tsconfig.json`:
 }
 ```
 
-Babel's ES5 output should be very similar to TypeScript's output for such a simple script.
+对于这样一个简单的脚本，Babel 生成的 ES5 输出应该与 TypeScript 的输出非常相似。
