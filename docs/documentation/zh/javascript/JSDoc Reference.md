@@ -24,7 +24,7 @@ translatable: true
 
 #### 类
 
-- [属性修饰符](#property-modifiers) `@public`、`@private`、`@protected`、`@readonly`
+- [属性修饰符](#属性修饰符) `@public`、`@private`、`@protected`、`@readonly`
 - [`@override`](#override)
 - [`@extends`](#extends)（或 [`@augments`](#extends)）
 - [`@implements`](#implements)
@@ -43,9 +43,9 @@ translatable: true
 
 - [`@enum`](#enum)
 - [`@author`](#author)
-- [其他支持的模式](#other-supported-patterns)
-- [不支持的模式](#unsupported-patterns)
-- [不支持的标签](#unsupported-tags)
+- [其他支持的模式](#其他支持的模式)
+- [不支持的模式](#不支持的模式)
+- [不支持的标签](#不支持的标签)
 
 其含义通常与 [jsdoc.app](https://jsdoc.app) 上给出的标签含义相同或更广泛。下面的代码描述了差异并给出了每个标签的示例用法。
 
