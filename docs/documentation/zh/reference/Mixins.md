@@ -57,7 +57,7 @@ function Scale<TBase extends Constructor>(Base: TBase) {
 
 设置好这些之后，你可以创建一个表示已应用 mixin 的基类的类：
 
-```ts
+```ts twoslash
 class Sprite {
   name = "";
   x = 0;
