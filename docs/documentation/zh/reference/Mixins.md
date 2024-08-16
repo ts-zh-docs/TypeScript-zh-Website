@@ -1,21 +1,18 @@
 ---
-title: Mixins
+title: mixin
 layout: docs
 permalink: /zh/docs/handbook/mixins.html
-oneline: Using the mixin pattern with TypeScript
+oneline: 在 TypeScript 中使用 mixin
 translatable: true
 ---
 
-Along with traditional OO hierarchies, another popular way of building up classes from reusable components is to build them by combining simpler partial classes.
-You may be familiar with the idea of mixins or traits for languages like Scala, and the pattern has also reached some popularity in the JavaScript community.
+除了传统的面向对象层次结构之外，另一种常用的构建类的方式是通过组合较简单的部分类来实现可重用组件。你可能熟悉类似 Scala 等语言中的 mixin 或 trait 的概念，这种模式在 JavaScript 社区中也相当流行。
 
-## How Does A Mixin Work?
+## mixin 是如何工作的？
 
-The pattern relies on using generics with class inheritance to extend a base class.
-TypeScript's best mixin support is done via the class expression pattern.
-You can read more about how this pattern works in JavaScript [here](https://justinfagnani.com/2015/12/21/real-mixins-with-javascript-classes/).
+该模式依赖于使用类继承的泛型来扩展基类。TypeScript 最好的 mixin 支持是通过类表达式模式实现的。你可以在[这里](https://justinfagnani.com/2015/12/21/real-mixins-with-javascript-classes/)阅读更多关于此模式在 JavaScript 中的工作方式。
 
-To get started, we'll need a class which will have the mixins applied on top of:
+作为起点，我们编写一个应用 mixin 的类：
 
 ```ts twoslash
 class Sprite {
@@ -29,22 +26,22 @@ class Sprite {
 }
 ```
 
-Then you need a type and a factory function which returns a class expression extending the base class.
+然后，你需要一个类型和一个工厂函数，该函数返回一个扩展基类的类表达式。
 
 ```ts twoslash
-// To get started, we need a type which we'll use to extend
-// other classes from. The main responsibility is to declare
-// that the type being passed in is a class.
+// 要开始，我们需要一个类型，我们将使用它来扩展
+// 其他类。其主要职责是声明
+// 传入的类型是一个类。
 
 type Constructor = new (...args: any[]) => {};
 
-// This mixin adds a scale property, with getters and setters
-// for changing it with an encapsulated private property:
+// 此 mixin 添加一个 scale 属性，该属性具有用于更改它的 getter 和 setter
+// 以及一个封装的私有属性：
 
 function Scale<TBase extends Constructor>(Base: TBase) {
   return class Scaling extends Base {
-    // Mixins may not declare private/protected properties
-    // however, you can use ES2020 private fields
+    // mixin 可能不会声明私有/受保护属性
+    // 但你可以使用 ES2020 私有字段
     _scale = 1;
 
     setScale(scale: number) {
@@ -58,9 +55,9 @@ function Scale<TBase extends Constructor>(Base: TBase) {
 }
 ```
 
-With these all set up, then you can create a class which represents the base class with mixins applied:
+设置好这些之后，你可以创建一个表示已应用 mixin 的基类的类：
 
-```ts twoslash
+```ts
 class Sprite {
   name = "";
   x = 0;
@@ -73,8 +70,8 @@ class Sprite {
 type Constructor = new (...args: any[]) => {};
 function Scale<TBase extends Constructor>(Base: TBase) {
   return class Scaling extends Base {
-    // Mixins may not declare private/protected properties
-    // however, you can use ES2020 private fields
+    // 混合类可能不能声明私有/受保护属性
+    // 但是，你可以使用 ES2020 私有字段
     _scale = 1;
 
     setScale(scale: number) {
@@ -87,8 +84,8 @@ function Scale<TBase extends Constructor>(Base: TBase) {
   };
 }
 // ---cut---
-// Compose a new class from the Sprite class,
-// with the Mixin Scale applier:
+// 从 Sprite 类组合一个新类，
+// 使用 Mixin Scale：
 const EightBitSprite = Scale(Sprite);
 
 const flappySprite = new EightBitSprite("Bird");
@@ -96,21 +93,20 @@ flappySprite.setScale(0.8);
 console.log(flappySprite.scale);
 ```
 
-## Constrained Mixins
+## 有限制的 Mixin
 
-In the above form, the mixin's have no underlying knowledge of the class which can make it hard to create the design you want.
+在上面的形式中，mixin 没有关于类的基础知识，这可能会使得创建你想要的设计变得困难。
 
-To model this, we modify the original constructor type to accept a generic argument.
+为了模拟这一点，我们修改原始构造函数类型以接受一个泛型参数。
 
 ```ts twoslash
-// This was our previous constructor:
+// 这是我们先前的构造函数：
 type Constructor = new (...args: any[]) => {};
-// Now we use a generic version which can apply a constraint on
-// the class which this mixin is applied to
+// 现在我们使用一个泛型版本，它可以对应用此 mixin 的类施加约束
 type GConstructor<T = {}> = new (...args: any[]) => T;
 ```
 
-This allows for creating classes which only work with constrained base classes:
+这样可以创建仅适用于有约束基类的类：
 
 ```ts twoslash
 type GConstructor<T = {}> = new (...args: any[]) => T;
@@ -129,7 +125,7 @@ type Spritable = GConstructor<Sprite>;
 type Loggable = GConstructor<{ print: () => void }>;
 ```
 
-Then you can create mixins which only work when you have a particular base to build on:
+然后，你可以创建仅在有特定基类时才起作用的 mixins：
 
 ```ts twoslash
 type GConstructor<T = {}> = new (...args: any[]) => T;
@@ -150,22 +146,20 @@ type Loggable = GConstructor<{ print: () => void }>;
 function Jumpable<TBase extends Positionable>(Base: TBase) {
   return class Jumpable extends Base {
     jump() {
-      // This mixin will only work if it is passed a base
-      // class which has setPos defined because of the
-      // Positionable constraint.
+      // 只有在传递了具有 setPos 定义的基类时，这个 mixin 才能起作用，这是由于 Positionable 的约束。
       this.setPos(0, 20);
     }
   };
 }
 ```
 
-## Alternative Pattern
+## 替代模式
 
-Previous versions of this document recommended a way to write mixins where you created both the runtime and type hierarchies separately, then merged them at the end:
+本文档的先前版本推荐一种编写 mixins 的方式，其中你分别创建运行时层次结构和类型层次结构，然后在最后将它们合并：
 
 ```ts twoslash
 // @strict: false
-// Each mixin is a traditional ES class
+// 每个 mixin 都是一个传统的 ES 类
 class Jumpable {
   jump() {}
 }
@@ -174,24 +168,22 @@ class Duckable {
   duck() {}
 }
 
-// Including the base
+// 包括基类
 class Sprite {
   x = 0;
   y = 0;
 }
 
-// Then you create an interface which merges
-// the expected mixins with the same name as your base
+// 然后你创建一个接口，将期望的 mixins 与与基类同名的接口合并
 interface Sprite extends Jumpable, Duckable {}
-// Apply the mixins into the base class via
-// the JS at runtime
+// 通过运行时的 JS 将 mixins 应用到基类
 applyMixins(Sprite, [Jumpable, Duckable]);
 
 let player = new Sprite();
 player.jump();
 console.log(player.x, player.y);
 
-// This can live anywhere in your codebase:
+// 这段代码可以放在代码库中的任何位置：
 function applyMixins(derivedCtor: any, constructors: any[]) {
   constructors.forEach((baseCtor) => {
     Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
@@ -206,21 +198,20 @@ function applyMixins(derivedCtor: any, constructors: any[]) {
 }
 ```
 
-This pattern relies less on the compiler, and more on your codebase to ensure both runtime and type-system are correctly kept in sync.
+这种模式更少地依赖于编译器，更多地依赖于你的代码库来确保运行时和类型系统正确地保持同步。
 
-## Constraints
+## 约束
 
-The mixin pattern is supported natively inside the TypeScript compiler by code flow analysis.
-There are a few cases where you can hit the edges of the native support.
+在 TypeScript 编译器内部，通过代码流分析本地支持 mixin 模式。有一些情况会使你触及本地支持的边缘。
 
-#### Decorators and Mixins [`#4881`](https://github.com/microsoft/TypeScript/issues/4881)
+#### 装饰器和 Mixins [`#4881`](https://github.com/microsoft/TypeScript/issues/4881)
 
-You cannot use decorators to provide mixins via code flow analysis:
+你不能使用装饰器通过代码流分析提供 mixins：
 
 ```ts twoslash
 // @experimentalDecorators
 // @errors: 2339
-// A decorator function which replicates the mixin pattern:
+// 一个复制 mixin 模式的装饰器函数：
 const Pausable = (target: typeof Player) => {
   return class Pausable extends target {
     shouldFreeze = false;
@@ -233,24 +224,23 @@ class Player {
   y = 0;
 }
 
-// The Player class does not have the decorator's type merged:
+// Player 类没有合并装饰器的类型：
 const player = new Player();
 player.shouldFreeze;
 
-// The runtime aspect could be manually replicated via
-// type composition or interface merging.
+// 可以通过手动复制运行时方面来复制
+// 类型组合或接口合并。
 type FreezablePlayer = Player & { shouldFreeze: boolean };
 
 const playerTwo = (new Player() as unknown) as FreezablePlayer;
 playerTwo.shouldFreeze;
 ```
 
-#### Static Property Mixins [`#17829`](https://github.com/microsoft/TypeScript/issues/17829)
+#### 静态属性 Mixins [`#17829`](https://github.com/microsoft/TypeScript/issues/17829)
 
-More of a gotcha than a constraint.
-The class expression pattern creates singletons, so they can't be mapped at the type system to support different variable types.
+更多是一个要注意的地方，而不是一个约束。类表达式模式创建单例，因此无法在类型系统中映射它们以支持不同的变量类型。
 
-You can work around this by using functions to return your classes which differ based on a generic:
+你可以通过使用函数返回基于泛型不同的类来解决这个问题：
 
 ```ts twoslash
 function base<T>() {
