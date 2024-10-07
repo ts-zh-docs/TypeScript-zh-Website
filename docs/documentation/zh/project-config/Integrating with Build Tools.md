@@ -1,13 +1,13 @@
 ---
-title: Integrating with Build Tools
+title: 与构建工具集成
 layout: docs
 permalink: /zh/docs/handbook/integrating-with-build-tools.html
-oneline: How to use TypeScript with other build tools
+oneline: 如何将 TypeScript 与其他构建工具一起使用
 ---
 
 ## Babel
 
-### Install
+### 安装
 
 ```sh
 npm install @babel/cli @babel/core @babel/preset-typescript --save-dev
@@ -21,7 +21,7 @@ npm install @babel/cli @babel/core @babel/preset-typescript --save-dev
 }
 ```
 
-### Using Command Line Interface
+### 使用命令行接口
 
 ```sh
 ./node_modules/.bin/babel --out-file bundle.js src/index.ts
@@ -37,7 +37,7 @@ npm install @babel/cli @babel/core @babel/preset-typescript --save-dev
 }
 ```
 
-### Execute Babel from the command line
+### 通过命令行执行 Babel
 
 ```sh
 npm run build
@@ -45,19 +45,19 @@ npm run build
 
 ## Browserify
 
-### Install
+### 安装
 
 ```sh
 npm install tsify
 ```
 
-### Using Command Line Interface
+### 使用命令行接口
 
 ```sh
 browserify main.ts -p [ tsify --noImplicitAny ] > bundle.js
 ```
 
-### Using API
+### 使用 API
 
 ```js
 var browserify = require("browserify");
@@ -70,19 +70,19 @@ browserify()
   .pipe(process.stdout);
 ```
 
-More details: [smrq/tsify](https://github.com/smrq/tsify)
+更多细节，详见：[smrq/tsify](https://github.com/smrq/tsify)
 
 ## Grunt
 
-### Using `grunt-ts` (no longer maintained)
+### 使用 `grunt-ts`（已停止维护）
 
-#### Install
+#### 安装
 
 ```sh
 npm install grunt-ts --save-dev
 ```
 
-#### Basic Gruntfile.js
+#### 基础的 Gruntfile.js
 
 ```js
 module.exports = function (grunt) {
@@ -98,17 +98,17 @@ module.exports = function (grunt) {
 };
 ```
 
-More details: [TypeStrong/grunt-ts](https://github.com/TypeStrong/grunt-ts)
+更多细节，详见：[TypeStrong/grunt-ts](https://github.com/TypeStrong/grunt-ts)
 
-### Using `grunt-browserify` combined with `tsify`
+### 将 `grunt-browserify` 以及 `tsify` 组合在一起使用
 
-#### Install
+#### 安装
 
 ```sh
 npm install grunt-browserify tsify --save-dev
 ```
 
-#### Basic Gruntfile.js
+#### 基础的 Gruntfile.js
 
 ```js
 module.exports = function (grunt) {
@@ -128,17 +128,17 @@ module.exports = function (grunt) {
 };
 ```
 
-More details: [jmreidy/grunt-browserify](https://github.com/jmreidy/grunt-browserify), [TypeStrong/tsify](https://github.com/TypeStrong/tsify)
+更多细节，参见：[jmreidy/grunt-browserify](https://github.com/jmreidy/grunt-browserify)、[TypeStrong/tsify](https://github.com/TypeStrong/tsify)
 
 ## Gulp
 
-### Install
+### 安装
 
 ```sh
 npm install gulp-typescript
 ```
 
-### Basic gulpfile.js
+### 基础的 gulpfile.js
 
 ```js
 var gulp = require("gulp");
@@ -155,33 +155,33 @@ gulp.task("default", function () {
 });
 ```
 
-More details: [ivogabe/gulp-typescript](https://github.com/ivogabe/gulp-typescript)
+更多细节，参见：[ivogabe/gulp-typescript](https://github.com/ivogabe/gulp-typescript)
 
 ## Jspm
 
-### Install
+### 安装
 
 ```sh
 npm install -g jspm@beta
 ```
 
-_Note: Currently TypeScript support in jspm is in 0.16beta_
+_注： 目前， TypeScript 在 jspm 中的 0.16beta 版本中受支持。_
 
-More details: [TypeScriptSamples/jspm](https://github.com/Microsoft/TypeScriptSamples/tree/master/jspm)
+更多细节，参见：[TypeScriptSamples/jspm](https://github.com/Microsoft/TypeScriptSamples/tree/master/jspm)
 
 ## MSBuild
 
-Update project file to include locally installed `Microsoft.TypeScript.Default.props` (at the top) and `Microsoft.TypeScript.targets` (at the bottom) files:
+更新项目文件以包含本地安装的 `Microsoft.TypeScript.Default.props`（位于顶部）和 `Microsoft.TypeScript.target`（位于底部）文件：
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- Include default props at the top -->
+  <!-- 在顶部包含默认属性 -->
   <Import
       Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props"
       Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
 
-  <!-- TypeScript configurations go here -->
+  <!-- TypeScript 配置在这里 -->
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
@@ -191,37 +191,37 @@ Update project file to include locally installed `Microsoft.TypeScript.Default.p
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
 
-  <!-- Include default targets at the bottom -->
+  <!-- 默认目标在底部 -->
   <Import
       Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets"
       Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>
 ```
 
-More details about defining MSBuild compiler options: [Setting Compiler Options in MSBuild projects](/zh/docs/handbook/compiler-options-in-msbuild.html)
+有关配置 MSBuild 编译器选项的更多详情：[在 MSBuild 项目中设置编译器选项](/docs/handbook/compiler-options-in-msbuild.html)
 
 ## NuGet
 
-- Right-Click -> Manage NuGet Packages
-- Search for `Microsoft.TypeScript.MSBuild`
-- Hit `Install`
-- When install is complete, rebuild!
+- 右击 -> 管理 NuGet 软件包
+- 搜索 `Microsoft.TypeScript.MSBuild`
+- 点击 `Install`
+- 安装完成后，重新构建！
 
-More details can be found at [Package Manager Dialog](http://docs.nuget.org/Consume/Package-Manager-Dialog) and [using nightly builds with NuGet](https://github.com/Microsoft/TypeScript/wiki/Nightly-drops#using-nuget-with-msbuild)
+更多详情，请参阅[软件包管理器对话框](http://docs.nuget.org/Consume/Package-Manager-Dialog) 和[使用 NuGet 进行每日构建](https://github.com/Microsoft/TypeScript/wiki/Nightly-drops#using-nuget-with-msbuild)
 
 ## Rollup
 
-### Install
+### 安装
 
 ```
 npm install @rollup/plugin-typescript --save-dev
 ```
 
-Note that both `typescript` and `tslib` are peer dependencies of this plugin that need to be installed separately.
+请注意，`typescript` 和 `tslib` 都是该插件的对等依赖项，需要单独安装。
 
-### Usage
+### 用法
 
-Create a `rollup.config.js` [configuration file](https://www.rollupjs.org/guide/en/#configuration-files) and import the plugin:
+创建 `rollup.config.js` [配置文件](https://www.rollupjs.org/guide/en/#configuration-files) 并导入插件：
 
 ```js
 // rollup.config.js
@@ -237,36 +237,36 @@ export default {
 };
 ```
 
-## Svelte Compiler
+## Svelte 编译器
 
-### Install
+### 安装
 
 ```
 npm install --save-dev svelte-preprocess
 ```
 
-Note that `typescript` is an optional peer dependencies of this plugin and needs to be installed separately. `tslib` is not provided either.
+请注意，`typescript` 是本插件的可选对等依赖项，需要单独安装。`tslib` 也没有被提供。
 
-You may also consider [`svelte-check`](https://www.npmjs.com/package/svelte-check) for CLI type checking.
+你也可以考虑使用 [`svelte-check`](https://www.npmjs.com/package/svelte-check)进行命令行类型检查。
 
-### Usage
+### 用法
 
-Create a `svelte.config.js` configuration file and import the plugin:
+创建 `svelte.config.js` 配置文件并导入插件：
 
 ```js
 // svelte.config.js
 import preprocess from 'svelte-preprocess';
 
 const config = {
-  // Consult https://github.com/sveltejs/svelte-preprocess
-  // for more information about preprocessors
+  // 查询 https://github.com/sveltejs/svelte-preprocess
+  // 获取更多有关预处理器的信息
   preprocess: preprocess()
 };
 
 export default config;
 ```
 
-You can now specify that script blocks are written in TypeScript:
+现在，你可以指定使用 TypeScript 编写脚本块：
 
 ```
 <script lang="ts">
@@ -274,17 +274,17 @@ You can now specify that script blocks are written in TypeScript:
 
 ## Vite
 
-Vite supports importing `.ts` files out-of-the-box. It only performs transpilation and not type checking. It also requires that some `compilerOptions` have certain values. See the [Vite docs](https://vitejs.dev/guide/features.html#typescript) for more details.
+Vite 原生支持导入 `.ts` 文件。 它只进行转译，不进行类型检查。它还要求某些 `compilerOptions` 具有特定的值。详情请参见 [Vite 文档](https://vitejs.dev/guide/features.html#typescript)。
 
 ## Webpack
 
-### Install
+### 安装
 
 ```sh
 npm install ts-loader --save-dev
 ```
 
-### Basic webpack.config.js when using Webpack 5 or 4
+### 使用 Webpack 5 或 4 时的基础 webpack.config.js
 
 ```js
 const path = require('path');
@@ -310,8 +310,8 @@ module.exports = {
 };
 ```
 
-See [more details on ts-loader here](https://www.npmjs.com/package/ts-loader).
+此处参见 [ts-loader 的更多详情](https://www.npmjs.com/package/ts-loader)。
 
-Alternatives:
+替代品：
 
 - [awesome-typescript-loader](https://www.npmjs.com/package/awesome-typescript-loader)
