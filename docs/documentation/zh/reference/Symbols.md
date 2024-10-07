@@ -6,7 +6,7 @@ oneline: 在 TypeScript 中使用 JavaScript 的 Symbol 原始数据类型
 translatable: true
 ---
 
-从 ECMAScript 2015 开始，`symbol` 成为一种原始数据类型，类似于 `number` 和 `string`。
+从 ECMAScript 2015 开始，`symbol` 成为一种基本数据类型，类似于 `number` 和 `string`。
 
 `symbol` 值是通过调用 `Symbol` 构造函数创建的。
 
@@ -16,7 +16,7 @@ let sym1 = Symbol();
 let sym2 = Symbol("key"); // 可选的字符串键
 ```
 
-符号是不可变且唯一的。
+符号不可变且唯一。
 
 ```ts
 let sym2 = Symbol("key");
@@ -54,7 +54,7 @@ let className = c[getClassNameSymbol](); // "C"
 
 ## `unique symbol`
 
-为了将符号视为唯一字面量，TypeScript 提供了一种特殊类型 `unique symbol`。`unique symbol` 是 `symbol` 的子类型，仅通过调用 `Symbol()` 或 `Symbol.for()`，或通过显式类型注解生成。此类型只能用于 `const` 声明和 `readonly static` 属性。要引用特定的唯一符号，必须使用 `typeof` 操作符。每个对唯一符号的引用都意味着与给定声明关联的完全独特的身份。
+为了能够将符号视为唯一字面量，TypeScript 提供了一种特殊类型 `unique symbol`。`unique symbol` 是 `symbol` 的子类型，仅能通过调用 `Symbol()` 或 `Symbol.for()`，或通过显式类型注解生成。此类型只能用于 `const` 声明和 `readonly static` 属性。要引用特定的唯一符号，必须使用 `typeof` 操作符。每个对唯一符号的引用都意味着与给定声明关联的完全独特的身份。
 
 ```ts twoslash
 // @errors: 1332
@@ -63,7 +63,7 @@ declare const sym1: unique symbol;
 // sym2 只能是常量引用。
 let sym2: unique symbol = Symbol();
 
-// 正常工作 - 引用一个唯一符号，但其身份与 'sym1' 绑定。
+// 正常工作——引用一个唯一符号，但其身份与‘sym1’绑定。
 let sym3: typeof sym1 = sym1;
 
 // 也正常工作。
@@ -84,7 +84,7 @@ if (sym2 === sym3) {
 }
 ```
 
-## 内置符号
+## 著名符号
 
 除了用户自定义的符号外，JavaScript 还提供了一些内置的著名符号。这些符号用于表示语言的内部行为。
 
