@@ -1,5 +1,5 @@
 ---
-title: 符号
+title: Symbol
 layout: docs
 permalink: /zh/docs/handbook/symbols.html
 oneline: 在 TypeScript 中使用 JavaScript 的 Symbol 原始数据类型
