@@ -1,77 +1,62 @@
 ---
-title: Triple-Slash Directives
+title: 三斜线指令
 layout: docs
 permalink: /zh/docs/handbook/triple-slash-directives.html
-oneline: How to use triple slash directives in TypeScript
+oneline: 如何在 TypeScript 中使用三斜线指令
 translatable: true
 ---
 
-Triple-slash directives are single-line comments containing a single XML tag.
-The contents of the comment are used as compiler directives.
+三斜线指令是包含单个 XML 标记的单行注释，其内容用于提供编译器指令。
 
-Triple-slash directives are **only** valid at the top of their containing file.
-A triple-slash directive can only be preceded by single or multi-line comments, including other triple-slash directives.
-If they are encountered following a statement or a declaration they are treated as regular single-line comments, and hold no special meaning.
+请注意，三斜线指令**仅**在所在文件的顶部有效。这些指令只能位于单行或多行注释之前，包括其他三斜线指令。如果它们出现在语句或声明之后，则会被视为常规单行注释，不具有特殊含义。
 
 ## `/// <reference path="..." />`
 
-The `/// <reference path="..." />` directive is the most common of this group.
-It serves as a declaration of _dependency_ between files.
+`/// <reference path="..." />` 指令是其中最常见的。它用作文件之间的*依赖*声明。
 
-Triple-slash references instruct the compiler to include additional files in the compilation process.
+三斜线引用指示编译器在编译过程中包含其他文件。
 
-They also serve as a method to order the output when using [`out`](/tsconfig#out) or [`outFile`](/tsconfig#outFile).
-Files are emitted to the output file location in the same order as the input after preprocessing pass.
+此外，当使用 [`out`](/zh/tsconfig#out) 或 [`outFile`](/zh/tsconfig#outFile) 时，它们还可以用来对输出进行排序。预处理完成后，文件会按照输入的顺序写入到输出文件位置。
 
-### Preprocessing input files
+### 预处理输入文件
 
-The compiler performs a preprocessing pass on input files to resolve all triple-slash reference directives.
-During this process, additional files are added to the compilation.
+在编译过程中，编译器会对输入文件执行预处理，以解析所有三斜线引用指令，并将其他文件添加到编译中。
 
-The process starts with a set of _root files_;
-these are the file names specified on the command-line or in the [`files`](/tsconfig#files) list in the `tsconfig.json` file.
-These root files are preprocessed in the same order they are specified.
-Before a file is added to the list, all triple-slash references in it are processed, and their targets included.
-Triple-slash references are resolved in a depth-first manner, in the order they have been seen in the file.
+该过程从一组*根文件*开始，这些根文件是在命令行或 `tsconfig.json` 文件的 [`files`](/zh/tsconfig#files) 列表中指定的文件名。根文件按照它们被指定的顺序进行预处理。在将文件添加到列表之前，会解析其中的所有三斜线引用指令，并包含它们的目标文件。三斜线引用指令按照深度优先的顺序解析，依据它们在文件中的出现顺序进行处理。
 
-A triple-slash reference path is resolved relative to the containing file, if a relative path is used.
+当使用相对路径时，三斜线引用路径将相对于包含该引用的文件进行解析。
 
-### Errors
+### 错误
 
-It is an error to reference a file that does not exist.
-It is an error for a file to have a triple-slash reference to itself.
+引用不存在的文件将导致错误。文件包含对自身的三斜线引用也会导致错误。
 
-### Using `--noResolve`
+### 使用 `--noResolve`
 
-If the compiler flag [`noResolve`](/tsconfig#noResolve) is specified, triple-slash references are ignored; they neither result in adding new files, nor change the order of the files provided.
+如果指定了编译器标志 [`noResolve`](/zh/tsconfig#noResolve)，则三斜线引用会被忽略，不会添加新文件，也不会改变提供文件的顺序。
 
 ## `/// <reference types="..." />`
 
-Similar to a `/// <reference path="..." />` directive, which serves as a declaration of _dependency_, a `/// <reference types="..." />` directive declares a dependency on a package.
+与 `/// <reference path="..." />` 指令用作*依赖*声明类似，`/// <reference types="..." />` 指令声明对包的依赖。
 
-The process of resolving these package names is similar to the process of resolving module names in an `import` statement.
-An easy way to think of triple-slash-reference-types directives are as an `import` for declaration packages.
+解析这些包名称的过程类似于解析 `import` 语句中的模块名称的过程。可以将三斜线引用类型指令视为声明包的简单 `import` 方式。
 
-For example, including `/// <reference types="node" />` in a declaration file declares that this file uses names declared in `@types/node/index.d.ts`;
-and thus, this package needs to be included in the compilation along with the declaration file.
+例如，声明文件中包含 `/// <reference types="node" />` 表示该文件使用在 `@types/node/index.d.ts` 中声明的名称；因此，需要将此包与声明文件一起包含在编译中。
 
-Use these directives only when you're authoring a `d.ts` file by hand.
+这些指令仅在手动编写 `d.ts` 文件时使用。
 
-For declaration files generated during compilation, the compiler will automatically add `/// <reference types="..." />` for you;
-A `/// <reference types="..." />` in a generated declaration file is added _if and only if_ the resulting file uses any declarations from the referenced package.
+在编译过程中生成的声明文件中，编译器会自动为你添加 `/// <reference types="..." />`。在生成的声明文件中，仅当结果文件使用了来自所引用包的任何声明时，才会添加 `/// <reference types="..." />`。
 
-For declaring a dependency on an `@types` package in a `.ts` file, use [`types`](/tsconfig#types) on the command line or in your `tsconfig.json` instead.
-See [using `@types`, `typeRoots` and `types` in `tsconfig.json` files](/zh/docs/handbook/tsconfig-json.html#types-typeroots-and-types) for more details.
+要在 `.ts` 文件中声明对 `@types` 包的依赖，请在命令行或 `tsconfig.json` 文件中使用 [`types`](/tsconfig#types)。有关更多详细信息，请参阅[在 `tsconfig.json` 文件中使用 `@types`、`typeRoots` 和 `types`](/zh/docs/handbook/tsconfig-json.html#types-typeroots-and-types)。
 
 ## `/// <reference lib="..." />`
 
-This directive allows a file to explicitly include an existing built-in _lib_ file.
+该指令允许文件显式包含现有的内置 _lib_ 文件。
 
-Built-in _lib_ files are referenced in the same fashion as the [`lib`](/tsconfig#lib) compiler option in _tsconfig.json_ (e.g. use `lib="es2015"` and not `lib="lib.es2015.d.ts"`, etc.).
+引用内置 _lib_ 文件的方式与 _tsconfig.json_ 中的 [`lib`](/zh/tsconfig#lib) 编译器选项相同（例如使用 `lib="es2015"` 而不是 `lib="lib.es2015.d.ts"`）。
 
-For declaration file authors who rely on built-in types, e.g. DOM APIs or built-in JS run-time constructors like `Symbol` or `Iterable`, triple-slash-reference lib directives are recommended. Previously these .d.ts files had to add forward/duplicate declarations of such types.
+对于依赖内置类型的声明文件作者，例如 DOM API 或内置 JS 运行时构造函数（如 `Symbol` 或 `Iterable`），建议使用三斜线引用 lib 指令。以前，这些 .d.ts 文件必须添加这些类型的前向/重复声明。
 
-For example, adding `/// <reference lib="es2017.string" />` to one of the files in a compilation is equivalent to compiling with `--lib es2017.string`.
+例如，在编译中的文件中添加 `/// <reference lib="es2017.string" />` 相当于使用 `--lib es2017.string` 进行编译。
 
 ```ts
 /// <reference lib="es2017.string" />
@@ -81,20 +66,17 @@ For example, adding `/// <reference lib="es2017.string" />` to one of the files 
 
 ## `/// <reference no-default-lib="true"/>`
 
-This directive marks a file as a _default library_.
-You will see this comment at the top of `lib.d.ts` and its different variants.
+该指令将文件标记为*默认库*。你会在 `lib.d.ts` 及其变体的顶部看到此注释。
 
-This directive instructs the compiler to _not_ include the default library (i.e. `lib.d.ts`) in the compilation.
-The impact here is similar to passing [`noLib`](/tsconfig#noLib) on the command line.
+此指令指示编译器在编译过程中*不要*包含默认库（即 `lib.d.ts`）。其效果类似于在命令行上传递 [`noLib`](/zh/tsconfig#noLib)。
 
-Also note that when passing [`skipDefaultLibCheck`](/tsconfig#skipDefaultLibCheck), the compiler will only skip checking files with `/// <reference no-default-lib="true"/>`.
+此外，请注意，当传递 [`skipDefaultLibCheck`](/zh/tsconfig#skipDefaultLibCheck) 时，编译器将仅跳过带有 `/// <reference no-default-lib="true"/>` 注释的文件的检查。
 
 ## `/// <amd-module />`
 
-By default AMD modules are generated anonymous.
-This can lead to problems when other tools are used to process the resulting modules, such as bundlers (e.g. `r.js`).
+默认情况下，会生成匿名的 AMD 模块。当使用其他工具处理生成的模块时（例如打包工具 `r.js`），这可能会导致问题。
 
-The `amd-module` directive allows passing an optional module name to the compiler:
+`amd-module` 指令允许向编译器传递一个可选的模块名称：
 
 ##### amdModule.ts
 
@@ -103,7 +85,7 @@ The `amd-module` directive allows passing an optional module name to the compile
 export class C {}
 ```
 
-Will result in assigning the name `NamedModule` to the module as part of calling the AMD `define`:
+将导致在调用 AMD `define` 时将名称 `NamedModule` 分配给模块：
 
 ##### amdModule.js
 
@@ -119,11 +101,11 @@ define("NamedModule", ["require", "exports"], function (require, exports) {
 
 ## `/// <amd-dependency />`
 
-> **Note**: this directive has been deprecated. Use `import "moduleName";` statements instead.
+> **注意**: 此指令已被弃用。请改用 `import "moduleName";` 语句。
 
-`/// <amd-dependency path="x" />` informs the compiler about a non-TS module dependency that needs to be injected in the resulting module's require call.
+`/// <amd-dependency path="x" />` 通知编译器有一个非 TypeScript 模块依赖项需要注入到生成模块的 require 调用中。
 
-The `amd-dependency` directive can also have an optional `name` property; this allows passing an optional name for an amd-dependency:
+`amd-dependency` 指令也可以具有可选的 `name` 属性；这允许为 amd-dependency 传递一个可选名称：
 
 ```ts
 /// <amd-dependency path="legacy/moduleA" name="moduleA"/>
@@ -131,7 +113,7 @@ declare var moduleA: MyType;
 moduleA.callStuff();
 ```
 
-Generated JS code:
+生成的 JS 代码：
 
 ```js
 define(["require", "exports", "legacy/moduleA"], function (
