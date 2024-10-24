@@ -1,20 +1,17 @@
 ---
-title: Type Checking JavaScript Files
+title: JavaScript 文件的类型检查
 layout: docs
 permalink: /zh/docs/handbook/type-checking-javascript-files.html
-oneline: How to add type checking to JavaScript files using TypeScript
+oneline: 如何使用 TypeScript 为 JavaScript 文件添加类型检查
 ---
 
-Here are some notable differences on how checking works in `.js` files compared to `.ts` files.
+以下是 `.js` 文件和 `.ts` 文件类型检查工作方式的一些显著差异。
 
-## Properties are inferred from assignments in class bodies
+## 属性从类体中的赋值推断
 
-ES2015 does not have a means for declaring properties on classes. Properties are dynamically assigned, just like object literals.
+ES2015 不提供在类中声明属性的方法。属性是动态分配的，就像对象字面量一样。
 
-In a `.js` file, the compiler infers properties from property assignments inside the class body.
-The type of a property is the type given in the constructor, unless it's not defined there, or the type in the constructor is undefined or null.
-In that case, the type is the union of the types of all the right-hand values in these assignments.
-Properties defined in the constructor are always assumed to exist, whereas ones defined just in methods, getters, or setters are considered optional.
+在 `.js` 文件中，编译器从类体内的属性赋值推断属性。属性的类型是构造函数中给出的类型，除非它未在构造函数中定义，或者构造函数中的类型是 undefined 或 null。在这种情况下，类型是所有右侧赋值类型的联合。构造函数中定义的属性总是被认为存在，而仅在方法、getter 或 setter 中定义的属性被认为是可选的。
 
 ```js twoslash
 // @checkJs
@@ -26,18 +23,16 @@ class C {
   }
   method() {
     this.constructorOnly = false;
-    this.constructorUnknown = "plunkbat"; // ok, constructorUnknown is string | undefined
-    this.methodOnly = "ok"; // ok, but methodOnly could also be undefined
+    this.constructorUnknown = "plunkbat"; // ok, constructorUnknown 是 string | undefined
+    this.methodOnly = "ok"; // ok，但 methodOnly 也可能是 undefined
   }
   method2() {
-    this.methodOnly = true; // also, ok, methodOnly's type is string | boolean | undefined
+    this.methodOnly = true; // 也 ok，methodOnly 的类型是 string | boolean | undefined
   }
 }
 ```
 
-If properties are never set in the class body, they are considered unknown.
-If your class has properties that are only read from, add and then annotate a declaration in the constructor with JSDoc to specify the type.
-You don't even have to give a value if it will be initialized later:
+如果属性在类体中从未设置，则它们被视为未知。如果类中有仅被读取的属性，请在构造函数中添加并注释声明，指定类型使用 JSDoc。即使稍后初始化，也无需提供值：
 
 ```js twoslash
 // @checkJs
@@ -56,11 +51,9 @@ c.prop = 0; // OK
 c.count = "string";
 ```
 
-## Constructor functions are equivalent to classes
+## 构造函数等同于类
 
-Before ES2015, JavaScript used constructor functions instead of classes.
-The compiler supports this pattern and understands constructor functions as equivalent to ES2015 classes.
-The property inference rules described above work exactly the same way.
+在 ES2015 之前，JavaScript 使用构造函数而不是类。编译器支持这种模式，并将构造函数视为等同于 ES2015 类。上述属性推断规则的工作方式完全相同。
 
 ```js twoslash
 // @checkJs
@@ -71,40 +64,36 @@ function C() {
 }
 C.prototype.method = function () {
   this.constructorOnly = false;
-  this.constructorUnknown = "plunkbat"; // OK, the type is string | undefined
+  this.constructorUnknown = "plunkbat"; // OK，类型是 string | undefined
 };
 ```
 
-## CommonJS modules are supported
+## 支持 CommonJS 模块
 
-In a `.js` file, TypeScript understands the CommonJS module format.
-Assignments to `exports` and `module.exports` are recognized as export declarations.
-Similarly, `require` function calls are recognized as module imports. For example:
+在 `.js` 文件中，TypeScript 理解 CommonJS 模块格式。对 `exports` 和 `module.exports` 的赋值被识别为导出声明。类似地，`require` 函数调用被识别为模块导入。例如：
 
 ```js
-// same as `import module "fs"`
+// 同于 `import module "fs"`
 const fs = require("fs");
 
-// same as `export function readFile`
+// 同于 `export function readFile`
 module.exports.readFile = function (f) {
   return fs.readFileSync(f);
 };
 ```
 
-The module support in JavaScript is much more syntactically forgiving than TypeScript's module support.
-Most combinations of assignments and declarations are supported.
+JavaScript 中的模块支持在语法上比 TypeScript 的模块支持更宽松。大多数赋值和声明的组合都是支持的。
 
-## Classes, functions, and object literals are namespaces
+## 类、函数和对象字面量是命名空间
 
-Classes are namespaces in `.js` files.
-This can be used to nest classes, for example:
+在 `.js` 文件中，类可以作为命名空间。这可以用于嵌套类，例如：
 
 ```js twoslash
 class C {}
 C.D = class {};
 ```
 
-And, for pre-ES2015 code, it can be used to simulate static methods:
+对于 ES2015 之前的代码，它可以用来模拟静态方法：
 
 ```js twoslash
 function Outer() {
@@ -118,7 +107,7 @@ Outer.Inner = function () {
 Outer.Inner();
 ```
 
-It can also be used to create simple namespaces:
+它还可以用来创建简单的命名空间：
 
 ```js twoslash
 var ns = {};
@@ -128,39 +117,36 @@ ns.func = function () {};
 ns;
 ```
 
-Other variants are allowed as well:
+其他变体也是允许的：
 
 ```js twoslash
-// IIFE
+// 自执行函数
 var ns = (function (n) {
   return n || {};
 })();
 ns.CONST = 1;
 
-// defaulting to global
+// 默认为全局
 var assign =
   assign ||
   function () {
-    // code goes here
+    // 代码在这里
   };
 assign.extra = 1;
 ```
 
-## Object literals are open-ended
+## 对象字面量是开放式的
 
-In a `.ts` file, an object literal that initializes a variable declaration gives its type to the declaration.
-No new members can be added that were not specified in the original literal.
-This rule is relaxed in a `.js` file; object literals have an open-ended type (an index signature) that allows adding and looking up properties that were not defined originally.
-For instance:
+在 `.ts` 文件中，初始化变量声明的对象字面量会将其类型赋给该声明。不能添加在原始字面量中未指定的新成员。在 `.js` 文件中，这条规则放宽了；对象字面量具有开放式类型（索引签名），允许添加和查找原本未定义的属性。例如：
 
 ```js twoslash
 var obj = { a: 1 };
-obj.b = 2; // Allowed
+obj.b = 2; // 允许
 ```
 
-Object literals behave as if they have an index signature `[x:string]: any` that allows them to be treated as open maps instead of closed objects.
+对象字面量的行为就像拥有一个索引签名 `[x:string]: any`，这使得它们可以被视为开放映射，而不是封闭对象。
 
-Like other special JS checking behaviors, this behavior can be changed by specifying a JSDoc type for the variable. For example:
+与其他特殊的 JS 检查行为一样，通过为变量指定 JSDoc 类型，可以改变这种行为。例如：
 
 ```js twoslash
 // @checkJs
@@ -170,11 +156,9 @@ var obj = { a: 1 };
 obj.b = 2;
 ```
 
-## null, undefined, and empty array initializers are of type any or any[]
+## null、undefined 和空数组初始化器的类型为 any 或 any[]
 
-Any variable, parameter or property that is initialized with null or undefined will have type any, even if strict null checks is turned on.
-Any variable, parameter or property that is initialized with [] will have type any[], even if strict null checks is turned on.
-The only exception is for properties that have multiple initializers as described above.
+任何用 null 或 undefined 初始化的变量、参数或属性的类型将为 any，即使开启了严格的 null 检查。任何用 [] 初始化的变量、参数或属性的类型将为 any[]，即使开启了严格的 null 检查。唯一的例外是具有多个初始化器的属性，如上所述。
 
 ```js twoslash
 function Foo(i = null) {
@@ -189,14 +173,13 @@ foo.l.push(foo.i);
 foo.l.push("end");
 ```
 
-## Function parameters are optional by default
+## 函数参数默认是可选的
 
-Since there is no way to specify optionality on parameters in pre-ES2015 JavaScript, all function parameters in `.js` file are considered optional.
-Calls with fewer arguments than the declared number of parameters are allowed.
+由于在 ES2015 之前的 JavaScript 中无法指定参数的可选性，因此在 `.js` 文件中的所有函数参数都被视为可选。调用时，如果提供的参数少于声明的参数数量是允许的。
 
-It is important to note that it is an error to call a function with too many arguments.
+需要注意的是，调用函数时提供过多参数会导致错误。
 
-For instance:
+例如：
 
 ```js twoslash
 // @checkJs
@@ -206,17 +189,16 @@ function bar(a, b) {
   console.log(a + " " + b);
 }
 
-bar(1); // OK, second argument considered optional
+bar(1); // OK，第二个参数被视为可选
 bar(1, 2);
-bar(1, 2, 3); // Error, too many arguments
+bar(1, 2, 3); // 错误，参数过多
 ```
 
-JSDoc annotated functions are excluded from this rule.
-Use JSDoc optional parameter syntax (`[` `]`) to express optionality. e.g.:
+带有 JSDoc 注释的函数不受此规则的限制。使用 JSDoc 可选参数语法（`[` `]`）来表示可选性。例如：
 
 ```js twoslash
 /**
- * @param {string} [somebody] - Somebody's name.
+ * @param {string} [somebody] - 某人的名字。
  */
 function sayHello(somebody) {
   if (!somebody) {
@@ -228,9 +210,9 @@ function sayHello(somebody) {
 sayHello();
 ```
 
-## Var-args parameter declaration inferred from use of `arguments`
+## 从 `arguments` 的使用推断可变参数声明
 
-A function whose body has a reference to the `arguments` reference is implicitly considered to have a var-arg parameter (i.e. `(...arg: any[]) => any`). Use JSDoc var-arg syntax to specify the type of the arguments.
+函数体中引用 `arguments` 的函数隐式地被认为具有可变参数（即 `(...arg: any[]) => any`）。使用 JSDoc 可变参数语法来指定参数的类型。
 
 ```js twoslash
 /** @param {...number} args */
@@ -243,26 +225,25 @@ function sum(/* numbers */) {
 }
 ```
 
-## Unspecified type parameters default to `any`
+## 未指定的类型参数默认值为 `any`
 
-Since there is no natural syntax for specifying generic type parameters in JavaScript, an unspecified type parameter defaults to `any`.
+由于在 JavaScript 中没有自然的语法来指定泛型类型参数，未指定的类型参数默认值为 `any`。
 
-### In extends clause
+### 在 extends 子句中
 
-For instance, `React.Component` is defined to have two type parameters, `Props` and `State`.
-In a `.js` file, there is no legal way to specify these in the extends clause. By default the type arguments will be `any`:
+例如，`React.Component` 被定义为具有两个类型参数 `Props` 和 `State`。在 `.js` 文件中，没有合法的方法在 extends 子句中指定这些参数。默认情况下，类型参数将为 `any`：
 
 ```js
 import { Component } from "react";
 
 class MyComponent extends Component {
   render() {
-    this.props.b; // Allowed, since this.props is of type any
+    this.props.b; // 允许，因为 this.props 的类型为 any
   }
 }
 ```
 
-Use JSDoc `@augments` to specify the types explicitly. for instance:
+使用 JSDoc 的 `@augments` 来显式指定类型。例如：
 
 ```js
 import { Component } from "react";
@@ -272,32 +253,32 @@ import { Component } from "react";
  */
 class MyComponent extends Component {
   render() {
-    this.props.b; // Error: b does not exist on {a:number}
+    this.props.b; // 错误：b 在 {a:number} 上不存在
   }
 }
 ```
 
-### In JSDoc references
+### 在 JSDoc 引用中
 
-An unspecified type argument in JSDoc defaults to any:
+JSDoc 中未指定的类型参数默认值为 any：
 
 ```js twoslash
 /** @type{Array} */
 var x = [];
 
 x.push(1); // OK
-x.push("string"); // OK, x is of type Array<any>
+x.push("string"); // OK，x 的类型为 Array<any>
 
 /** @type{Array.<number>} */
 var y = [];
 
 y.push(1); // OK
-y.push("string"); // Error, string is not assignable to number
+y.push("string"); // 错误，string 不能赋值给 number
 ```
 
-### In function calls
+### 在函数调用中
 
-A call to a generic function uses the arguments to infer the type parameters. Sometimes this process fails to infer any types, mainly because of lack of inference sources; in these cases, the type parameters will default to `any`. For example:
+调用一个泛型函数时，会使用参数推断类型参数。有时这个过程无法推断出任何类型，主要是由于缺乏推断来源；在这些情况下，类型参数将默认为 any。例如：
 
 ```js
 var p = new Promise((resolve, reject) => {
@@ -307,4 +288,4 @@ var p = new Promise((resolve, reject) => {
 p; // Promise<any>;
 ```
 
-To learn all of the features available in JSDoc, see [the reference](/zh/docs/handbook/jsdoc-supported-types.html).
+要了解 JSDoc 中可用的所有功能，请参见 [参考文档](/docs/handbook/jsdoc-supported-types.html)。
