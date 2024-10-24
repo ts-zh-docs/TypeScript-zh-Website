@@ -16,13 +16,13 @@ let sym1 = Symbol();
 let sym2 = Symbol("key"); // 可选的字符串键
 ```
 
-符号是不可变且唯一的。
+Symbol 不可变且唯一。
 
 ```ts
 let sym2 = Symbol("key");
 let sym3 = Symbol("key");
 
-sym2 === sym3; // false，符号是唯一的
+sym2 === sym3; // false，symbol 唯一
 ```
 
 符号可以像字符串一样用作对象属性的键。
