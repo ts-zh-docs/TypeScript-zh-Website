@@ -25,7 +25,7 @@ let sym3 = Symbol("key");
 sym2 === sym3; // false，symbol 唯一
 ```
 
-符号可以像字符串一样用作对象属性的键。
+symbol 可以像字符串一样用作对象属性的键。
 
 ```ts
 const sym = Symbol();
@@ -37,7 +37,7 @@ let obj = {
 console.log(obj[sym]); // "value"
 ```
 
-符号也可以与计算属性声明结合使用，用于定义对象属性和类成员。
+symbol 也可以与计算属性声明结合使用，用于定义对象属性和类成员。
 
 ```ts
 const getClassNameSymbol = Symbol();
@@ -54,7 +54,7 @@ let className = c[getClassNameSymbol](); // "C"
 
 ## `unique symbol`
 
-为了能够将符号视为唯一字面量，TypeScript 提供了一种特殊类型 `unique symbol`。`unique symbol` 是 `symbol` 的子类型，仅能通过调用 `Symbol()` 或 `Symbol.for()`，或通过显式类型注解生成。此类型只能用于 `const` 声明和 `readonly static` 属性。要引用特定的唯一符号，必须使用 `typeof` 操作符。每个对唯一符号的引用都意味着与给定声明关联的完全独特的身份。
+为了能够将 symbol 视为唯一字面量，TypeScript 提供了一种特殊类型 `unique symbol`。`unique symbol` 是 `symbol` 的子类型，仅能通过调用 `Symbol()` 或 `Symbol.for()`，或通过显式类型注解生成。此类型只能用于 `const` 声明和 `readonly static` 属性。要引用特定的唯一 symbol ，必须使用 `typeof` 操作符。每个对唯一 symbol 的引用都意味着与给定声明关联的完全独特的身份。
 
 ```ts twoslash
 // @errors: 1332
@@ -63,7 +63,7 @@ declare const sym1: unique symbol;
 // sym2 只能是常量引用。
 let sym2: unique symbol = Symbol();
 
-// 正常工作——引用一个唯一符号，但其身份与‘sym1’绑定。
+// 正常工作——引用一个唯一 symbol ，但其身份与‘sym1’绑定。
 let sym3: typeof sym1 = sym1;
 
 // 也正常工作。
@@ -84,11 +84,11 @@ if (sym2 === sym3) {
 }
 ```
 
-## 著名符号
+## 著名 symbol
 
-除了用户自定义的符号外，JavaScript 还提供了一些内置的著名符号。这些符号用于表示语言的内部行为。
+除了用户自定义的 symbol 外，JavaScript 还提供了一些内置的著名 symbol。这些 symbol 用于表示语言的内部行为。
 
-以下是著名符号的列表：
+以下是著名 symbol 的列表：
 
 ### `Symbol.asyncIterator`
 
