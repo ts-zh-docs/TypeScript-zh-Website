@@ -1,5 +1,5 @@
 ---
-title: 符号
+title: Symbol
 layout: docs
 permalink: /zh/docs/handbook/symbols.html
 oneline: 在 TypeScript 中使用 JavaScript 的 Symbol 原始数据类型
@@ -16,13 +16,13 @@ let sym1 = Symbol();
 let sym2 = Symbol("key"); // 可选的字符串键
 ```
 
-符号不可变且唯一。
+Symbol 不可变且唯一。
 
 ```ts
 let sym2 = Symbol("key");
 let sym3 = Symbol("key");
 
-sym2 === sym3; // false，符号是唯一的
+sym2 === sym3; // false，symbol 唯一
 ```
 
 符号可以像字符串一样用作对象属性的键。
