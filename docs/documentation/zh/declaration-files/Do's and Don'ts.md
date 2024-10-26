@@ -179,7 +179,7 @@ TypeScript 通过检查目标的任何签名是否可以使用源的参数调用
 function fn(x: (a: string, b: number, c: number) => void) {}
 var x: Example;
 // 当使用重载编写时，OK——使用第一个重载
-// 当使用可选参数编写时，出现了错误
+// 当使用可选参数编写时，如预期般出现了错误
 fn(x.diff);
 ```
 
