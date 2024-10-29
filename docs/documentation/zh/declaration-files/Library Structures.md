@@ -1,67 +1,57 @@
 ---
-title: Library Structures
+title: 库结构
 layout: docs
 permalink: /zh/docs/handbook/declaration-files/library-structures.html
-oneline: How to structure your d.ts files
+oneline: 如何组织你的 d.ts 文件
 ---
 
-Broadly speaking, the way you _structure_ your declaration file depends on how the library is consumed.
-There are many ways of offering a library for consumption in JavaScript, and you'll need to write your declaration file to match it.
-This guide covers how to identify common library patterns, and how to write declaration files which correspond to that pattern.
+总的来说，你的声明文件的*结构*取决于库的使用方式。在 JavaScript 中有许多种提供库的方式，你需要编写声明文件以匹配它。本指南涵盖了如何识别常见的库模式，以及如何编写与该模式相对应的声明文件。
 
-Each type of major library structuring pattern has a corresponding file in the [Templates](/zh/docs/handbook/declaration-files/templates.html) section.
-You can start with these templates to help you get going faster.
+每种主要库结构模式都在[模板](/zh/docs/handbook/declaration-files/templates.html)部分有对应的文件。你可以从这些模板开始，以帮助你更快地入门。
 
-## Identifying Kinds of Libraries
+## 识别库的类型
 
-First, we'll review the kinds of libraries TypeScript declaration files can represent.
-We'll briefly show how each kind of library is _used_, how it is _written_, and list some example libraries from the real world.
+首先，我们将回顾 TypeScript 声明文件可以表示的库的种类。我们将简要展示每种库的*使用*方式、*编写*方式，并列出一些来自现实世界的示例库。
 
-Identifying the structure of a library is the first step in writing its declaration file.
-We'll give hints on how to identify structure both based on its _usage_ and its _code_.
-Depending on the library's documentation and organization, one might be easier than the other.
-We recommend using whichever is more comfortable to you.
+识别库的结构是编写其声明文件的第一步。我们将提供关于如何基于其*使用方式*和*代码*来识别结构的提示。根据库的文档和组织方式，其中一种可能比另一种更容易。我们建议使用你更熟悉的那种方式。
 
-### What should you look for?
+### 你应该寻找什么？
 
-Question to ask yourself while looking at a library you are trying to type.
+在尝试为库编写类型时，请问自己以下问题。
 
-1. How do you obtain the library?
+1. 你如何获取这个库？
 
-   For example, can you _only_ get it through npm or only from a CDN?
+   例如，你*只能*通过 npm 获取它吗，还是只能从 CDN 获取？
 
-2. How would you import it?
+2. 你如何导入它？
 
-   Does it add a global object? Does it use `require` or `import`/`export` statements?
+   它是否会添加全局对象？它是否使用 `require` 或 `import`/`export` 语句？
 
-### Smaller samples for different types of libraries
+### 不同类型库的小样本
 
-### Modular Libraries
+### 模块化库
 
-Almost every modern Node.js library falls into the module family.
-These type of libraries only work in a JS environment with a module loader.
-For example, `express` only works in Node.js and must be loaded using the CommonJS `require` function.
+几乎每个现代 Node.js 库都属于模块。这类库只能在带有模块加载器的 JS 环境下工作。例如，`express` 只能在 Node.js 中工作，并且必须使用 CommonJS 的 `require` 函数加载。
 
-ECMAScript 2015 (also known as ES2015, ECMAScript 6, and ES6), CommonJS, and RequireJS have similar notions of _importing_ a _module_.
-In JavaScript CommonJS (Node.js), for example, you would write
+ECMAScript 2015（也称为 ES2015、ECMAScript 6 和 ES6）、CommonJS 和 RequireJS 都有类似的*导入模块*的概念。在 JavaScript CommonJS（Node.js）中，你需要这样写：
 
 ```js
 var fs = require("fs");
 ```
 
-In TypeScript or ES6, the `import` keyword serves the same purpose:
+在 TypeScript 或 ES6 中，`import` 关键字具有相同的作用：
 
 ```ts
 import * as fs from "fs";
 ```
 
-You'll typically see modular libraries include one of these lines in their documentation:
+通常，你会在模块化库的文档中看到以下一行代码：
 
 ```js
 var someLib = require("someLib");
 ```
 
-or
+或者
 
 ```js
 define(..., ['someLib'], function(someLib) {
@@ -69,76 +59,70 @@ define(..., ['someLib'], function(someLib) {
 });
 ```
 
-As with global modules, you might see these examples in the documentation of [a UMD](#umd) module, so be sure to check the code or documentation.
+与全局模块一样，你也可能会在 [UMD](#umd) 模块的文档中看到这些示例，因此请务必检查代码或文档。
 
-#### Identifying a Module Library from Code
+#### 从代码中识别模块化库
 
-Modular libraries will typically have at least some of the following:
+模块化库通常至少具有以下一些特征：
 
-- Unconditional calls to `require` or `define`
-- Declarations like `import * as a from 'b';` or `export c;`
-- Assignments to `exports` or `module.exports`
+- 对 `require` 或 `define` 的无条件调用
+- 声明，如 `import * as a from 'b';` 或 `export c;`
+- 对 `exports` 或 `module.exports` 的赋值
 
-They will rarely have:
+它们很少具有：
 
-- Assignments to properties of `window` or `global`
+- 对 `window` 或 `global` 属性的赋值
 
-#### Templates For Modules
+#### 模块的模板
 
-There are four templates available for modules,
-[`module.d.ts`](/zh/docs/handbook/declaration-files/templates/module-d-ts.html), [`module-class.d.ts`](/zh/docs/handbook/declaration-files/templates/module-class-d-ts.html), [`module-function.d.ts`](/zh/docs/handbook/declaration-files/templates/module-function-d-ts.html) and [`module-plugin.d.ts`](/zh/docs/handbook/declaration-files/templates/module-plugin-d-ts.html).
+有四种可用于模块的模板，[`module.d.ts`](/zh/docs/handbook/declaration-files/templates/module-d-ts.html)、[`module-class.d.ts`](/zh/docs/handbook/declaration-files/templates/module-class-d-ts.html)、[`module-function.d.ts`](/zh/docs/handbook/declaration-files/templates/module-function-d-ts.html) 和 [`module-plugin.d.ts`](/zh/docs/handbook/declaration-files/templates/module-plugin-d-ts.html)。
 
-You should first read [`module.d.ts`](/zh/docs/handbook/declaration-files/templates/module-d-ts.html) for an overview on the way they all work.
+你应首先阅读 [`module.d.ts`](/zh/docs/handbook/declaration-files/templates/module-d-ts.html) 以大致了解它们的工作方式。
 
-Then use the template [`module-function.d.ts`](/zh/docs/handbook/declaration-files/templates/module-function-d-ts.html) if your module can be _called_ like a function:
+然后，如果你的模块可以像函数一样*调用*，请使用模板 [`module-function.d.ts`](/zh/docs/handbook/declaration-files/templates/module-function-d-ts.html):
 
 ```js
 const x = require("foo");
-// Note: calling 'x' as a function
+// 注意：将‘x’当作函数调用
 const y = x(42);
 ```
 
-Use the template [`module-class.d.ts`](/zh/docs/handbook/declaration-files/templates/module-class-d-ts.html) if your module can be _constructed_ using `new`:
+如果你的模块可以使用 `new` *构造*，请使用模板 [`module-class.d.ts`](/zh/docs/handbook/declaration-files/templates/module-class-d-ts.html):
 
 ```js
 const x = require("bar");
-// Note: using 'new' operator on the imported variable
+// 注意：对导入的变量使用‘new’操作符
 const y = new x("hello");
 ```
 
-If you have a module which when imported, makes changes to other modules use template [`module-plugin.d.ts`](/zh/docs/handbook/declaration-files/templates/module-plugin-d-ts.html):
+如果你有一个模块，其在导入时会对其他模块进行更改，请使用模板 [`module-plugin.d.ts`](/zh/docs/handbook/declaration-files/templates/module-plugin-d-ts.html):
 
 ```js
 const jest = require("jest");
 require("jest-matchers-files");
 ```
 
-### Global Libraries
+### 全局库
 
-A _global_ library is one that can be accessed from the global scope (i.e. without using any form of `import`).
-Many libraries simply expose one or more global variables for use.
-For example, if you were using [jQuery](https://jquery.com/), the `$` variable can be used by simply referring to it:
+一个*全局*库是指可以从全局范围访问的库（即无需使用任何形式的 `import`）。许多库只是简单地暴露一个或多个全局变量供使用。例如，如果你正在使用 [jQuery](https://jquery.com/)，则可以通过简单地引用 `$` 变量来使用它：
 
 ```ts
 $(() => {
-  console.log("hello!");
+  console.log("你好！");
 });
 ```
 
-You'll usually see guidance in the documentation of a global library of how to use the library in an HTML script tag:
+通常，在全局库的文档中会看到如何在 HTML 脚本标签中使用库的指导：
 
 ```html
 <script src="http://a.great.cdn.for/someLib.js"></script>
 ```
 
-Today, most popular globally-accessible libraries are actually written as UMD libraries (see below).
-UMD library documentation is hard to distinguish from global library documentation.
-Before writing a global declaration file, make sure the library isn't actually UMD.
+如今，大多数流行的全局访问库实际上是以 UMD 库的形式编写的（见下文）。UMD 库的文档很难与全局库的文档区分开来。在编写全局声明文件之前，请确保该库实际上不是 UMD。
 
-#### Identifying a Global Library from Code
+#### 从代码中识别全局库
 
-Global library code is usually extremely simple.
-A global "Hello, world" library might look like this:
+全局库的代码通常非常简单。一个全局的“Hello, world”库可能如下所示：
 
 ```js
 function createGreeting(s) {
@@ -146,7 +130,7 @@ function createGreeting(s) {
 }
 ```
 
-or like this:
+或者像这样：
 
 ```js
 // Web
@@ -159,56 +143,51 @@ global.createGreeting = function (s) {
   return "Hello, " + s;
 };
 
-// Potentially any runtime
+// 可能在任何运行时
 globalThis.createGreeting = function (s) {
   return "Hello, " + s;
 };
 ```
 
-When looking at the code of a global library, you'll usually see:
+查看全局库的代码时，通常会看到：
 
-- Top-level `var` statements or `function` declarations
-- One or more assignments to `window.someName`
-- Assumptions that DOM primitives like `document` or `window` exist
+- 顶级 `var` 声明或 `function` 声明
+- 对 `window.someName` 进行一个或多个赋值
+- 假定 DOM 基本元素如 `document` 或 `window` 存在
 
-You _won't_ see:
+你*不会*看到：
 
-- Checks for, or usage of, module loaders like `require` or `define`
-- CommonJS/Node.js-style imports of the form `var fs = require("fs");`
-- Calls to `define(...)`
-- Documentation describing how to `require` or import the library
+- 对模块加载器如 `require` 或 `define` 的检查或使用
+- CommonJS/Node.js 风格的导入形式，如 `var fs = require("fs");`
+- 对 `define(...)` 的调用
+- 描述如何 `require` 或导入库的文档
 
-#### Examples of Global Libraries
+#### 全局库示例
 
-Because it's usually easy to turn a global library into a UMD library, very few popular libraries are still written in the global style.
-However, libraries that are small and require the DOM (or have _no_ dependencies) may still be global.
+由于通常很容易将全局库转换为 UMD 库，因此很少有流行的库仍然以全局样式编写。然而，那些体积小且需要 DOM（或*没有*依赖关系）的库可能仍然是全局的。
 
-#### Global Library Template
+#### 全局库模板
 
-The template file [`global.d.ts`](/zh/docs/handbook/declaration-files/templates/global-d-ts.html) defines an example library `myLib`.
-Be sure to read the ["Preventing Name Conflicts" footnote](#preventing-name-conflicts).
+模板文件 [`global.d.ts`](/zh/docs/handbook/declaration-files/templates/global-d-ts.html) 定义了示例库 `myLib`。请务必阅读[“避免名称冲突”脚注](#避免名称冲突)。
 
-### _UMD_
+### *UMD*
 
-A _UMD_ module is one that can _either_ be used as module (through an import), or as a global (when run in an environment without a module loader).
-Many popular libraries, such as [Moment.js](https://momentjs.com/), are written this way.
-For example, in Node.js or using RequireJS, you would write:
+UMD模块是一种*既*可以作为模块（通过导入），又可以作为全局变量（在没有模块加载器的环境中运行）的模块。许多流行的库，例如 [Moment.js](https://momentjs.com/)，都是以这种方式编写的。例如，在 Node.js 或使用 RequireJS 时，你会这样写：
 
 ```ts
 import moment = require("moment");
 console.log(moment.format());
 ```
 
-whereas in a vanilla browser environment you would write:
+而在纯浏览器环境中，你会这样写：
 
 ```js
 console.log(moment.format());
 ```
 
-#### Identifying a UMD library
+识别 UMD 库
 
-[UMD modules](https://github.com/umdjs/umd) check for the existence of a module loader environment.
-This is an easy-to-spot pattern that looks something like this:
+[UMD 模块](https://github.com/umdjs/umd)会检查模块加载器环境的存在。这是一个很容易识别的模式，看起来像这样：
 
 ```js
 (function (root, factory) {
@@ -222,28 +201,25 @@ This is an easy-to-spot pattern that looks something like this:
 }(this, function (b) {
 ```
 
-If you see tests for `typeof define`, `typeof window`, or `typeof module` in the code of a library, especially at the top of the file, it's almost always a UMD library.
+如果你在库的代码中看到对 `typeof define`、`typeof window` 或 `typeof module` 的测试，尤其是在文件顶部，那几乎总是 UMD 库。
 
-Documentation for UMD libraries will also often demonstrate a "Using in Node.js" example showing `require`,
-and a "Using in the browser" example showing using a `<script>` tag to load the script.
+UMD 库的文档通常还会展示一个“在Node.js 中使用”的示例，显示 `require`，以及一个“在浏览器中使用”的示例，显示使用 `<script>` 标签加载脚本。
 
-#### Examples of UMD libraries
+#### UMD库示例
 
-Most popular libraries are now available as UMD packages.
-Examples include [jQuery](https://jquery.com/), [Moment.js](https://momentjs.com/), [lodash](https://lodash.com/), and many more.
+现在，大多数流行的库都作为 UMD 包提供了。示例包括 [jQuery](https://jquery.com/)、[Moment.js](https://momentjs.com/) 以及 [lodash](https://lodash.com/)等等。
 
-#### Template
+#### 模板
 
-Use the [`module-plugin.d.ts`](/zh/docs/handbook/declaration-files/templates/module-plugin-d-ts.html) template.
+使用 [`module-plugin.d.ts`](/zh/docs/handbook/declaration-files/templates/module-plugin-d-ts.html) 模板。
 
-## Consuming Dependencies
+## 消费依赖项
 
-There are several kinds of dependencies your library might have.
-This section shows how to import them into the declaration file.
+你的库可能有几种依赖关系。本节展示如何将它们导入到声明文件中。
 
-### Dependencies on Global Libraries
+### 依赖于全局库
 
-If your library depends on a global library, use a `/// <reference types="..." />` directive:
+如果你的库依赖于全局库，请使用 `/// <reference types="..." />` 指令：
 
 ```ts
 /// <reference types="someLib" />
@@ -251,9 +227,9 @@ If your library depends on a global library, use a `/// <reference types="..." /
 function getThing(): someLib.thing;
 ```
 
-### Dependencies on Modules
+### 依赖于模块
 
-If your library depends on a module, use an `import` statement:
+如果你的库依赖于模块，请使用 `import` 语句：
 
 ```ts
 import * as moment from "moment";
@@ -261,11 +237,11 @@ import * as moment from "moment";
 function getThing(): moment;
 ```
 
-### Dependencies on UMD libraries
+### 依赖于 UMD 库
 
-#### From a Global Library
+#### 来自全局库
 
-If your global library depends on a UMD module, use a `/// <reference types` directive:
+如果你的全局库依赖于一个 UMD 模块，请使用 `/// <reference types` 指令：
 
 ```ts
 /// <reference types="moment" />
@@ -273,25 +249,23 @@ If your global library depends on a UMD module, use a `/// <reference types` dir
 function getThing(): moment;
 ```
 
-#### From a Module or UMD Library
+#### 来自模块或 UMD 库
 
-If your module or UMD library depends on a UMD library, use an `import` statement:
+如果你的模块或 UMD 库依赖于一个 UMD 库，请使用 `import` 语句：
 
 ```ts
 import * as someLib from "someLib";
 ```
 
-Do _not_ use a `/// <reference` directive to declare a dependency to a UMD library!
+*不要*使用 `/// <reference` 指令来声明对 UMD 库的依赖！
 
-## Footnotes
+## 脚注
 
-### Preventing Name Conflicts
+### 避免名称冲突
 
-Note that it's possible to define many types in the global scope when writing a global declaration file.
-We strongly discourage this as it leads to possible unresolvable name conflicts when many declaration files are in a project.
+请注意，在编写全局声明文件时，可能会在全局范围内定义许多类型。我们强烈反对这样做，因为当项目中有许多声明文件时，可能会导致无法解决的名称冲突。
 
-A simple rule to follow is to only declare types _namespaced_ by whatever global variable the library defines.
-For example, if the library defines the global value 'cats', you should write
+遵循的一个简单规则是只声明由库定义的全局变量命名空间。例如，如果库定义了全局值‘cats’，你应该这样写
 
 ```ts
 declare namespace cats {
@@ -299,28 +273,24 @@ declare namespace cats {
 }
 ```
 
-But _not_
+而不是
 
 ```ts
-// at top-level
+// 在顶层
 interface CatsKittySettings {}
 ```
 
-This guidance also ensures that the library can be transitioned to UMD without breaking declaration file users.
+这些指导原则还确保了库可以过渡到 UMD 而不会破坏声明文件用户。
 
-### The Impact of ES6 on Module Call Signatures
+### ES6 对模块调用签名的影响
 
-Many popular libraries, such as Express, expose themselves as a callable function when imported.
-For example, the typical Express usage looks like this:
+许多流行的库，比如 Express，在导入时会将自身暴露为可调用函数。例如，典型的 Express 用法如下：
 
 ```ts
 import exp = require("express");
 var app = exp();
 ```
 
-In ES6-compliant module loaders, the top-level object (here imported as `exp`) can only have properties;
-the top-level module object can _never_ be callable.
+在符合 ES6 的模块加载器中，顶级对象（这里作为 `exp` 导入）只能具有属性；顶级模块对象*永远*不能是可调用的。
 
-The most common solution here is to define a `default` export for a callable/constructable object;
-module loaders commonly detect this situation automatically and replace the top-level object with the `default` export.
-TypeScript can handle this for you, if you have [`"esModuleInterop": true`](/tsconfig/#esModuleInterop) in your tsconfig.json.
+在这里最常见的解决方案是为可调用/可构造对象定义一个 `default` 导出；模块加载器通常会自动检测到这种情况，并用 `default` 导出替换顶级对象。如果你在 tsconfig.json 中有 [`"esModuleInterop": true`](/zh/tsconfig/#esModuleInterop)，TypeScript 可以为你处理这个问题。
