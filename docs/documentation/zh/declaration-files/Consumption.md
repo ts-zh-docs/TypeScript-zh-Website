@@ -1,5 +1,5 @@
 ---
-title: Consumption
+title: 使用
 layout: docs
 permalink: /zh/docs/handbook/declaration-files/consumption.html
 oneline: "如何下载 .d.ts 文件以供你的项目使用"
