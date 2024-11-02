@@ -1,8 +1,8 @@
 ---
-title: Templates
+title: 模板
 layout: docs
 permalink: /zh/docs/handbook/declaration-files/templates.html
-oneline: "Different d.ts module template examples"
+oneline: "多种 d.ts 模块模板示例"
 ---
 
 [global-modifying-module.d.ts](./templates/global-modifying-module.d.ts.md)
