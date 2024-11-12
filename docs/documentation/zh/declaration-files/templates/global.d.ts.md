@@ -67,3 +67,72 @@ window.createGreeting = function (s) {
 ## 全局库示例
 
 因为通常很容易将全局库转换为 UMD 库，所以很少有流行的库仍然以全局样式编写。但是，需要 DOM（或没有依赖性）的小型库可能仍然是全局的。
+
+## 全局库模板
+
+以下是一个示例类型定义（Type Definitions, DTS）：
+
+```ts
+// Type definitions for [~THE LIBRARY NAME~] [~OPTIONAL VERSION NUMBER~]
+// Project: [~THE PROJECT NAME~]
+// Definitions by: [~YOUR NAME~] <[~A URL FOR YOU~]>
+
+/*~ 如果这个库可以调用（例如，可以像 myLib(3) 一样调用），
+ *~ 请在这里包含这些调用签名。
+ *~ 否则，删除此部分。
+ */
+declare function myLib(a: string): string;
+declare function myLib(a: number): number;
+
+/*~ 如果你想让这个库的名称成为一个有效的类型名称，
+ *~ 你可以在这里这样做。
+ *~
+ *~ 例如，这允许我们写 'var x: myLib'；
+ *~ 确保这实际上是有意义的！如果没有意义，删除此声明并
+ *~ 在下面的命名空间中添加类型。
+ */
+interface myLib {
+  name: string;
+  length: number;
+  extras?: string[];
+}
+
+/*~ 如果你的库有在全局变量上暴露的属性，
+ *~ 请在这里放置它们。
+ *~ 你还应该在这里放置类型（接口和类型别名）。
+ */
+declare namespace myLib {
+  //~ 我们可以写 'myLib.timeout = 50;'
+  let timeout: number;
+
+  //~ 我们可以访问 'myLib.version'，但不能更改它
+  const version: string;
+
+  //~ 有一个类可以通过 'let c = new myLib.Cat(42)' 创建
+  //~ 或引用，例如 'function f(c: myLib.Cat) { ... }'
+  class Cat {
+    constructor(n: number);
+
+    //~ 我们可以从 'Cat' 实例中读取 'c.age'
+    readonly age: number;
+
+    //~ 我们可以从 'Cat' 实例中调用 'c.purr()'
+    purr(): void;
+  }
+
+  //~ 我们可以将变量声明为
+  //~   'var s: myLib.CatSettings = { weight: 5, name: "Maru" };'
+  interface CatSettings {
+    weight: number;
+    name: string;
+    tailLength?: number;
+  }
+
+  //~ 我们可以写 'const v: myLib.VetID = 42;'
+  //~  或 'const v: myLib.VetID = "bob";'
+  type VetID = string | number;
+
+  //~ 我们可以调用 'myLib.checkCat(c)' 或 'myLib.checkCat(c, v);'
+  function checkCat(c: Cat, s?: VetID);
+}
+```
