@@ -1,108 +1,103 @@
 ---
-title: Do's and Don'ts
+title: 注意事项
 layout: docs
 permalink: /zh/docs/handbook/declaration-files/do-s-and-don-ts.html
-oneline: "Recommendations for writing d.ts files"
+oneline: "编写 d.ts 文件方面的建议"
 ---
 
-## General Types
+## 一般类型
 
-### `Number`, `String`, `Boolean`, `Symbol` and `Object`
+### `Number`、`String`、`Boolean`、`Symbol` 和 `Object`
 
-❌ **Don't** ever use the types `Number`, `String`, `Boolean`, `Symbol`, or `Object`
-These types refer to non-primitive boxed objects that are almost never used appropriately in JavaScript code.
+❌ **不要**使用类型 `Number`、`String`、`Boolean`、`Symbol` 或 `Object`。这些类型指的是非基本类型的装箱对象，在 JavaScript 代码中几乎从未被正确使用。
 
 ```ts
-/* WRONG */
+/* 错误 */
 function reverse(s: String): String;
 ```
 
-✅ **Do** use the types `number`, `string`, `boolean`, and `symbol`.
+✅ **要**使用类型 `number`、`string`、`boolean` 和 `symbol`。
 
 ```ts
-/* OK */
+/* 正确 */
 function reverse(s: string): string;
 ```
 
-Instead of `Object`, use the non-primitive `object` type ([added in TypeScript 2.2](../release-notes/typescript-2-2.html#object-type)).
+不要使用 `Object`，请使用非基本类型 `object`（[在 TypeScript 2.2 中添加](../release-notes/typescript-2-2.html#object-type)）。
 
-### Generics
+### 泛型
 
-❌ **Don't** ever have a generic type which doesn't use its type parameter.
-See more details in [TypeScript FAQ page](https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-type-inference-work-on-this-interface-interface-foot--).
+❌ **不要**使用不带类型参数的泛型类型。更多细节请参见 [TypeScript 常见问题页面](https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-type-inference-work-on-this-interface-interface-foot--).
 
 ### any
 
-❌ **Don't** use `any` as a type unless you are in the process of migrating a JavaScript project to TypeScript. The compiler _effectively_ treats `any` as "please turn off type checking for this thing". It is similar to putting an `@ts-ignore` comment around every usage of the variable. This can be very helpful when you are first migrating a JavaScript project to TypeScript as you can set the type for stuff you haven't migrated yet as `any`, but in a full TypeScript project you are disabling type checking for any parts of your program that use it.
+❌ **不要**将 `any` 用作类型，除非你正在将 JavaScript 项目迁移到 TypeScript。编译器*实际上*将 `any` 视为“请关闭对这个东西的类型检查”。这类似于在每次使用变量时添加 `@ts-ignore` 注释。当你首次将 JavaScript 项目迁移到 TypeScript 时，这非常有帮助，因为你可以将尚未迁移的内容的类型设置为 `any`，但在完整的 TypeScript 项目中，所有使用它的程序部分的类型检查将会被禁用。
 
-In cases where you don't know what type you want to accept, or when you want to accept anything because you will be blindly passing it through without interacting with it, you can use [`unknown`](/zh/play/#example/unknown-and-never).
+在你不知道想要接受什么类型，或希望接受任何内容（不与其交互而盲目传入它）的情况下，可以使用 [`unknown`](/zh/play/#example/unknown-and-never)。
 
-<!-- TODO: More -->
+<!-- TODO: 更多 -->
 
-## Callback Types
+## 回调类型
 
-### Return Types of Callbacks
+### 回调的返回类型
 
-<!-- TODO: Reword; these examples make no sense in the context of a declaration file -->
+<!-- TODO: 重新措辞；这些示例在声明文件的上下文中没有意义 -->
 
-❌ **Don't** use the return type `any` for callbacks whose value will be ignored:
+❌ **不要**为返回值将被忽略的回调使用返回类型 `any`：
 
 ```ts
-/* WRONG */
+/* 错误 */
 function fn(x: () => any) {
   x();
 }
 ```
 
-✅ **Do** use the return type `void` for callbacks whose value will be ignored:
+✅ **要**为返回值将被忽略的回调使用返回类型 `void`：
 
 ```ts
-/* OK */
+/* 正确 */
 function fn(x: () => void) {
   x();
 }
 ```
 
-❔ **Why:** Using `void` is safer because it prevents you from accidentally using the return value of `x` in an unchecked way:
+❔ **为什么：** 使用 `void` 更安全，因为它可以防止你意外地以不受检查的方式使用 `x` 的返回值：
 
 ```ts
 function fn(x: () => void) {
-  var k = x(); // oops! meant to do something else
-  k.doSomething(); // error, but would be OK if the return type had been 'any'
+  var k = x(); // 哎呀！本来想做其他事情
+  k.doSomething(); // 错误，但如果返回类型是‘any’就不会有问题
 }
 ```
 
-### Optional Parameters in Callbacks
+### 回调中的可选参数
 
-❌ **Don't** use optional parameters in callbacks unless you really mean it:
+❌ **不要**在回调中使用可选参数，除非你真的想这样做：
 
 ```ts
-/* WRONG */
+/* 错误 */
 interface Fetcher {
   getObject(done: (data: unknown, elapsedTime?: number) => void): void;
 }
 ```
 
-This has a very specific meaning: the `done` callback might be invoked with 1 argument or might be invoked with 2 arguments.
-The author probably intended to say that the callback might not care about the `elapsedTime` parameter,
-but there's no need to make the parameter optional to accomplish this --
-it's always legal to provide a callback that accepts fewer arguments.
+这有一个非常具体的含义：`done` 回调可能会在被调用时传递 1 个参数，或传递 2 个参数。作者可能意图表达回调可能不关心 `elapsedTime` 参数，但没有必要将该参数设为可选——回调可以合法地接受更少的参数。
 
-✅ **Do** write callback parameters as non-optional:
+✅ **要**将回调参数写为非可选：
 
 ```ts
-/* OK */
+/* 正确 */
 interface Fetcher {
   getObject(done: (data: unknown, elapsedTime: number) => void): void;
 }
 ```
 
-### Overloads and Callbacks
+### 重载和回调
 
-❌ **Don't** write separate overloads that differ only on callback arity:
+❌ **不要**编写仅在回调参数个数上有所不同的单独重载：
 
 ```ts
-/* WRONG */
+/* 错误 */
 declare function beforeAll(action: () => void, timeout?: number): void;
 declare function beforeAll(
   action: (done: DoneFn) => void,
@@ -110,56 +105,54 @@ declare function beforeAll(
 ): void;
 ```
 
-✅ **Do** write a single overload using the maximum arity:
+✅ **要**使用最大参数个数编写单个重载：
 
 ```ts
-/* OK */
+/* 正确 */
 declare function beforeAll(
   action: (done: DoneFn) => void,
   timeout?: number
 ): void;
 ```
 
-❔ **Why:** It's always legal for a callback to disregard a parameter, so there's no need for the shorter overload.
-Providing a shorter callback first allows incorrectly-typed functions to be passed in because they match the first overload.
+❔ **为什么：**回调可以合法地忽略参数，因此没有必要提供较短的重载。优先提供较短的回调会导致类型不正确的函数被错误传入，因为它们匹配了第一个重载。
 
-## Function Overloads
+## 函数重载
 
-### Ordering
+### 排序
 
-❌ **Don't** put more general overloads before more specific overloads:
+❌ **不要** 将更一般的重载放在更具体的重载之前：
 
 ```ts
-/* WRONG */
+/* 错误 */
 declare function fn(x: unknown): unknown;
 declare function fn(x: HTMLElement): number;
 declare function fn(x: HTMLDivElement): string;
 
 var myElem: HTMLDivElement;
-var x = fn(myElem); // x: unknown, wat?
+var x = fn(myElem); // x: unknown, 什么情况？
 ```
 
-✅ **Do** sort overloads by putting the more general signatures after more specific signatures:
+✅ **要** 通过将更具体的签名放在更一般的签名之前来排序重载：
 
 ```ts
-/* OK */
+/* 正确 */
 declare function fn(x: HTMLDivElement): string;
 declare function fn(x: HTMLElement): number;
 declare function fn(x: unknown): unknown;
 
 var myElem: HTMLDivElement;
-var x = fn(myElem); // x: string, :)
+var x = fn(myElem); // x: string, :) 
 ```
 
-❔ **Why:** TypeScript chooses the _first matching overload_ when resolving function calls.
-When an earlier overload is "more general" than a later one, the later one is effectively hidden and cannot be called.
+❔ **为什么：**TypeScript 在解析函数调用时选择*第一个匹配的重载*。当前面的重载比后面的重载“更一般”时，后面的重载实际上被隐藏，无法被调用。
 
-### Use Optional Parameters
+### 使用可选参数
 
-❌ **Don't** write several overloads that differ only in trailing parameters:
+❌ **不要**编写多个仅在尾部参数上有所不同的重载：
 
 ```ts
-/* WRONG */
+/* 错误 */
 interface Example {
   diff(one: string): number;
   diff(one: string, two: string): number;
@@ -167,48 +160,44 @@ interface Example {
 }
 ```
 
-✅ **Do** use optional parameters whenever possible:
+✅ **要**尽可能使用可选参数：
 
 ```ts
-/* OK */
+/* 正确 */
 interface Example {
   diff(one: string, two?: string, three?: boolean): number;
 }
 ```
 
-Note that this collapsing should only occur when all overloads have the same return type.
+注意，这种合并仅在所有重载具有相同的返回类型时发生。
 
-❔ **Why:** This is important for two reasons.
+❔ **为什么：**这很重要，有两个原因。
 
-TypeScript resolves signature compatibility by seeing if any signature of the target can be invoked with the arguments of the source,
-_and extraneous arguments are allowed_.
-This code, for example, exposes a bug only when the signature is correctly written using optional parameters:
+TypeScript 通过检查目标的任何签名是否可以使用源的参数调用来解析签名兼容性，*并且允许多余的参数*。例如，这段代码只有在使用可选参数正确编写签名时才会暴露错误：
 
 ```ts
 function fn(x: (a: string, b: number, c: number) => void) {}
 var x: Example;
-// When written with overloads, OK -- used first overload
-// When written with optionals, correctly an error
+// 当使用重载编写时，OK——使用第一个重载
+// 当使用可选参数编写时，如预期般出现了错误
 fn(x.diff);
 ```
 
-The second reason is when a consumer uses the "strict null checking" feature of TypeScript.
-Because unspecified parameters appear as `undefined` in JavaScript, it's usually fine to pass an explicit `undefined` to a function with optional arguments.
-This code, for example, should be OK under strict nulls:
+第二个原因是当消费者使用 TypeScript 的“严格空检查”特性时。由于未指定的参数在 JavaScript 中会表现为 `undefined`，通常可以将显式的 `undefined` 传递给具有可选参数的函数。例如，这段代码在严格空检查下应该是 OK 的：
 
 ```ts
 var x: Example;
-// When written with overloads, incorrectly an error because of passing 'undefined' to 'string'
-// When written with optionals, correctly OK
+// 当使用重载编写时，错误地因为将‘undefined’传递给‘string’而报错
+// 当使用可选参数编写时，正确 OK
 x.diff("something", true ? undefined : "hour");
 ```
 
-### Use Union Types
+### 使用联合类型
 
-❌ **Don't** write overloads that differ by type in only one argument position:
+❌ **不要**编写仅在一个参数位置的类型不同的重载：
 
 ```ts
-/* WRONG */
+/* 错误 */
 interface Moment {
   utcOffset(): number;
   utcOffset(b: number): Moment;
@@ -216,26 +205,26 @@ interface Moment {
 }
 ```
 
-✅ **Do** use union types whenever possible:
+✅ **要**尽可能使用联合类型：
 
 ```ts
-/* OK */
+/* 正确 */
 interface Moment {
   utcOffset(): number;
   utcOffset(b: number | string): Moment;
 }
 ```
 
-Note that we didn't make `b` optional here because the return types of the signatures differ.
+注意我们没有将 `b` 设置为可选，因为这些签名的返回类型不同。
 
-❔ **Why:** This is important for people who are "passing through" a value to your function:
+❔ **为什么：** 这对那些“传递”值到你的函数的人很重要：
 
 ```ts
 function fn(x: string): Moment;
 function fn(x: number): Moment;
 function fn(x: number | string) {
-  // When written with separate overloads, incorrectly an error
-  // When written with union types, correctly OK
+  // 当使用单独的重载时，出现了错误
+  // 当使用联合类型时，正确 OK
   return moment().utcOffset(x);
 }
 ```
